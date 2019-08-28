@@ -1,0 +1,14 @@
+SQL> shutdown immediate;
+
+SQL> startup restrict
+
+SQL> select name from v$database;
+
+SQL> ALTER DATABASE CHARACTER SET INTERNAL_USE AR8MSWIN1256 ;
+
+SQL> select value from NLS_DATABASE_PARAMETERS 
+     where parameter=’NLS_CHARACTERSET’;
+
+SQL> shutdown immediate;
+
+SQL> startup

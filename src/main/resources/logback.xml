@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+<property name="logPattern" value="%d %-5level %logger{35} - %msg%n"/>
+<property name="logEncoding" value="UTF-8"/>
+<property name="logDirectory" value="C:\\HAI_FUJ_LOG"/>
+
+<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <charset>${logEncoding}</charset>
+      <pattern>${logPattern}</pattern>
+    </encoder>
+</appender>
+  
+<appender name="fileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${logDirectory}/hai.log</file>
+    
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">              
+        <fileNamePattern>${logDirectory}/hai.%d{yyyy-MM-dd}.log</fileNamePattern>
+        <maxHistory>30</maxHistory>
+    </rollingPolicy>
+    
+
+    
+    <encoder>
+        <charset>${logEncoding}</charset>
+        <pattern>${logPattern}</pattern>
+    </encoder>
+</appender>
+
+<logger name="org.glassfish.jersey" level="ERROR"/>
+
+
+<root level="INFO">
+    <appender-ref ref="fileAppender"/>
+    <appender-ref ref="STDOUT" />
+</root>
+
+</configuration>
