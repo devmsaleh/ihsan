@@ -50,16 +50,12 @@ public class CharityBoxTransferDetail {
 	@Column(name = "CREATION_DATE")
 	private Date creationDate = new Date();
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "TRX_DATE")
-	private Date transactionDate = new Date();
-
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ACTION_TYPE")
 	private CharityBoxActionType actionType;
 
-	@Column(name = "STATUS")
-	private String status = "1";
+	// @Column(name = "STATUS")
+	// private String status = "1";
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "SUPERVISOR_ID")
@@ -88,14 +84,6 @@ public class CharityBoxTransferDetail {
 
 	public void setSafetyCase(BigInteger safetyCase) {
 		this.safetyCase = safetyCase;
-	}
-
-	public Date getTransactionDate() {
-		return transactionDate;
-	}
-
-	public void setTransactionDate(Date transactionDate) {
-		this.transactionDate = transactionDate;
 	}
 
 	public BigInteger getId() {
@@ -152,14 +140,6 @@ public class CharityBoxTransferDetail {
 
 	public void setActionType(CharityBoxActionType actionType) {
 		this.actionType = actionType;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
 	}
 
 	public Delegate getSupervisor() {
