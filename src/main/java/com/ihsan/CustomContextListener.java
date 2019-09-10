@@ -19,12 +19,12 @@ public class CustomContextListener implements ServletContextListener {
 
 	@Override
 	public void contextInitialized(ServletContextEvent servletContextEvent) {
-		logger.info("######### IHS contextInitialized #########");
+		logger.info("######### IHSAN contextInitialized #########");
 	}
 
 	@Override
 	public void contextDestroyed(ServletContextEvent servletContextEvent) {
-		logger.info("######### IHS contextDestroyed #########");
+		logger.info("######### IHSAN contextDestroyed #########");
 		Enumeration<Driver> drivers = DriverManager.getDrivers();
 		while (drivers.hasMoreElements()) {
 			Driver driver = drivers.nextElement();

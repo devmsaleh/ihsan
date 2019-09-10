@@ -16,7 +16,7 @@ public interface ReceiptRepository extends JpaRepository<Receipt, BigInteger> {
 
 	Receipt findByIdAndCreatedById(BigInteger id, BigInteger delegateId);
 
-	Receipt findTop1ByCreatedByIdOrderByIdDesc(String delegateId);
+	Receipt findTop1ByCreatedByIdOrderByIdDesc(BigInteger delegateId);
 
 	@Modifying(clearAutomatically = true)
 	@Query(value = "update Receipt set numberOfPrints=numberOfPrints+1 where id=:id")
@@ -24,7 +24,7 @@ public interface ReceiptRepository extends JpaRepository<Receipt, BigInteger> {
 	int updateNumberOfPrints(@Param("id") BigInteger id);
 
 	@Query(value = "select sum(TOTAL_AMOUNT) from TM_RECEIPTS where TM_DELEGATES_CODE=:delegateId and STATUS=0", nativeQuery = true)
-	BigDecimal getDelegateTotalAmount(@Param("delegateId") String delegateId);
+	BigDecimal getDelegateTotalAmount(@Param("delegateId") BigInteger delegateId);
 
-	List<Receipt> findByCollectedAndCreatedById(String collected, String delegateId);
+	List<Receipt> findByCollectedAndCreatedById(String collected, BigInteger delegateId);
 }

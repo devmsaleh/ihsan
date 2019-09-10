@@ -406,7 +406,7 @@ public class CharityBoxWebService extends HAIServiceBase {
 
 			Attachment attachment = new Attachment();
 			attachment.setFilePath(filePath);
-			attachment.setCreatedBy(new Delegate(documentDTO.getDelegateId().toString()));
+			attachment.setCreatedBy(new Delegate(documentDTO.getDelegateId()));
 			attachmentRepository.save(attachment);
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE,
 					new GeneralResponseDTO(attachment.getId().toString()), errorCodeRepository, lang);

@@ -667,13 +667,13 @@ public class HAIServiceBase {
 			logger.info("###### convertCharityBoxTransferDTOToEntity,supervisor id: "
 					+ charityBoxTransferDTO.getDelegateId());
 
-		detail.setCreatedBy(new Delegate(charityBoxTransferDTO.getDelegateId().toString()));
+		detail.setCreatedBy(new Delegate(charityBoxTransferDTO.getDelegateId()));
 		if (!GeneralUtils.isEmptyNumber(charityBoxTransferDTO.getNewCharityBoxId()))
 			detail.setNewCharityBox(new CharityBox(charityBoxTransferDTO.getNewCharityBoxId()));
 		detail.setNotes(charityBoxTransferDTO.getNotes());
 		if (!GeneralUtils.isEmptyNumber(charityBoxTransferDTO.getSubLocationId()))
 			detail.setSubLocation(new SubLocation(charityBoxTransferDTO.getSubLocationId()));
-		detail.setSupervisor(new Delegate(charityBoxTransferDTO.getDelegateId().toString()));
+		detail.setSupervisor(new Delegate(charityBoxTransferDTO.getDelegateId()));
 		if (!GeneralUtils.isEmptyNumber(charityBoxTransferDTO.getSafetyCaseId()))
 			detail.setSafetyCase(charityBoxTransferDTO.getSafetyCaseId());
 

@@ -1,5 +1,6 @@
 package com.ihsan.webservice.dto;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +8,7 @@ import com.ihsan.entities.PaymentTypeEnum;
 
 public class ReceiptDTO {
 
-	private String delegateId;
+	private BigInteger delegateId;
 
 	private String donatorPhoneNumber;
 
@@ -35,11 +36,11 @@ public class ReceiptDTO {
 		this.donatorName = donatorName;
 	}
 
-	public String getDelegateId() {
+	public BigInteger getDelegateId() {
 		return delegateId;
 	}
 
-	public void setDelegateId(String delegateId) {
+	public void setDelegateId(BigInteger delegateId) {
 		this.delegateId = delegateId;
 	}
 

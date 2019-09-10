@@ -1,5 +1,6 @@
 package com.ihsan.entities;
 
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.UUID;
 
@@ -21,7 +22,7 @@ public class UserToken {
 	private String token = UUID.randomUUID().toString();
 
 	@Column(name = "DELEGATE_ID")
-	private String delegateId;
+	private BigInteger delegateId;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "CREATE_DATE")
@@ -31,7 +32,7 @@ public class UserToken {
 	@Column(name = "EXPIRY_DATE")
 	private Date expiryDate = DateUtils.addHours(new Date(), 1);
 
-	public UserToken(String delegateId) {
+	public UserToken(BigInteger delegateId) {
 		this.delegateId = delegateId;
 	}
 
@@ -39,11 +40,11 @@ public class UserToken {
 
 	}
 
-	public String getDelegateId() {
+	public BigInteger getDelegateId() {
 		return delegateId;
 	}
 
-	public void setDelegateId(String delegateId) {
+	public void setDelegateId(BigInteger delegateId) {
 		this.delegateId = delegateId;
 	}
 

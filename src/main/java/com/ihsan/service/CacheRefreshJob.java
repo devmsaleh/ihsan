@@ -29,11 +29,11 @@ public class CacheRefreshJob {
 	@Scheduled(fixedRate = 3600000 * 1, initialDelay = 0)
 	public void refreshCache() {
 		try {
-			logger.info("######## IHS CacheRefreshJob at: " + new Date());
+			logger.info("######## IHSAN CacheRefreshJob at: " + new Date());
 			cacheService.refreshAllCaches();
 			tokenRepository.deleteOldTokens(DateUtils.addWeeks(new Date(), -1));
 		} catch (Exception e) {
-			logger.error("Exception in IHS CacheRefreshJob", e);
+			logger.error("Exception in IHSAN CacheRefreshJob", e);
 		}
 	}
 

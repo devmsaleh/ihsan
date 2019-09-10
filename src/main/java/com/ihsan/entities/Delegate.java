@@ -19,7 +19,7 @@ public class Delegate {
 
 	@Id
 	@Column(name = "DELEGATE_ID", nullable = false)
-	private String id;
+	private BigInteger id;
 	@Column(name = "DELEGATE_NUMBER")
 	private String number;
 	@Column(name = "DELEGATE_NAME")
@@ -72,7 +72,7 @@ public class Delegate {
 
 	}
 
-	public Delegate(String id) {
+	public Delegate(BigInteger id) {
 		this.id = id;
 	}
 
@@ -87,11 +87,11 @@ public class Delegate {
 		this.status = status;
 	}
 
-	public String getId() {
+	public BigInteger getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(BigInteger id) {
 		this.id = id;
 	}
 

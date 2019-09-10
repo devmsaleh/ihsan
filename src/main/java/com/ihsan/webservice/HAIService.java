@@ -292,7 +292,7 @@ public class HAIService extends HAIServiceBase {
 	@Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	@Path("/changePassword")
 	@ApiOperation(value = "تغيير كلمة المرور")
-	public ServiceResponse changePassword(@HeaderParam("delegateId") String delegateId,
+	public ServiceResponse changePassword(@HeaderParam("delegateId") BigInteger delegateId,
 			@HeaderParam("oldPassword") String oldPassword, @HeaderParam("newPassword") String newPassword,
 			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
 		try {
@@ -317,7 +317,7 @@ public class HAIService extends HAIServiceBase {
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	@Path("/findDelegateReceipts/{delegateId}/{fromDate}/{toDate}")
 	@ApiOperation(value = "عرض الايصالات التى أنشأها مفوض فى فترة معينة")
-	public ServiceResponse findDelegateReceipts(@PathParam("delegateId") String delegateId,
+	public ServiceResponse findDelegateReceipts(@PathParam("delegateId") BigInteger delegateId,
 			@PathParam("fromDate") String fromDateStr, @PathParam("toDate") String toDateStr,
 			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
 		try {
@@ -343,7 +343,7 @@ public class HAIService extends HAIServiceBase {
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	@Path("/findDelegateNotCollectedReceipts/{delegateId}")
 	@ApiOperation(value = "عرض المبالغ الغير محصلة عند المندوب")
-	public ServiceResponse findDelegateNotCollectedReceipts(@PathParam("delegateId") String delegateId,
+	public ServiceResponse findDelegateNotCollectedReceipts(@PathParam("delegateId") BigInteger delegateId,
 			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
 		try {
 
@@ -377,7 +377,7 @@ public class HAIService extends HAIServiceBase {
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	@Path("/findDelegateLatestReceipt/{delegateId}")
 	@ApiOperation(value = "عرض تفاصيل أخر ايصال منشأ بواسطة مفوض")
-	public ServiceResponse findDelegateLatestReceipt(@PathParam("delegateId") String delegateId,
+	public ServiceResponse findDelegateLatestReceipt(@PathParam("delegateId") BigInteger delegateId,
 			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
 		try {
 
@@ -428,7 +428,7 @@ public class HAIService extends HAIServiceBase {
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	@Path("/findDelegateTotalAmount/{delegateId}")
 	@ApiOperation(value = "عرض رصيد المندوب")
-	public ServiceResponse findDelegateTotalAmount(@PathParam("delegateId") String delegateId,
+	public ServiceResponse findDelegateTotalAmount(@PathParam("delegateId") BigInteger delegateId,
 			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
 		try {
 

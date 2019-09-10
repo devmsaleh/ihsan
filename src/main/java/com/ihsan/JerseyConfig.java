@@ -21,7 +21,7 @@ public class JerseyConfig extends ResourceConfig {
 		// register(SponsorShipWebService.class);
 
 		BeanConfig swaggerConfig = new BeanConfig();
-		swaggerConfig.setBasePath("/ihs/api");
+		swaggerConfig.setBasePath("/ihsan/api");
 		SwaggerConfigLocator.getInstance().putConfig(SwaggerContextService.CONFIG_ID_DEFAULT, swaggerConfig);
 
 		packages(getClass().getPackage().getName(), ApiListingResource.class.getPackage().getName());
