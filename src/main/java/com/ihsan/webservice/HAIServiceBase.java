@@ -1,6 +1,7 @@
 package com.ihsan.webservice;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -29,6 +31,14 @@ import com.ihsan.dao.ReceiptDetailsRepository;
 import com.ihsan.dao.ReceiptRepository;
 import com.ihsan.dao.TokenRepository;
 import com.ihsan.dao.UtilsRepository;
+import com.ihsan.dao.charityBoxes.AttachmentRepository;
+import com.ihsan.dao.charityBoxes.CharityBoxRepository;
+import com.ihsan.dao.charityBoxes.CharityBoxTransferRepository;
+import com.ihsan.dao.charityBoxes.EmarahRepository;
+import com.ihsan.dao.charityBoxes.LocationRepository;
+import com.ihsan.dao.charityBoxes.RegionRepository;
+import com.ihsan.dao.charityBoxes.RouteDetailRepository;
+import com.ihsan.dao.charityBoxes.SubLocationRepository;
 import com.ihsan.entities.BankCheque;
 import com.ihsan.entities.BankTransfer;
 import com.ihsan.entities.CouponType;
@@ -38,6 +48,15 @@ import com.ihsan.entities.PaymentTypeEnum;
 import com.ihsan.entities.Receipt;
 import com.ihsan.entities.ReceiptDetail;
 import com.ihsan.entities.ReceiptPayment;
+import com.ihsan.entities.charityBoxes.CharityBox;
+import com.ihsan.entities.charityBoxes.CharityBoxActionType;
+import com.ihsan.entities.charityBoxes.CharityBoxTransfer;
+import com.ihsan.entities.charityBoxes.CharityBoxTransferDetail;
+import com.ihsan.entities.charityBoxes.Location;
+import com.ihsan.entities.charityBoxes.Region;
+import com.ihsan.entities.charityBoxes.RouteDetail;
+import com.ihsan.entities.charityBoxes.SubLocation;
+import com.ihsan.enums.CharityBoxActionTypeEnum;
 import com.ihsan.service.DelegateService;
 import com.ihsan.service.UtilsService;
 import com.ihsan.util.GeneralUtils;
@@ -54,6 +73,11 @@ import com.ihsan.webservice.dto.ReceiptsReportDTO;
 import com.ihsan.webservice.dto.ServiceResponse;
 import com.ihsan.webservice.dto.SupervisorReportDTO;
 import com.ihsan.webservice.dto.TransactionTypeEnum;
+import com.ihsan.webservice.dto.charityBox.CharityBoxDTO;
+import com.ihsan.webservice.dto.charityBox.CharityBoxTransferDTO;
+import com.ihsan.webservice.dto.charityBox.LocationDTO;
+import com.ihsan.webservice.dto.charityBox.RegionDTO;
+import com.ihsan.webservice.dto.charityBox.SubLocationDTO;
 
 @Service
 public class HAIServiceBase {
@@ -95,6 +119,33 @@ public class HAIServiceBase {
 
 	@Autowired
 	protected UtilsRepository utilsRepository;
+
+	@Autowired
+	protected CharityBoxRepository charityBoxRepository;
+
+	@Autowired
+	protected EmarahRepository emarahRepository;
+
+	@Autowired
+	protected RegionRepository regionRepository;
+
+	@Autowired
+	protected LocationRepository locationRepository;
+
+	@Autowired
+	protected SubLocationRepository subLocationRepository;
+
+	@Autowired
+	protected CharityBoxTransferRepository charityBoxTransferRepository;
+
+	@Autowired
+	protected AttachmentRepository attachmentRepository;
+
+	@Autowired
+	protected RouteDetailRepository routeDetailRepository;
+
+	@Value("${debugEnabled}")
+	protected boolean debugEnabled;
 
 	protected boolean isSuccess(ErrorCodeEnum errorCode) {
 		return errorCode != null && errorCode.intValue() == ErrorCodeEnum.SUCCESS_CODE.intValue();
@@ -376,6 +427,263 @@ public class HAIServiceBase {
 			newList.add(bankDTO);
 		}
 		return newList;
+	}
+
+	public List<CharityBoxDTO> convertCharityBoxListToDTO(List<CharityBox> inputList) {
+		if (inputList == null || inputList.size() == 0) {
+			return new ArrayList<CharityBoxDTO>();
+		}
+		List<CharityBoxDTO> resultList = new ArrayList<CharityBoxDTO>(inputList.size());
+		for (CharityBox charityBox : inputList) {
+			resultList.add(convertCharityBoxToDTO(charityBox));
+		}
+		return resultList;
+	}
+
+	public List<SubLocationDTO> convertRouteDetailListToDTO(List<RouteDetail> inputList) {
+		if (inputList == null || inputList.size() == 0) {
+			return new ArrayList<SubLocationDTO>();
+		}
+		List<SubLocationDTO> resultList = new ArrayList<SubLocationDTO>(inputList.size());
+		for (RouteDetail routeDetail : inputList) {
+			resultList.add(new SubLocationDTO(routeDetail.getSubLocation()));
+		}
+		return resultList;
+	}
+
+	public CharityBoxDTO convertCharityBoxToDTO(CharityBox charityBox) {
+		CharityBoxDTO charityBoxDTO = new CharityBoxDTO();
+		if (charityBox == null)
+			return charityBoxDTO;
+		charityBoxDTO.setId(charityBox.getId().toString());
+		charityBoxDTO.setBarcode(charityBox.getBarcode());
+		charityBoxDTO.setName(charityBox.getName());
+		// logger.info("####### charityBox.getSubLocationId(): " +
+		// charityBox.getSubLocationId());
+		SubLocation subLocation = utilsService.getSubLocationFromCache(charityBox.getSubLocationId());
+		// logger.info("####### subLocation: " + subLocation);
+		if (subLocation != null) {
+			// logger.info("####### subLocation.getName(): " + subLocation.getName());
+			// logger.info("####### subLocation.getId(): " + subLocation.getId());
+			// logger.info("####### subLocation.getLocationId(): " +
+			// subLocation.getLocationId());
+		}
+		if (subLocation != null && subLocation.getId() != null && subLocation.getId().compareTo(BigInteger.ZERO) > 0) {
+			charityBoxDTO.setSubLocation(subLocation.getName());
+			Location location = utilsService.getLocationFromCache(subLocation.getLocationId());
+			// logger.info("####### location: " + location);
+			if (location != null) {
+				// logger.info("####### location.getName(): " + location.getName());
+				// logger.info("####### location.getId(): " + location.getId());
+				// logger.info("####### location.getRegionId(): " + location.getRegionId());
+			}
+			if (location != null && location.getId() != null && location.getId().compareTo(BigInteger.ZERO) > 0) {
+				charityBoxDTO.setLocation(location.getName());
+				Region region = utilsService.getRegionFromCache(location.getRegionId());
+				// logger.info("####### region: " + region);
+				if (location != null) {
+					// logger.info("####### region.getName(): " + location.getName());
+				}
+				if (region != null && region.getId() != null && region.getId().compareTo(BigInteger.ZERO) > 0) {
+					charityBoxDTO.setRegion(region.getName());
+				}
+			}
+		}
+		charityBoxDTO.setSource(utilsService.getCharityBoxCategoryFromCache(charityBox.getCategoryId()).getName());
+		charityBoxDTO.setSourceId(charityBox.getCategoryId());
+		charityBoxDTO.setStatus(utilsService.getCharityBoxStatusFromCache(charityBox.getStatusId()).getName());
+		charityBoxDTO.setType(utilsService.getCharityBoxTypeFromCache(charityBox.getTypeId()).getName());
+		return charityBoxDTO;
+	}
+
+	public List<RegionDTO> convertRegionToDTO(List<Region> inputList) {
+		if (inputList == null || inputList.size() == 0) {
+			return new ArrayList<RegionDTO>();
+		}
+		List<RegionDTO> resultList = new ArrayList<RegionDTO>(inputList.size());
+		for (Region region : inputList) {
+			resultList.add(new RegionDTO(region.getId(), region.getName()));
+		}
+		return resultList;
+	}
+
+	public List<LocationDTO> convertLocationToDTO(List<Location> inputList) {
+		if (inputList == null || inputList.size() == 0) {
+			return new ArrayList<LocationDTO>();
+		}
+		List<LocationDTO> resultList = new ArrayList<LocationDTO>(inputList.size());
+		for (Location location : inputList) {
+			resultList.add(new LocationDTO(location.getId(), location.getRegionId(), location.getName()));
+		}
+		return resultList;
+	}
+
+	public List<SubLocationDTO> convertSubLocationListToDTO(List<SubLocation> inputList, boolean concatDetails) {
+		if (inputList == null || inputList.size() == 0) {
+			return new ArrayList<SubLocationDTO>();
+		}
+		List<SubLocationDTO> resultList = new ArrayList<SubLocationDTO>(inputList.size());
+		SubLocationDTO subLocationDTO = null;
+		Region region = null;
+		Location location = null;
+		for (SubLocation subLocation : inputList) {
+			subLocationDTO = new SubLocationDTO(subLocation.getId(), subLocation.getLocationId(), subLocation.getName(),
+					subLocation.getLocationLatitude(), subLocation.getLocationLongitude());
+			if (concatDetails && subLocation.getLocationId() != null
+					&& subLocation.getLocationId().compareTo(BigInteger.ZERO) > 0) {
+				location = utilsService.getLocationFromCache(subLocation.getLocationId());
+				if (location != null && location.getRegionId() != null
+						&& location.getRegionId().compareTo(BigInteger.ZERO) > 0) {
+					region = utilsService.getRegionFromCache(location.getRegionId());
+				}
+				if (location != null && StringUtils.isNotBlank(location.getName()))
+					subLocationDTO.setName(location.getName() + " - " + subLocationDTO.getName());
+				if (region != null && StringUtils.isNotBlank(region.getName()))
+					subLocationDTO.setName(region.getName() + " - " + subLocationDTO.getName());
+			}
+			resultList.add(subLocationDTO);
+		}
+		return resultList;
+	}
+
+	public Region createNewRegion(RegionDTO regionDTO) {
+		Region region = new Region(regionDTO.getName().trim(), new BigInteger(regionDTO.getEmarahId()));
+		List<Region> resultList = regionRepository.findByNameAndEmarahId(region.getName(), region.getEmarahId());
+		if (resultList != null && resultList.size() > 0) {
+			region = resultList.get(0);
+			region.setAlreadyExist(true);
+			logger.info("##### NEW REGION ALREADY EXISTS: " + region.getId());
+		} else {
+			regionRepository.save(region);
+			if (debugEnabled)
+				logger.info("##### CREATED NEW REGION: " + region.getId());
+			region = regionRepository.findOne(region.getId());
+			regionRepository.findAll().add(region);
+		}
+		return region;
+	}
+
+	public Location createNewLocation(LocationDTO locationDTO) {
+		Location location = new Location(locationDTO.getName().trim(), locationDTO.getRegionId());
+
+		List<Location> resultList = locationRepository.findByNameAndRegionId(location.getName(),
+				location.getRegionId());
+		if (resultList != null && resultList.size() > 0) {
+			location = resultList.get(0);
+			location.setAlreadyExist(true);
+			logger.info("##### NEW LOCATION ALREADY EXISTS: " + location.getId());
+		} else {
+			locationRepository.save(location);
+			if (debugEnabled)
+				logger.info("##### CREATED NEW LOCATION: " + location.getId());
+			location = locationRepository.findOne(location.getId());
+			locationRepository.findAll().add(location);
+		}
+
+		return location;
+	}
+
+	public SubLocation createNewSubLocation(SubLocationDTO subLocationDTO, String actionType) {
+		SubLocation subLocation = new SubLocation(subLocationDTO.getName().trim(), subLocationDTO.getLocationId(),
+				subLocationDTO.getLocationLatitude(), subLocationDTO.getLocationLongitude());
+
+		List<SubLocation> resultList = subLocationRepository.findByNameAndLocationId(subLocation.getName(),
+				subLocation.getLocationId());
+		logger.info("##### createNewSubLocation,name: " + subLocation.getName() + ",locationId: "
+				+ subLocation.getLocationId() + ",resultList: " + resultList);
+		if (resultList != null && resultList.size() > 0) {
+			subLocation = resultList.get(0);
+			subLocation.setAlreadyExist(true);
+			logger.info("##### NEW SUB LOCATION ALREADY EXISTS: " + subLocation.getId());
+		}
+
+		if (!subLocation.isAlreadyExist()) {
+			subLocationRepository.save(subLocation);
+			if (debugEnabled)
+				logger.info("##### CREATED NEW SUB LOCATION: " + subLocation.getId());
+			subLocation = subLocationRepository.findOne(subLocation.getId());
+			subLocationRepository.findAll().add(subLocation);
+		} else {
+			if (actionType.equals(CharityBoxActionTypeEnum.INSERT.getValue())) {
+				subLocation.setErrorCode(ErrorCodeEnum.SUBLOCATION_ALREADY_HAS_CHARITYBOX);
+			}
+		}
+
+		return subLocation;
+	}
+
+	public CharityBoxTransfer convertCharityBoxTransferDTOToEntity(CharityBoxTransferDTO charityBoxTransferDTO) {
+
+		CharityBoxTransfer charityBoxTransfer = new CharityBoxTransfer();
+		CharityBoxTransferDetail detail = new CharityBoxTransferDetail();
+		if (charityBoxTransferDTO.getNewRegionDTO() != null
+				&& StringUtils.isNotBlank(charityBoxTransferDTO.getNewRegionDTO().getName())
+				&& !charityBoxTransferDTO.getNewRegionDTO().getName().equalsIgnoreCase("string")) {
+			Region region = createNewRegion(charityBoxTransferDTO.getNewRegionDTO());
+			if (region != null)
+				charityBoxTransferDTO.setRegionId(region.getId());
+		}
+
+		if (charityBoxTransferDTO.getNewLocationDTO() != null
+				&& StringUtils.isNotBlank(charityBoxTransferDTO.getNewLocationDTO().getName())
+				&& !charityBoxTransferDTO.getNewLocationDTO().getName().equalsIgnoreCase("string")) {
+			if (charityBoxTransferDTO.getNewLocationDTO().getRegionId() == null)
+				charityBoxTransferDTO.getNewLocationDTO().setRegionId(charityBoxTransferDTO.getRegionId());
+			Location location = createNewLocation(charityBoxTransferDTO.getNewLocationDTO());
+			if (location != null)
+				charityBoxTransferDTO.setLocationId(location.getId());
+		}
+
+		// التحقق من انه لا يوجد مكان لنفس الحى مضاف مسبقا
+		// وذلك لمنع زرع اكثر من حصالة فى نفس المكان
+		if (charityBoxTransferDTO.getNewSubLocationDTO() != null
+				&& StringUtils.isNotBlank(charityBoxTransferDTO.getNewSubLocationDTO().getName())
+				&& !charityBoxTransferDTO.getNewSubLocationDTO().getName().equalsIgnoreCase("string")) {
+
+			logger.info("######### charityBoxTransferDTO.getLocationId(): " + charityBoxTransferDTO.getLocationId());
+			logger.info("######### charityBoxTransferDTO.getNewSubLocationDTO().getLocationId(): "
+					+ charityBoxTransferDTO.getNewSubLocationDTO().getLocationId());
+			if (charityBoxTransferDTO.getNewSubLocationDTO().getLocationId() == null)
+				charityBoxTransferDTO.getNewSubLocationDTO().setLocationId(charityBoxTransferDTO.getLocationId());
+			SubLocation subLocation = createNewSubLocation(charityBoxTransferDTO.getNewSubLocationDTO(),
+					charityBoxTransferDTO.getActionType().getValue());
+			if (subLocation != null) {
+				if (subLocation.getErrorCode() != null) {
+					charityBoxTransfer.setErrorCode(subLocation.getErrorCode());
+					return charityBoxTransfer;
+				}
+				charityBoxTransferDTO.setSubLocationId(subLocation.getId());
+			}
+
+		}
+		detail.setActionType(new CharityBoxActionType(charityBoxTransferDTO.getActionType().getValue()));
+		detail.setCharityBox(new CharityBox(charityBoxTransferDTO.getCharityBoxId()));
+		if (charityBoxTransferDTO.getActionType().getValue().equals(CharityBoxActionTypeEnum.INSERT.getValue())) {
+			detail.setNewCharityBox(new CharityBox(charityBoxTransferDTO.getCharityBoxId()));
+			detail.setCharityBox(null);
+		}
+
+		if (debugEnabled)
+			logger.info("###### convertCharityBoxTransferDTOToEntity,supervisor id: "
+					+ charityBoxTransferDTO.getDelegateId());
+
+		detail.setCreatedBy(new Delegate(charityBoxTransferDTO.getDelegateId().toString()));
+		if (!GeneralUtils.isEmptyNumber(charityBoxTransferDTO.getNewCharityBoxId()))
+			detail.setNewCharityBox(new CharityBox(charityBoxTransferDTO.getNewCharityBoxId()));
+		detail.setNotes(charityBoxTransferDTO.getNotes());
+		if (!GeneralUtils.isEmptyNumber(charityBoxTransferDTO.getSubLocationId()))
+			detail.setSubLocation(new SubLocation(charityBoxTransferDTO.getSubLocationId()));
+		detail.setSupervisor(new Delegate(charityBoxTransferDTO.getDelegateId().toString()));
+		if (!GeneralUtils.isEmptyNumber(charityBoxTransferDTO.getSafetyCaseId()))
+			detail.setSafetyCase(charityBoxTransferDTO.getSafetyCaseId());
+
+		charityBoxTransfer.setCharityBoxTransferDetail(detail);
+		detail.setCharityBoxTransfer(charityBoxTransfer);
+		charityBoxTransfer.setSupervisor(detail.getSupervisor());
+		charityBoxTransfer.setCreatedBy(detail.getCreatedBy());
+		charityBoxTransfer.setNotes(detail.getNotes());
+
+		return charityBoxTransfer;
 	}
 
 }

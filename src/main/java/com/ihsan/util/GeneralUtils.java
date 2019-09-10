@@ -89,6 +89,10 @@ public class GeneralUtils {
 
 	}
 
+	public static boolean isBigIntegerGreaterThanZero(BigInteger number) {
+		return number != null && number.compareTo(BigInteger.ZERO) > 0;
+	}
+
 	public static void main(String[] args) {
 		System.out.println(isEmptyNumber("5"));
 	}
