@@ -48,6 +48,8 @@ public class SubLocation {
 	@Transient
 	private ErrorCodeEnum errorCode;
 
+	// we should map creation date here
+
 	public BigInteger getLocationId() {
 		return locationId;
 	}
