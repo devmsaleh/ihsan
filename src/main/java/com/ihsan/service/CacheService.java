@@ -11,9 +11,15 @@ import org.springframework.stereotype.Service;
 
 import com.ihsan.dao.BankChequeRepository;
 import com.ihsan.dao.BankTransferRepository;
+import com.ihsan.dao.CountryRepository;
 import com.ihsan.dao.CouponTypeRepository;
 import com.ihsan.dao.ErrorCodeRepository;
+import com.ihsan.dao.FirstTitleRepository;
+import com.ihsan.dao.GenderRepository;
+import com.ihsan.dao.GiftTypeRepository;
+import com.ihsan.dao.NationalityRepository;
 import com.ihsan.dao.NewProjectTypeRepository;
+import com.ihsan.dao.SponsorshipTypeRepository;
 import com.ihsan.dao.charityBoxes.CharityBoxActionTypeRepository;
 import com.ihsan.dao.charityBoxes.CharityBoxCategoryRepository;
 import com.ihsan.dao.charityBoxes.CharityBoxStatusRepository;
@@ -24,8 +30,14 @@ import com.ihsan.dao.charityBoxes.RegionRepository;
 import com.ihsan.dao.charityBoxes.SubLocationRepository;
 import com.ihsan.entities.BankCheque;
 import com.ihsan.entities.BankTransfer;
+import com.ihsan.entities.Country;
 import com.ihsan.entities.CouponType;
+import com.ihsan.entities.FirstTitle;
+import com.ihsan.entities.Gender;
+import com.ihsan.entities.GiftType;
+import com.ihsan.entities.Nationality;
 import com.ihsan.entities.NewProjectType;
+import com.ihsan.entities.SponsorshipType;
 import com.ihsan.entities.charityBoxes.CharityBoxActionType;
 import com.ihsan.entities.charityBoxes.CharityBoxCategory;
 import com.ihsan.entities.charityBoxes.CharityBoxStatus;
@@ -78,6 +90,24 @@ public class CacheService {
 
 	@Autowired
 	private CharityBoxActionTypeRepository charityBoxActionTypeRepository;
+
+	@Autowired
+	private GiftTypeRepository giftTypeRepository;
+
+	@Autowired
+	private FirstTitleRepository firstTitleRepository;
+
+	@Autowired
+	private NationalityRepository nationalityRepository;
+
+	@Autowired
+	private SponsorshipTypeRepository sponsorshipTypeRepository;
+
+	@Autowired
+	private CountryRepository countryRepository;
+
+	@Autowired
+	private GenderRepository genderRepository;
 
 	public void refreshAllCaches() {
 		DateTime startDate = DateTime.now();
@@ -134,8 +164,34 @@ public class CacheService {
 		List<Emarah> emarahList = emarahRepository.getEmarahList();
 		logger.info("######### emarahList: " + emarahList.size());
 
+		giftTypeRepository.clearGiftTypeCache();
+		List<GiftType> giftTypeList = giftTypeRepository.getGiftTypes();
+		logger.info("######### giftTypeList: " + giftTypeList.size());
+		firstTitleRepository.clearFirstTitleCache();
+		List<FirstTitle> firstTitleList = firstTitleRepository.getFirstTitles();
+		logger.info("######### firstTitleList: " + firstTitleList.size());
+
+		sponsorshipTypeRepository.clearSponsorshipTypesCache();
+		List<SponsorshipType> sponsorshipTypeList = sponsorshipTypeRepository.getSponsorshipTypes();
+		logger.info("######### sponsorshipTypeList: " + sponsorshipTypeList.size());
+
+		countryRepository.clearAllCountriesCache();
+		List<Country> countriesList = countryRepository.findAll();
+		logger.info("######### countriesList: " + countriesList.size());
+		genderRepository.clearAllGendersCache();
+		List<Gender> genderList = genderRepository.findAll();
+		logger.info("######### genderList: " + genderList.size());
+
+		nationalityRepository.clearAllNationalitiesCache();
+		List<Nationality> nationalitiesList = nationalityRepository.findAll();
+		logger.info("######### nationalitiesList: " + nationalitiesList.size());
+
 		errorCodeRepository.clearErrorCodesCache();
+		countryRepository.clearNewProjectCountriesCache();
 		couponTypeRepository.clearCouponImageCache();
+		countryRepository.clearCountryImageCache();
+		nationalityRepository.clearSponsorshipTypeCountriesCache();
+		nationalityRepository.clearCountrySponsorshipImageCache();
 		newProjectTypeRepository.clearNewProjectTypeImageCache();
 
 	}

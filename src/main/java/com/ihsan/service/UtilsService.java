@@ -10,9 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ihsan.dao.CountryRepository;
 import com.ihsan.dao.CouponTypeRepository;
 import com.ihsan.dao.DelegateRepository;
+import com.ihsan.dao.FamilyRepository;
+import com.ihsan.dao.FirstTitleRepository;
+import com.ihsan.dao.GenderRepository;
+import com.ihsan.dao.GiftTypeRepository;
+import com.ihsan.dao.NationalityRepository;
 import com.ihsan.dao.NewProjectTypeRepository;
+import com.ihsan.dao.OrphanRepository;
 import com.ihsan.dao.ReceiptRepository;
 import com.ihsan.dao.charityBoxes.CharityBoxActionTypeRepository;
 import com.ihsan.dao.charityBoxes.CharityBoxCategoryRepository;
@@ -21,8 +28,15 @@ import com.ihsan.dao.charityBoxes.CharityBoxTypeRepository;
 import com.ihsan.dao.charityBoxes.LocationRepository;
 import com.ihsan.dao.charityBoxes.RegionRepository;
 import com.ihsan.dao.charityBoxes.SubLocationRepository;
+import com.ihsan.entities.Country;
 import com.ihsan.entities.CouponType;
+import com.ihsan.entities.Family;
+import com.ihsan.entities.FirstTitle;
+import com.ihsan.entities.Gender;
+import com.ihsan.entities.GiftType;
+import com.ihsan.entities.Nationality;
 import com.ihsan.entities.NewProjectType;
+import com.ihsan.entities.Orphan;
 import com.ihsan.entities.Receipt;
 import com.ihsan.entities.charityBoxes.CharityBoxActionType;
 import com.ihsan.entities.charityBoxes.CharityBoxCategory;
@@ -31,6 +45,7 @@ import com.ihsan.entities.charityBoxes.CharityBoxType;
 import com.ihsan.entities.charityBoxes.Location;
 import com.ihsan.entities.charityBoxes.Region;
 import com.ihsan.entities.charityBoxes.SubLocation;
+import com.ihsan.webservice.dto.OrphanDTO;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -70,6 +85,27 @@ public class UtilsService {
 
 	@Autowired
 	private CharityBoxActionTypeRepository charityBoxActionTypeRepository;
+
+	@Autowired
+	private CountryRepository countryRepository;
+
+	@Autowired
+	private GiftTypeRepository giftTypeRepository;
+
+	@Autowired
+	private GenderRepository genderRepository;
+
+	@Autowired
+	private FirstTitleRepository firstTitleRepository;
+
+	@Autowired
+	private OrphanRepository orphanRepository;
+
+	@Autowired
+	private NationalityRepository nationalityRepository;
+
+	@Autowired
+	private FamilyRepository familyRepository;
 
 	public Receipt createReceipt(Receipt receipt) {
 		receiptRepository.save(receipt);
@@ -210,6 +246,119 @@ public class UtilsService {
 		if (charityBoxActionType == null)
 			charityBoxActionType = new CharityBoxActionType();
 		return charityBoxActionType;
+	}
+
+	public Country getCountryFromCache(String countryId) {
+		if (countryId == null)
+			return new Country();
+		List<Country> list = countryRepository.findAll();
+		for (Country countryLoop : list) {
+			if (countryLoop.getId().equals(countryId)) {
+				return countryLoop;
+			}
+		}
+		Country country = countryRepository.findOne(countryId);
+		if (country == null)
+			country = new Country();
+		return country;
+	}
+
+	public Nationality getNationalityFromCache(String nationalityId) {
+		if (StringUtils.isBlank(nationalityId))
+			return new Nationality();
+		List<Nationality> list = nationalityRepository.findAll();
+		for (Nationality loopObj : list) {
+			if (loopObj.getId().equals(nationalityId)) {
+				return loopObj;
+			}
+		}
+		Nationality obj = nationalityRepository.findOne(nationalityId);
+		if (StringUtils.isBlank(nationalityId))
+			obj = new Nationality();
+		return obj;
+	}
+
+	public Gender getGenderFromCache(String genderId) {
+		if (StringUtils.isBlank(genderId))
+			return new Gender();
+		if (genderId.trim().equals("0"))
+			genderId = "3";
+		List<Gender> list = genderRepository.findAll();
+		for (Gender genderLoop : list) {
+			if (genderLoop.getId().equals(genderId)) {
+				return genderLoop;
+			}
+		}
+		Gender gender = genderRepository.findOne(genderId);
+		if (gender == null)
+			gender = new Gender();
+		return gender;
+	}
+
+	public FirstTitle getFirstTitleFromCache(String firstTitleId) {
+		if (StringUtils.isBlank(firstTitleId))
+			return new FirstTitle();
+		List<FirstTitle> list = firstTitleRepository.getFirstTitles();
+		for (FirstTitle firstTitleLoop : list) {
+			if (firstTitleLoop.getId().equals(firstTitleId)) {
+				return firstTitleLoop;
+			}
+		}
+		FirstTitle firstTitle = firstTitleRepository.findOne(firstTitleId);
+		if (firstTitle == null)
+			firstTitle = new FirstTitle();
+		return firstTitle;
+	}
+
+	public GiftType getGiftTypeFromCache(String giftTypeId) {
+		if (StringUtils.isBlank(giftTypeId))
+			return new GiftType();
+		List<GiftType> list = giftTypeRepository.getGiftTypes();
+		for (GiftType giftTypeLoop : list) {
+			if (giftTypeLoop.getId().equals(giftTypeId)) {
+				return giftTypeLoop;
+			}
+		}
+		GiftType giftType = giftTypeRepository.findOne(giftTypeId);
+		if (giftType == null)
+			giftType = new GiftType();
+		return giftType;
+	}
+
+	public OrphanDTO getOrphanDetails(BigInteger id) {
+		Orphan orphan = orphanRepository.findOne(id);
+		String genderId = null;
+		if (orphan.getGenderId() != null)
+			genderId = orphan.getGenderId().toString();
+		Gender gender = getGenderFromCache(genderId);
+		OrphanDTO orphanDTO = new OrphanDTO(orphan.getId().toString(), orphan.getName(), orphan.getBirthDateStr(),
+				orphan.getCaseNumber(), gender.getName());
+
+		if (orphan.getNationalityId() != null) {
+			Nationality nationality = getNationalityFromCache(orphan.getNationalityId().toString());
+			orphanDTO.setNationality(nationality.getName());
+		}
+		if (orphan.getFamilyId() != null) {
+			Family family = familyRepository.findOne(orphan.getFamilyId());
+			if (family != null) {
+				orphanDTO.setFatherDeathReason(family.getFatherDeathReason());
+				orphanDTO.setFamilyNumber(family.getNumber());
+			}
+		}
+		orphanDTO.setMotherName(orphan.getMotherName());
+		if (orphanDTO.getFamilyNumber() == null) {
+			orphanDTO.setFamilyNumber("");
+		}
+		if (orphanDTO.getFatherDeathReason() == null) {
+			orphanDTO.setFatherDeathReason("");
+		}
+		if (orphanDTO.getMotherName() == null) {
+			orphanDTO.setMotherName("");
+		}
+		if (orphanDTO.getNationality() == null) {
+			orphanDTO.setNationality("");
+		}
+		return orphanDTO;
 	}
 
 }
