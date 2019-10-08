@@ -155,6 +155,7 @@ public class HAIService extends HAIServiceBase {
 		}
 	}
 
+	// 100000000000000091
 	@GET
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	@Path("/getCoupons/{delegateId}")
