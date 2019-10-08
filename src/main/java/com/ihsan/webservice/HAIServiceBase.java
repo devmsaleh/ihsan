@@ -23,12 +23,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ihsan.constants.ErrorCodeEnum;
 import com.ihsan.dao.BankChequeRepository;
 import com.ihsan.dao.BankTransferRepository;
+import com.ihsan.dao.CountryRepository;
 import com.ihsan.dao.CouponTypeRepository;
 import com.ihsan.dao.DelegateRepository;
+import com.ihsan.dao.DonatorRepository;
 import com.ihsan.dao.ErrorCodeRepository;
+import com.ihsan.dao.FirstTitleRepository;
+import com.ihsan.dao.GiftTypeRepository;
+import com.ihsan.dao.NationalityRepository;
 import com.ihsan.dao.NewProjectTypeRepository;
+import com.ihsan.dao.OldProjectRepository;
+import com.ihsan.dao.OrphanRepository;
+import com.ihsan.dao.ProjectStudyRepository;
 import com.ihsan.dao.ReceiptDetailsRepository;
 import com.ihsan.dao.ReceiptRepository;
+import com.ihsan.dao.SponsorshipTypeRepository;
 import com.ihsan.dao.TokenRepository;
 import com.ihsan.dao.UtilsRepository;
 import com.ihsan.dao.charityBoxes.AttachmentRepository;
@@ -41,10 +50,16 @@ import com.ihsan.dao.charityBoxes.RouteDetailRepository;
 import com.ihsan.dao.charityBoxes.SubLocationRepository;
 import com.ihsan.entities.BankCheque;
 import com.ihsan.entities.BankTransfer;
+import com.ihsan.entities.Country;
 import com.ihsan.entities.CouponType;
 import com.ihsan.entities.Delegate;
+import com.ihsan.entities.Donator;
+import com.ihsan.entities.Gender;
 import com.ihsan.entities.NewProjectType;
+import com.ihsan.entities.OldProject;
+import com.ihsan.entities.Orphan;
 import com.ihsan.entities.PaymentTypeEnum;
+import com.ihsan.entities.ProjectStudy;
 import com.ihsan.entities.Receipt;
 import com.ihsan.entities.ReceiptDetail;
 import com.ihsan.entities.ReceiptPayment;
@@ -57,14 +72,19 @@ import com.ihsan.entities.charityBoxes.Region;
 import com.ihsan.entities.charityBoxes.RouteDetail;
 import com.ihsan.entities.charityBoxes.SubLocation;
 import com.ihsan.enums.CharityBoxActionTypeEnum;
+import com.ihsan.enums.CouponTypeEnum;
 import com.ihsan.service.DelegateService;
 import com.ihsan.service.UtilsService;
 import com.ihsan.util.GeneralUtils;
 import com.ihsan.webservice.dto.BankDTO;
 import com.ihsan.webservice.dto.CouponTypeDTO;
 import com.ihsan.webservice.dto.DelegateDTO;
+import com.ihsan.webservice.dto.DonatorDTO;
 import com.ihsan.webservice.dto.NewCouponDTO;
 import com.ihsan.webservice.dto.NewProjectTypeDTO;
+import com.ihsan.webservice.dto.OldProjectDTO;
+import com.ihsan.webservice.dto.OrphanDTO;
+import com.ihsan.webservice.dto.ProjectStudyDTO;
 import com.ihsan.webservice.dto.ReceiptDTO;
 import com.ihsan.webservice.dto.ReceiptDetailDTO;
 import com.ihsan.webservice.dto.ReceiptPaymentDTO;
@@ -143,6 +163,33 @@ public class HAIServiceBase {
 
 	@Autowired
 	protected RouteDetailRepository routeDetailRepository;
+
+	@Autowired
+	protected CountryRepository countryRepository;
+
+	@Autowired
+	protected DonatorRepository sponsorRepository;
+
+	@Autowired
+	protected OldProjectRepository oldProjectRepository;
+
+	@Autowired
+	protected ProjectStudyRepository projectStudyRepository;
+
+	@Autowired
+	protected SponsorshipTypeRepository sponsorshipTypeRepository;
+
+	@Autowired
+	protected NationalityRepository countrySponsorshipRepository;
+
+	@Autowired
+	protected GiftTypeRepository giftTypeRepository;
+
+	@Autowired
+	protected OrphanRepository orphanRepository;
+
+	@Autowired
+	protected FirstTitleRepository firstTitleRepository;
 
 	@Value("${debugEnabled}")
 	protected boolean debugEnabled;
@@ -259,6 +306,11 @@ public class HAIServiceBase {
 		couponDTO.setPriority(coupon.getPriority());
 		couponDTO.setQrCode(coupon.getQrCode());
 		couponDTO.setValue(coupon.getValue());
+		if (coupon.getType() == CouponTypeEnum.YEARLY.getValue()) {
+			couponDTO.setType(CouponTypeEnum.YEARLY);
+		} else if (coupon.getType() == CouponTypeEnum.QUICK_PAY.getValue()) {
+			couponDTO.setType(CouponTypeEnum.QUICK_PAY);
+		}
 		return couponDTO;
 	}
 
@@ -684,6 +736,90 @@ public class HAIServiceBase {
 		charityBoxTransfer.setNotes(detail.getNotes());
 
 		return charityBoxTransfer;
+	}
+
+	public List<ProjectStudyDTO> convertProjectStudyToDTO(List<ProjectStudy> list) {
+		List<ProjectStudyDTO> newList = new ArrayList<ProjectStudyDTO>(list.size());
+		for (ProjectStudy projectStudy : list) {
+			ProjectStudyDTO projectStudyDTO = new ProjectStudyDTO();
+			projectStudyDTO.setId(projectStudy.getId().toString());
+			projectStudyDTO.setName(projectStudy.getName());
+			projectStudyDTO.setDescription(projectStudy.getDescription());
+			projectStudyDTO.setCost(projectStudy.getCost());
+			if (projectStudy.getProjectTypeId() != null) {
+				projectStudyDTO.setProjectCategoryId(projectStudy.getProjectTypeId().toString());
+				if (projectStudy.getProjectTypeId() != null)
+					projectStudyDTO.setProjectCategoryName(utilsService
+							.getNewProjectTypeFromCache(projectStudy.getProjectTypeId().toString()).getName());
+			}
+			newList.add(projectStudyDTO);
+		}
+		return newList;
+	}
+
+	public List<DonatorDTO> convertDonatorToDTO(List<Donator> list) {
+		List<DonatorDTO> newList = new ArrayList<DonatorDTO>(list.size());
+		for (Donator donator : list) {
+			DonatorDTO donatorDTO = new DonatorDTO();
+			donatorDTO.setId(donator.getId().toString());
+			donatorDTO.setName(donator.getName());
+			donatorDTO.setMailBox(donator.getMailBox());
+			donatorDTO.setMobile(donator.getMobile());
+			newList.add(donatorDTO);
+		}
+		return newList;
+	}
+
+	public List<OldProjectDTO> getDonatorOldProjects(BigInteger donatorId) {
+		List<OldProject> list = oldProjectRepository.getDonatorOldProjects(donatorId);
+		return convertOldProjectToDTO(list);
+	}
+
+	public List<OldProjectDTO> getMostRecentProjects() {
+		List<OldProject> list = oldProjectRepository.getMostRecentProjects();
+		return convertOldProjectToDTO(list);
+	}
+
+	public List<OldProjectDTO> findOldProjectsByName(String name) {
+		List<OldProject> list = oldProjectRepository.findTop10ByNameIgnoreCaseContainingOrderByNameAsc(name);
+		return convertOldProjectToDTO(list);
+	}
+
+	private List<OldProjectDTO> convertOldProjectToDTO(List<OldProject> list) {
+		List<OldProjectDTO> newList = new ArrayList<OldProjectDTO>(list.size());
+		OldProjectDTO oldProjectDTO = null;
+		for (OldProject oldProject : list) {
+			oldProjectDTO = new OldProjectDTO(oldProject.getId().toString(), oldProject.getName());
+			if (oldProject.getProjectCategoryId() != null) {
+				NewProjectType newProjectType = utilsService
+						.getNewProjectTypeFromCache(oldProject.getProjectCategoryId());
+				oldProjectDTO.setCategoryName(newProjectType.getName());
+			}
+			if (oldProject.getCountryId() != null) {
+				Country country = utilsService.getCountryFromCache(oldProject.getCountryId().toString());
+				oldProjectDTO.setCountryName(country.getName());
+			}
+
+			newList.add(oldProjectDTO);
+
+		}
+		return newList;
+	}
+
+	public List<OrphanDTO> convertOrphansToDTO(List<Orphan> orphansList) {
+		List<OrphanDTO> list = new ArrayList<>(orphansList.size());
+		Gender gender = null;
+		for (Orphan orphan : orphansList) {
+			if (orphan.getGenderId() != null)
+				gender = utilsService.getGenderFromCache(orphan.getGenderId().toString());
+			String genderStr = "";
+			if (gender != null) {
+				genderStr = gender.getName();
+			}
+			list.add(new OrphanDTO(orphan.getId().toString(), orphan.getName(), orphan.getBirthDateStr(),
+					orphan.getCaseNumber(), genderStr));
+		}
+		return list;
 	}
 
 }

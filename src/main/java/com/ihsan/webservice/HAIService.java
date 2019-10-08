@@ -9,6 +9,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -29,6 +30,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -36,8 +39,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ihsan.constants.ErrorCodeEnum;
 import com.ihsan.entities.BankCheque;
 import com.ihsan.entities.BankTransfer;
+import com.ihsan.entities.Country;
 import com.ihsan.entities.CouponType;
 import com.ihsan.entities.Delegate;
+import com.ihsan.entities.Donator;
+import com.ihsan.entities.NewProjectType;
+import com.ihsan.entities.ProjectStudy;
 import com.ihsan.entities.Receipt;
 import com.ihsan.entities.ReceiptDetail;
 import com.ihsan.entities.UserToken;
@@ -46,7 +53,11 @@ import com.ihsan.util.GeneralUtils;
 import com.ihsan.webservice.dto.BankDTO;
 import com.ihsan.webservice.dto.CouponTypeDTO;
 import com.ihsan.webservice.dto.DelegateDTO;
+import com.ihsan.webservice.dto.DonatorDTO;
 import com.ihsan.webservice.dto.GeneralResponseDTO;
+import com.ihsan.webservice.dto.NewProjectTypeDTO;
+import com.ihsan.webservice.dto.OldProjectDTO;
+import com.ihsan.webservice.dto.ProjectStudyDTO;
 import com.ihsan.webservice.dto.ReceiptDTO;
 import com.ihsan.webservice.dto.ReceiptPrintDTO;
 import com.ihsan.webservice.dto.ReceiptsReportDTO;
@@ -145,10 +156,10 @@ public class HAIService extends HAIServiceBase {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	@Path("/getCoupons")
+	@Path("/getCoupons/{delegateId}")
 	@ApiOperation(value = "عرض انواع الكوبونات")
-	public ServiceResponse getCoupons(@HeaderParam("token") String token, @HeaderParam("lang") String lang)
-			throws Exception {
+	public ServiceResponse getCoupons(@PathParam("delegateId") BigInteger delegateId,
+			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
 		try {
 
 			List<CouponType> couponsList = couponRepository.getCoupons();
@@ -157,6 +168,23 @@ public class HAIService extends HAIServiceBase {
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, resultList, errorCodeRepository, lang);
 		} catch (Exception e) {
 			logger.error("Exception in getCoupons webservice: ", e);
+			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
+		}
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Path("/findCountryByName/{name}")
+	@ApiOperation(value = "البحث عن الدولة بجزء من الإسم")
+	public ServiceResponse findCountryByName(@PathParam("name") String name, @HeaderParam("token") String token,
+			@HeaderParam("lang") String lang) throws Exception {
+		try {
+
+			List<Country> list = countryRepository.findTop10ByNameIgnoreCaseContainingOrderByNameAsc(name);
+			logger.info("###### findCountryByName,list: " + list.size());
+			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, list, errorCodeRepository, lang);
+		} catch (Exception e) {
+			logger.error("Exception in findCountryByName webservice: ", e);
 			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
 		}
 	}
@@ -386,6 +414,190 @@ public class HAIService extends HAIServiceBase {
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, receiptPrintDTO, errorCodeRepository, lang);
 		} catch (Exception e) {
 			logger.error("Exception in findReceiptDetails webservice: ", e);
+			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
+		}
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Path("/findDonator/{searchText}")
+	@ApiOperation(value = "البحث عن المتبرع بجزء من الإسم او رقم الجوال يبدء ب او رقم صندوق البريد يبدء ب")
+	public ServiceResponse findDonator(@PathParam("searchText") String searchText, @HeaderParam("token") String token,
+			@HeaderParam("lang") String lang) throws Exception {
+		try {
+
+			List<Donator> donatorsList = new ArrayList<Donator>();
+			if (StringUtils.isNotBlank(searchText)) {
+				searchText = searchText.trim();
+				if (StringUtils.isAlpha(searchText) || StringUtils.containsWhitespace(searchText)) {
+					donatorsList = sponsorRepository.findTop50ByNameIgnoreCaseContainingOrderByNameAsc(searchText);
+				} else if (StringUtils.isNumeric(searchText)) {
+					donatorsList = sponsorRepository.findByMobileOrMailBoxOrAccountNumber(searchText,
+							new PageRequest(0, 50, new Sort(Sort.Direction.ASC, "name")));
+				} else if (searchText.contains("@")) {
+					donatorsList = sponsorRepository.findTop50ByEmailIgnoreCaseContainingOrderByNameAsc(searchText);
+				}
+			} else {
+				donatorsList = sponsorRepository.findTop50ByNameNotNullOrderByNameAsc();
+			}
+			logger.info("###### findDonator,donatorsList: " + donatorsList.size());
+			List<DonatorDTO> resultList = convertDonatorToDTO(donatorsList);
+			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, resultList, errorCodeRepository, lang);
+		} catch (Exception e) {
+			logger.error("Exception in findDonator webservice: ", e);
+			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
+		}
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Path("/findDonatorOldProjects/{id}")
+	@ApiOperation(value = "عرض المشاريع القديمة لمتبرع معين")
+	public ServiceResponse findDonatorOldProjects(@PathParam("id") BigInteger id, @HeaderParam("token") String token,
+			@HeaderParam("lang") String lang) throws Exception {
+		try {
+
+			List<OldProjectDTO> list = getDonatorOldProjects(id);
+			logger.info("###### oldProjectsList: " + list.size());
+			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, list, errorCodeRepository, lang);
+		} catch (Exception e) {
+			logger.error("Exception in findDonatorOldProjects webservice: ", e);
+			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
+		}
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Path("/findNewProjectCountries/{newProjectTypeId}")
+	@ApiOperation(value = "عرض الدول المتاح فيها نوع المشروع")
+	public ServiceResponse findNewProjectCountries(@PathParam("newProjectTypeId") long newProjectTypeId,
+			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
+		try {
+
+			List<Country> countriesList = countryRepository.getProjectCountries(newProjectTypeId);
+			logger.info("###### findNewProjectCountries,list: " + countriesList.size());
+			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, countriesList, errorCodeRepository, lang);
+		} catch (Exception e) {
+			logger.error("Exception in findNewProjectCountries webservice: ", e);
+			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
+		}
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Path("/findOldProjects/{name}")
+	@ApiOperation(value = "البحث فى المشاريع القديمة بجزء من الإسم")
+	public ServiceResponse findOldProjects(@PathParam("name") String name, @HeaderParam("token") String token,
+			@HeaderParam("lang") String lang) throws Exception {
+		try {
+
+			List<OldProjectDTO> list = findOldProjectsByName(name);
+			logger.info("###### oldProjectsList: " + list.size());
+			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, list, errorCodeRepository, lang);
+		} catch (Exception e) {
+			logger.error("Exception in findOldProjects webservice: ", e);
+			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
+		}
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Path("/findProjectStudy/{countryId}/{projectCategoryId}/{name}")
+	@ApiOperation(value = "البحث عن دراسة مشروع فى دولة معينة لتصنيف مشاريع معين بجزء من إسم الدراسة")
+	public ServiceResponse findProjectStudy(@PathParam("countryId") String countryId,
+			@PathParam("projectCategoryId") BigInteger projectTypeId, @PathParam("name") String name,
+			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
+		try {
+			List<ProjectStudy> projectStudyList = new ArrayList<ProjectStudy>();
+			if (StringUtils.isNotBlank(name)) {
+				projectStudyList = projectStudyRepository
+						.findTop10ByCountryIdAndProjectTypeIdAndProjectCategoryIdAndNameIgnoreCaseContainingOrderByNameAsc(
+								countryId, projectTypeId, new BigInteger("1"), name);
+			} else {
+				projectStudyList = projectStudyRepository
+						.findTop10ByCountryIdAndProjectTypeIdAndProjectCategoryIdOrderByNameAsc(countryId,
+								projectTypeId, new BigInteger("1"));
+			}
+			logger.info("###### projectStudyList: " + projectStudyList.size());
+			List<ProjectStudyDTO> resultList = convertProjectStudyToDTO(projectStudyList);
+			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, resultList, errorCodeRepository, lang);
+		} catch (Exception e) {
+			logger.error("Exception in findProjectStudy webservice: ", e);
+			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
+		}
+	}
+
+	@GET
+	@Produces(MediaType.WILDCARD)
+	@Path("/getNewProjectTypeImage/{newProjectTypeId}")
+	@ApiOperation(value = "تحميل صورة نوع المشروع")
+	public Response getNewProjectTypeImage(@PathParam("newProjectTypeId") BigInteger newProjectTypeId,
+			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
+		try {
+
+			// CouponType coupon = couponRepository.findOne(couponId);
+			byte[] image = newProjectTypeRepository.getImageById(newProjectTypeId);
+			String mimeType = "image/png";
+			mimeType = StringUtils.isEmpty(mimeType) ? "image/*" : mimeType;
+			String fileName = "NewProjectType_" + newProjectTypeId;
+			if (!StringUtils.isEmpty(mimeType)) {
+				if (mimeType.toLowerCase().contains("png"))
+					fileName += ".png";
+				else if (mimeType.toLowerCase().contains("jpg") || mimeType.toLowerCase().contains("jpeg"))
+					fileName += ".jpg";
+				else
+					fileName += ".image";
+			}
+			return Response.ok(image, mimeType)
+					.header("Content-Disposition", "attachment; filename=\"" + fileName + "\"").build();
+		} catch (Exception e) {
+			logger.error("Exception in getNewProjectTypeImage webservice: ", e);
+			return Response.serverError().build();
+		}
+	}
+
+	@GET
+	@Produces(MediaType.WILDCARD)
+	@Path("/getNewProjectCountryImage/{countryId}")
+	@ApiOperation(value = "تحميل صورة الدولة الخاصة بنوع المشروع")
+	public Response getNewProjectCountryImage(@PathParam("countryId") String countryId,
+			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
+		try {
+
+			byte[] image = countryRepository.getImageById(countryId);
+			String mimeType = "image/png";
+			mimeType = StringUtils.isEmpty(mimeType) ? "image/*" : mimeType;
+			String fileName = "NewProjectCountry_" + countryId;
+			if (!StringUtils.isEmpty(mimeType)) {
+				if (mimeType.toLowerCase().contains("png"))
+					fileName += ".png";
+				else if (mimeType.toLowerCase().contains("jpg") || mimeType.toLowerCase().contains("jpeg"))
+					fileName += ".jpg";
+				else
+					fileName += ".image";
+			}
+			return Response.ok(image, mimeType)
+					.header("Content-Disposition", "attachment; filename=\"" + fileName + "\"").build();
+		} catch (Exception e) {
+			logger.error("Exception in getNewProjectCountryImage webservice: ", e);
+			return Response.serverError().build();
+		}
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Path("/getNewProjectTypes")
+	@ApiOperation(value = "عرض انواع المشاريع الجديدة")
+	public ServiceResponse getNewProjectTypes(@HeaderParam("token") String token, @HeaderParam("lang") String lang)
+			throws Exception {
+		try {
+
+			List<NewProjectType> list = newProjectTypeRepository.getNewProjectTypes();
+			logger.info("###### getNewProjectTypes,list: " + list.size());
+			List<NewProjectTypeDTO> resultList = convertNewProjectTypeToDTO(list);
+			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, resultList, errorCodeRepository, lang);
+		} catch (Exception e) {
+			logger.error("Exception in getNewProjectTypes webservice: ", e);
 			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
 		}
 	}

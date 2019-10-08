@@ -1,75 +1,97 @@
 package com.ihsan.webservice.dto;
 
+import com.ihsan.enums.CouponTypeEnum;
+
 public class CouponTypeDTO {
 
-    private String id;
+	private String id;
 
-    private String name;
+	private String name;
 
-    private boolean mustEnterDonator;
+	private boolean mustEnterDonator;
 
-    private int value;
+	private int value;
 
-    private int minimumAmount;
+	private int minimumAmount;
 
-    private String qrCode;
+	private String qrCode;
 
-    private int priority;
+	private int priority;
 
-    public String getId() {
-        return id;
-    }
+	private CouponTypeEnum type = CouponTypeEnum.NORMAL;
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	private boolean favorite;
 
-    public String getName() {
-        return name;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public boolean isMustEnterDonator() {
-        return mustEnterDonator;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setMustEnterDonator(boolean mustEnterDonator) {
-        this.mustEnterDonator = mustEnterDonator;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public int getValue() {
-        return value;
-    }
+	public boolean isMustEnterDonator() {
+		return mustEnterDonator;
+	}
 
-    public void setValue(int value) {
-        this.value = value;
-    }
+	public void setMustEnterDonator(boolean mustEnterDonator) {
+		this.mustEnterDonator = mustEnterDonator;
+	}
 
-    public int getMinimumAmount() {
-        return minimumAmount;
-    }
+	public int getValue() {
+		return value;
+	}
 
-    public void setMinimumAmount(int minimumAmount) {
-        this.minimumAmount = minimumAmount;
-    }
+	public void setValue(int value) {
+		this.value = value;
+	}
 
-    public String getQrCode() {
-        return qrCode;
-    }
+	public int getMinimumAmount() {
+		return minimumAmount;
+	}
 
-    public void setQrCode(String qrCode) {
-        this.qrCode = qrCode;
-    }
+	public void setMinimumAmount(int minimumAmount) {
+		this.minimumAmount = minimumAmount;
+	}
 
-    public int getPriority() {
-        return priority;
-    }
+	public String getQrCode() {
+		return qrCode;
+	}
 
-    public void setPriority(int priority) {
-        this.priority = priority;
-    }
+	public void setQrCode(String qrCode) {
+		this.qrCode = qrCode;
+	}
+
+	public int getPriority() {
+		return priority;
+	}
+
+	public void setPriority(int priority) {
+		this.priority = priority;
+	}
+
+	public CouponTypeEnum getType() {
+		return type;
+	}
+
+	public void setType(CouponTypeEnum type) {
+		this.type = type;
+	}
+
+	public boolean isFavorite() {
+		return favorite;
+	}
+
+	public void setFavorite(boolean favorite) {
+		this.favorite = favorite;
+	}
 
 }

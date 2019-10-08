@@ -45,6 +45,9 @@ public class CouponType {
 	@Column(name = "PRIORITY")
 	private Integer priority;
 
+	@Column(name = "YEARLYPROJECT")
+	private Integer type;
+
 	public CouponType() {
 
 	}
@@ -143,6 +146,16 @@ public class CouponType {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public Integer getType() {
+		if (type == null)
+			type = 0;
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
 	}
 
 }

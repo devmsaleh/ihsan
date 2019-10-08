@@ -128,9 +128,10 @@ public class UtilsService {
 		return couponType;
 	}
 
-	public NewProjectType getNewProjectTypeFromCache(BigInteger projectTypeId) {
-		if (projectTypeId == null)
+	public NewProjectType getNewProjectTypeFromCache(String projectTypeIdStr) {
+		if (StringUtils.isBlank(projectTypeIdStr))
 			return new NewProjectType();
+		BigInteger projectTypeId = new BigInteger(projectTypeIdStr);
 		List<NewProjectType> list = newProjectTypeRepository.getNewProjectTypes();
 		for (NewProjectType projectTypeLoop : list) {
 			if (projectTypeLoop.getId().compareTo(projectTypeId) == 0) {
