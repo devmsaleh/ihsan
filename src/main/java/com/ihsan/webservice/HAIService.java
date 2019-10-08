@@ -42,6 +42,7 @@ import com.ihsan.entities.BankTransfer;
 import com.ihsan.entities.Country;
 import com.ihsan.entities.CouponType;
 import com.ihsan.entities.Delegate;
+import com.ihsan.entities.DelegateCoupon;
 import com.ihsan.entities.Donator;
 import com.ihsan.entities.NewProjectType;
 import com.ihsan.entities.ProjectStudy;
@@ -161,10 +162,19 @@ public class HAIService extends HAIServiceBase {
 	public ServiceResponse getCoupons(@PathParam("delegateId") BigInteger delegateId,
 			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
 		try {
-
+			logger.info("###### getCoupons,delegateId: " + delegateId);
 			List<CouponType> couponsList = couponRepository.getCoupons();
 			logger.info("###### couponsList: " + couponsList.size());
+			List<DelegateCoupon> favoritesList = delegateCouponRepository.findByDelegateId(delegateId);
+			logger.info("###### favoritesList: " + favoritesList.size());
 			List<CouponTypeDTO> resultList = convertCouponListToDTO(couponsList);
+			for (CouponTypeDTO couponTypeDTO : resultList) {
+				for (DelegateCoupon delegateCoupon : favoritesList) {
+					if (delegateCoupon.getCouponId().toString().equals(couponTypeDTO.getId())) {
+						couponTypeDTO.setFavorite(true);
+					}
+				}
+			}
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, resultList, errorCodeRepository, lang);
 		} catch (Exception e) {
 			logger.error("Exception in getCoupons webservice: ", e);
