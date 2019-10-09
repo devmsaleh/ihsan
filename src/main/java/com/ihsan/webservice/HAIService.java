@@ -352,6 +352,45 @@ public class HAIService extends HAIServiceBase {
 		}
 	}
 
+	@POST
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Path("/addToFavorites/{delegateId}/{couponId}")
+	@ApiOperation(value = "اضافة كوبون الى المفضلة")
+	public ServiceResponse addToFavorites(@PathParam("delegateId") BigInteger delegateId,
+			@PathParam("couponId") BigInteger couponId, @HeaderParam("token") String token,
+			@HeaderParam("lang") String lang) throws Exception {
+		try {
+
+			// we should make unique constraint on delegateId+couponId
+			// also we should make check that coupoun is not already in favorites
+			DelegateCoupon delegateCoupon = new DelegateCoupon(delegateId, couponId);
+			delegateCouponRepository.save(delegateCoupon);
+			logger.info("######## addFavorite,id: " + delegateCoupon.getId());
+			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, new GeneralResponseDTO(true), errorCodeRepository,
+					lang);
+		} catch (Exception e) {
+			logger.error("Exception in addToFavorites webservice: ", e);
+			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
+		}
+	}
+
+	@POST
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Path("/removeFromFavorites/{delegateId}/{couponId}")
+	@ApiOperation(value = "إزالة كوبون من المفضلة")
+	public ServiceResponse removeFromFavorites(@PathParam("delegateId") BigInteger delegateId,
+			@PathParam("couponId") BigInteger couponId, @HeaderParam("token") String token,
+			@HeaderParam("lang") String lang) throws Exception {
+		try {
+			delegateCouponRepository.deleteByDelegateIdAndCouponId(delegateId, couponId);
+			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, new GeneralResponseDTO(true), errorCodeRepository,
+					lang);
+		} catch (Exception e) {
+			logger.error("Exception in removeFromFavorites webservice: ", e);
+			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
+		}
+	}
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	@Path("/findDelegateReceipts/{delegateId}/{fromDate}/{toDate}")
