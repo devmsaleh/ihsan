@@ -18,13 +18,10 @@ public class ReceiptDTO {
 
 	private List<NewCouponDTO> couponsList = new ArrayList<NewCouponDTO>();
 
-	// private List<NewProjectDTO> newProjectsList = new ArrayList<NewProjectDTO>();
-	// private List<OldProjectDonationDTO> oldProjectsList = new
-	// ArrayList<OldProjectDonationDTO>();
-	// private List<NewSponsorshipDTO> newSponsorshipList = new
-	// ArrayList<NewSponsorshipDTO>();
-	// private List<OldSponsorshipDTO> oldSponsorshipList = new
-	// ArrayList<OldSponsorshipDTO>();
+	private List<NewProjectDTO> newProjectsList = new ArrayList<NewProjectDTO>();
+	private List<OldProjectDonationDTO> oldProjectsList = new ArrayList<OldProjectDonationDTO>();
+	private List<NewSponsorshipDTO> newSponsorshipList = new ArrayList<NewSponsorshipDTO>();
+	private List<OldSponsorshipDTO> oldSponsorshipList = new ArrayList<OldSponsorshipDTO>();
 
 	private ReceiptPaymentDTO receiptPaymentDTO = new ReceiptPaymentDTO();
 
@@ -74,6 +71,38 @@ public class ReceiptDTO {
 
 	public void setPaymentType(PaymentTypeEnum paymentType) {
 		this.paymentType = paymentType;
+	}
+
+	public List<NewProjectDTO> getNewProjectsList() {
+		return newProjectsList;
+	}
+
+	public void setNewProjectsList(List<NewProjectDTO> newProjectsList) {
+		this.newProjectsList = newProjectsList;
+	}
+
+	public List<OldProjectDonationDTO> getOldProjectsList() {
+		return oldProjectsList;
+	}
+
+	public void setOldProjectsList(List<OldProjectDonationDTO> oldProjectsList) {
+		this.oldProjectsList = oldProjectsList;
+	}
+
+	public List<NewSponsorshipDTO> getNewSponsorshipList() {
+		return newSponsorshipList;
+	}
+
+	public void setNewSponsorshipList(List<NewSponsorshipDTO> newSponsorshipList) {
+		this.newSponsorshipList = newSponsorshipList;
+	}
+
+	public List<OldSponsorshipDTO> getOldSponsorshipList() {
+		return oldSponsorshipList;
+	}
+
+	public void setOldSponsorshipList(List<OldSponsorshipDTO> oldSponsorshipList) {
+		this.oldSponsorshipList = oldSponsorshipList;
 	}
 
 }

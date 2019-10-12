@@ -55,7 +55,9 @@ import com.ihsan.entities.Country;
 import com.ihsan.entities.CouponType;
 import com.ihsan.entities.Delegate;
 import com.ihsan.entities.Donator;
+import com.ihsan.entities.FirstTitle;
 import com.ihsan.entities.Gender;
+import com.ihsan.entities.GiftType;
 import com.ihsan.entities.NewProjectType;
 import com.ihsan.entities.OldProject;
 import com.ihsan.entities.Orphan;
@@ -82,9 +84,14 @@ import com.ihsan.webservice.dto.CouponTypeDTO;
 import com.ihsan.webservice.dto.DelegateDTO;
 import com.ihsan.webservice.dto.DonatorDTO;
 import com.ihsan.webservice.dto.NewCouponDTO;
+import com.ihsan.webservice.dto.NewProjectDTO;
 import com.ihsan.webservice.dto.NewProjectTypeDTO;
+import com.ihsan.webservice.dto.NewSponsorshipDTO;
 import com.ihsan.webservice.dto.OldProjectDTO;
+import com.ihsan.webservice.dto.OldProjectDonationDTO;
+import com.ihsan.webservice.dto.OldSponsorshipDTO;
 import com.ihsan.webservice.dto.OrphanDTO;
+import com.ihsan.webservice.dto.OrphanSponsorshipDTO;
 import com.ihsan.webservice.dto.ProjectStudyDTO;
 import com.ihsan.webservice.dto.ReceiptDTO;
 import com.ihsan.webservice.dto.ReceiptDetailDTO;
@@ -236,11 +243,153 @@ public class HAIServiceBase {
 				receiptDetails.setAmount(couponDTO.getAmount());
 				receiptDetails.setCreatedBy(receipt.getCreatedBy());
 				receiptDetails.setCoupon(new CouponType(couponDTO.getCouponTypeId()));
-
+				receiptDetails.setTransactionType(TransactionTypeEnum.COUPON.getValue());
 				receiptDetails.setName(couponDTO.getCouponTypeName());
-
+				receiptDetails.setPaymentType(receiptDTO.getPaymentType().getValue());
 				receipt.getReceiptDetailsList().add(receiptDetails);
 				totalAmountForReceipt = totalAmountForReceipt.add(couponDTO.getAmount());
+			}
+		}
+		if (CollectionUtils.isNotEmpty(receiptDTO.getNewProjectsList())) {
+			for (NewProjectDTO newProjectDTO : receiptDTO.getNewProjectsList()) {
+				receiptDetails = new ReceiptDetail();
+				receiptDetails.setReceipt(receipt);
+				receiptDetails.setAmount(newProjectDTO.getAmount());
+				receiptDetails.setCreatedBy(receipt.getCreatedBy());
+				receiptDetails.setProjectStudy(new ProjectStudy(newProjectDTO.getProjectStudyId()));
+				receiptDetails.setProjectCountry(new Country(newProjectDTO.getProjectCountryId()));
+				receiptDetails.setReceiptType(new NewProjectType(newProjectDTO.getNewProjectTypeId()));
+				receiptDetails.setProjectCommitment(newProjectDTO.getCommitment());
+				receiptDetails.setProjectName(newProjectDTO.getProjectName());
+				if (!GeneralUtils.isEmptyNumber(newProjectDTO.getDonatorId())) {
+					receiptDetails.setDonator(new Donator(newProjectDTO.getDonatorId()));
+				} else {
+					if (!GeneralUtils.isEmptyNumber(newProjectDTO.getNewDonatorDTO().getDonatorCountryId())) {
+						receiptDetails
+								.setDonatorCountry(new Country(newProjectDTO.getNewDonatorDTO().getDonatorCountryId()));
+					}
+					receiptDetails.setDonatorEmail(newProjectDTO.getNewDonatorDTO().getDonatorEmail());
+					receiptDetails.setDonatorMobile(newProjectDTO.getNewDonatorDTO().getDonatorMobile());
+					receiptDetails.setDonatorName(newProjectDTO.getNewDonatorDTO().getDonatorName());
+					receiptDetails.setDonatorPhone(newProjectDTO.getNewDonatorDTO().getDonatorPhone());
+					receiptDetails.setDonatorPOBOX(newProjectDTO.getNewDonatorDTO().getDonatorPOBOX());
+				}
+				receiptDetails.setTransactionType(TransactionTypeEnum.PROJECT_NEW.getValue());
+				receiptDetails.setName(newProjectDTO.getProjectName());
+				receiptDetails.setPaymentType(receiptDTO.getPaymentType().getValue());
+				receipt.getReceiptDetailsList().add(receiptDetails);
+				totalAmountForReceipt = totalAmountForReceipt.add(newProjectDTO.getAmount());
+			}
+		}
+
+		if (CollectionUtils.isNotEmpty(receiptDTO.getOldProjectsList())) {
+			for (OldProjectDonationDTO oldProjectDTO : receiptDTO.getOldProjectsList()) {
+				receiptDetails = new ReceiptDetail();
+				receiptDetails.setReceipt(receipt);
+				receiptDetails.setAmount(oldProjectDTO.getAmount());
+				receiptDetails.setCreatedBy(receipt.getCreatedBy());
+				receiptDetails.setOldProject(new OldProject(oldProjectDTO.getOldProjectId()));
+				receiptDetails.setDonator(new Donator(oldProjectDTO.getDonatorId()));
+				receiptDetails.setName(oldProjectDTO.getOldProjectName());
+				receiptDetails.setTransactionType(TransactionTypeEnum.PROJECT_OLD.getValue());
+				receiptDetails.setPaymentType(receiptDTO.getPaymentType().getValue());
+				receipt.getReceiptDetailsList().add(receiptDetails);
+				totalAmountForReceipt = totalAmountForReceipt.add(oldProjectDTO.getAmount());
+			}
+		}
+		if (CollectionUtils.isNotEmpty(receiptDTO.getNewSponsorshipList())) {
+			for (NewSponsorshipDTO newSponsorshipDTO : receiptDTO.getNewSponsorshipList()) {
+				for (OrphanSponsorshipDTO orphanSponsorshipDTO : newSponsorshipDTO.getOrphansList()) {
+					receiptDetails = new ReceiptDetail();
+					receiptDetails.setReceipt(receipt);
+					receiptDetails.setCreatedBy(receipt.getCreatedBy());
+					receiptDetails.setOrphanId(orphanSponsorshipDTO.getOrphanId());
+					if (StringUtils.isNotBlank(orphanSponsorshipDTO.getSponsorshipStartDate())) {
+						receiptDetails.setSponsorshipStartDate(
+								GeneralUtils.parseDate(orphanSponsorshipDTO.getSponsorshipStartDate()));
+					}
+					BigDecimal amountPerMonth = orphanSponsorshipDTO.getAmount()
+							.divide(new BigDecimal(orphanSponsorshipDTO.getNumberOfMonths()));
+					receiptDetails.setCaseAmount(amountPerMonth);
+					receiptDetails.setAmount(orphanSponsorshipDTO.getAmount());
+					receiptDetails.setCasePaymentType(receiptDTO.getPaymentType().getValue());
+					receiptDetails.setSponsorFor(newSponsorshipDTO.getSponsorFor());
+					if (StringUtils.isNotBlank(newSponsorshipDTO.getFirstTitleId()))
+						receiptDetails.setFirstTitle(new FirstTitle(newSponsorshipDTO.getFirstTitleId()));
+					if (StringUtils.isNotBlank(orphanSponsorshipDTO.getGiftId())) {
+						receiptDetails.setGiftType(new GiftType(orphanSponsorshipDTO.getGiftId()));
+						receiptDetails.setGiftAmount(orphanSponsorshipDTO.getGiftAmount());
+						if (orphanSponsorshipDTO.getGiftAmount() != null) {
+							BigDecimal newAmount = receiptDetails.getAmount().add(orphanSponsorshipDTO.getGiftAmount());
+							receiptDetails.setAmount(newAmount);
+						}
+					}
+					if (!GeneralUtils.isEmptyNumber(newSponsorshipDTO.getSponsorId())) {
+						receiptDetails.setSponsor(new Donator(newSponsorshipDTO.getSponsorId()));
+					} else {
+						if (!GeneralUtils.isEmptyNumber(newSponsorshipDTO.getNewDonatorDTO().getDonatorCountryId())) {
+							receiptDetails.setDonatorCountry(
+									new Country(newSponsorshipDTO.getNewDonatorDTO().getDonatorCountryId()));
+						}
+						receiptDetails.setDonatorEmail(newSponsorshipDTO.getNewDonatorDTO().getDonatorEmail());
+						receiptDetails.setDonatorMobile(newSponsorshipDTO.getNewDonatorDTO().getDonatorMobile());
+						receiptDetails.setDonatorName(newSponsorshipDTO.getNewDonatorDTO().getDonatorName());
+						receiptDetails.setDonatorPhone(newSponsorshipDTO.getNewDonatorDTO().getDonatorPhone());
+						receiptDetails.setDonatorPOBOX(newSponsorshipDTO.getNewDonatorDTO().getDonatorPOBOX());
+					}
+					receiptDetails.setName(orphanSponsorshipDTO.getOrphanName());
+					receiptDetails.setPaymentType(receiptDTO.getPaymentType().getValue());
+					receiptDetails.setCasePaymentNumberOfMonths(orphanSponsorshipDTO.getNumberOfMonths());
+					receiptDetails.setCaseAmountPerMonth(amountPerMonth);
+					receiptDetails.setTransactionType(TransactionTypeEnum.SPONSORSHIP_NEW.getValue());
+					receipt.getReceiptDetailsList().add(receiptDetails);
+					totalAmountForReceipt = totalAmountForReceipt.add(orphanSponsorshipDTO.getAmount());
+					if (!GeneralUtils.isEmptyNumber(orphanSponsorshipDTO.getGiftAmount()))
+						totalAmountForReceipt = totalAmountForReceipt.add(orphanSponsorshipDTO.getGiftAmount());
+				}
+
+			}
+		}
+
+		if (CollectionUtils.isNotEmpty(receiptDTO.getOldSponsorshipList())) {
+			for (OldSponsorshipDTO oldSponsorshipDTO : receiptDTO.getOldSponsorshipList()) {
+				for (OrphanSponsorshipDTO orphanSponsorshipDTO : oldSponsorshipDTO.getOrphansList()) {
+					receiptDetails = new ReceiptDetail();
+					receiptDetails.setReceipt(receipt);
+					receiptDetails.setCreatedBy(receipt.getCreatedBy());
+					receiptDetails.setOrphanId(orphanSponsorshipDTO.getOrphanId());
+					if (StringUtils.isNotBlank(orphanSponsorshipDTO.getSponsorshipStartDate())) {
+						receiptDetails.setSponsorshipStartDate(
+								GeneralUtils.parseDate(orphanSponsorshipDTO.getSponsorshipStartDate()));
+					}
+					BigDecimal amountPerMonth = orphanSponsorshipDTO.getAmount()
+							.divide(new BigDecimal(orphanSponsorshipDTO.getNumberOfMonths()));
+					receiptDetails.setCaseAmount(amountPerMonth);
+					receiptDetails.setAmount(orphanSponsorshipDTO.getAmount());
+					receiptDetails.setCasePaymentType(receiptDTO.getPaymentType().getValue());
+					receiptDetails.setSponsorFor(orphanSponsorshipDTO.getSponsorFor());
+					if (StringUtils.isNotBlank(orphanSponsorshipDTO.getFirstTitleId()))
+						receiptDetails.setFirstTitle(new FirstTitle(orphanSponsorshipDTO.getFirstTitleId()));
+					if (StringUtils.isNotBlank(orphanSponsorshipDTO.getGiftId())) {
+						receiptDetails.setGiftType(new GiftType(orphanSponsorshipDTO.getGiftId()));
+						receiptDetails.setGiftAmount(orphanSponsorshipDTO.getGiftAmount());
+						if (orphanSponsorshipDTO.getGiftAmount() != null) {
+							BigDecimal newAmount = receiptDetails.getAmount().add(orphanSponsorshipDTO.getGiftAmount());
+							receiptDetails.setAmount(newAmount);
+						}
+					}
+					receiptDetails.setSponsor(new Donator(oldSponsorshipDTO.getSponsorId()));
+					receiptDetails.setName(orphanSponsorshipDTO.getOrphanName());
+					receiptDetails.setPaymentType(receiptDTO.getPaymentType().getValue());
+					receiptDetails.setCasePaymentNumberOfMonths(orphanSponsorshipDTO.getNumberOfMonths());
+					receiptDetails.setCaseAmountPerMonth(amountPerMonth);
+					receiptDetails.setTransactionType(TransactionTypeEnum.SPONSORSHIP_OLD.getValue());
+					receipt.getReceiptDetailsList().add(receiptDetails);
+					totalAmountForReceipt = totalAmountForReceipt.add(orphanSponsorshipDTO.getAmount());
+					if (!GeneralUtils.isEmptyNumber(orphanSponsorshipDTO.getGiftAmount()))
+						totalAmountForReceipt = totalAmountForReceipt.add(orphanSponsorshipDTO.getGiftAmount());
+				}
+
 			}
 		}
 
@@ -250,7 +399,6 @@ public class HAIServiceBase {
 		ReceiptPayment receiptPayment = new ReceiptPayment();
 		receiptPayment.setReceipt(receipt);
 		receiptPayment.setCashValue(receipt.getTotalAmount());
-		receiptPayment.setPaymentType(receiptDTO.getPaymentType().getValue());
 		if (receiptDTO.getPaymentType() == PaymentTypeEnum.CHEQUE) {
 			// receiptPayment.setBankCode(paymentDTO.getBankCode());
 			receiptPayment.setChequeDate(GeneralUtils.parseDate(paymentDTO.getChequeDate()));
