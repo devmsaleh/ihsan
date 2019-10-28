@@ -74,7 +74,7 @@ public class CharityBoxWebService extends HAIServiceBase {
 			if (StringUtils.isNotBlank(barcodeDTO.getBarcode()))
 				charityBox = charityBoxRepository.findByBarcode(barcodeDTO.getBarcode());
 			else if (StringUtils.isNotBlank(barcodeDTO.getNumber()))
-				charityBox = charityBoxRepository.findByNumber(barcodeDTO.getNumber());
+				charityBox = charityBoxRepository.findByNumberIgnoreCase(barcodeDTO.getNumber());
 			if (charityBox == null) {
 				if (StringUtils.isNotBlank(barcodeDTO.getBarcode()))
 					return new ServiceResponse(ErrorCodeEnum.BARCODE_NOT_EXIST, errorCodeRepository, lang);
@@ -189,24 +189,25 @@ public class CharityBoxWebService extends HAIServiceBase {
 			@PathParam("sourceId") String sourceId, @PathParam("name") String name, @HeaderParam("token") String token,
 			@HeaderParam("lang") String lang) throws Exception {
 		try {
-			List<SubLocation> subLocationsList = new ArrayList<SubLocation>();
 
+			List<SubLocation> subLocationsList = new ArrayList<SubLocation>();
 			if (StringUtils.isNotBlank(name) && !name.equalsIgnoreCase("ALL")) {
 				if (oneCharityBoxPerSubLocation)
 					subLocationsList = subLocationRepository
 							.findTop10ByLocationIdAndCategoryIdAndNameForInsertSingle(locationId, sourceId, name);
 				else
 					subLocationsList = subLocationRepository
-							.findTop10ByLocationIdAndCategoryIdAndNameForInsertMultiple(locationId, sourceId, name);
+							.findTop10ByLocationIdAndCategoryIdAndNameForInsertMultiple(locationId, name);
 			} else {
 				if (oneCharityBoxPerSubLocation)
 					subLocationsList = subLocationRepository
 							.findTop500ByLocationIdAndCategoryIdForInsertSingle(locationId, sourceId);
 				else
 					subLocationsList = subLocationRepository
-							.findTop500ByLocationIdAndCategoryIdForInsertMultiple(locationId, sourceId);
+							.findTop500ByLocationIdAndCategoryIdForInsertMultiple(locationId);
 			}
-			logger.info("###### findInsertSubLocation,subLocationsList: " + subLocationsList.size());
+			logger.info("###### findInsertSubLocation,subLocationsList: " + subLocationsList.size() + ",locationId: "
+					+ locationId + ",sourceId: " + sourceId + ",name: " + name);
 			List<SubLocationDTO> resultList = convertSubLocationListToDTO(subLocationsList, false);
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, resultList, errorCodeRepository, lang);
 		} catch (Exception e) {

@@ -15,7 +15,7 @@ public interface CharityBoxRepository extends JpaRepository<CharityBox, BigInteg
 
 	CharityBox findByBarcode(String barcode);
 
-	CharityBox findByNumber(String number);
+	CharityBox findByNumberIgnoreCase(String number);
 
 	int countByCategoryIdAndSubLocationIdAndStatusIdNot(String categoryId, BigInteger subLocationId, String statusId);
 

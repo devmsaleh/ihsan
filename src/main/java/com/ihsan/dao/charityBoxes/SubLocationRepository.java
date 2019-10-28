@@ -39,16 +39,14 @@ public interface SubLocationRepository extends JpaRepository<SubLocation, BigInt
 
 	@Query(value = "select * from TM_SUB_LOCATIONS sub where sub.LOCATION_ID=:locationId and sub.SUB_LOCATION_NAME like %:name% order by SUB_LOCATION_NAME fetch next 10 rows only", nativeQuery = true)
 	List<SubLocation> findTop10ByLocationIdAndCategoryIdAndNameForInsertMultiple(
-			@Param("locationId") BigInteger locationId, @Param("categoryId") String categoryId,
-			@Param("name") String name);
+			@Param("locationId") BigInteger locationId, @Param("name") String name);
 
 	@Query(value = "select * from TM_SUB_LOCATIONS sub where sub.LOCATION_ID=:locationId and sub.SUB_LOCATION_ID not in (select SUB_LOCATION_ID from TM_CHARITY_BOXES where CATEGORY_OF_BOXES=:categoryId and STATUS!='1') fetch next 100 rows only", nativeQuery = true)
 	List<SubLocation> findTop500ByLocationIdAndCategoryIdForInsertSingle(@Param("locationId") BigInteger locationId,
 			@Param("categoryId") String categoryId);
 
-	@Query(value = "select * from TM_SUB_LOCATIONS sub where sub.LOCATION_ID=:locationId order by SUB_LOCATION_NAME  fetch next 100 rows only", nativeQuery = true)
-	List<SubLocation> findTop500ByLocationIdAndCategoryIdForInsertMultiple(@Param("locationId") BigInteger locationId,
-			@Param("categoryId") String categoryId);
+	@Query(value = "select * from TM_SUB_LOCATIONS sub where sub.LOCATION_ID=:locationId order by SUB_LOCATION_NAME fetch next 100 rows only", nativeQuery = true)
+	List<SubLocation> findTop500ByLocationIdAndCategoryIdForInsertMultiple(@Param("locationId") BigInteger locationId);
 
 	@Modifying(clearAutomatically = true)
 	@Transactional
