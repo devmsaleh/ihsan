@@ -10,6 +10,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -163,11 +164,11 @@ public class HAIService extends HAIServiceBase {
 	public ServiceResponse getCoupons(@PathParam("delegateId") BigInteger delegateId,
 			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
 		try {
-			logger.info("###### getCoupons,delegateId: " + delegateId);
+
 			List<CouponType> couponsList = couponRepository.getCoupons();
-			logger.info("###### couponsList: " + couponsList.size());
+
 			List<DelegateCoupon> favoritesList = delegateCouponRepository.findByDelegateId(delegateId);
-			logger.info("###### favoritesList: " + favoritesList.size());
+
 			List<CouponTypeDTO> resultList = convertCouponListToDTO(couponsList);
 			for (CouponTypeDTO couponTypeDTO : resultList) {
 				for (DelegateCoupon delegateCoupon : favoritesList) {
@@ -176,6 +177,7 @@ public class HAIService extends HAIServiceBase {
 					}
 				}
 			}
+			resultList.sort(Comparator.comparing(CouponTypeDTO::isFavorite).reversed());
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, resultList, errorCodeRepository, lang);
 		} catch (Exception e) {
 			logger.error("Exception in getCoupons webservice: ", e);

@@ -58,6 +58,8 @@ public class CharityBoxWebService extends HAIServiceBase {
 	@Value("${charityBoxAttachmentsPath}")
 	private String charityBoxAttachmentsPath;
 
+	private boolean oneCharityBoxPerSubLocation = false;
+
 	private static final Logger logger = LoggerFactory.getLogger(CharityBoxWebService.class);
 
 	@POST
@@ -190,11 +192,19 @@ public class CharityBoxWebService extends HAIServiceBase {
 			List<SubLocation> subLocationsList = new ArrayList<SubLocation>();
 
 			if (StringUtils.isNotBlank(name) && !name.equalsIgnoreCase("ALL")) {
-				subLocationsList = subLocationRepository.findTop10ByLocationIdAndCategoryIdAndNameForInsert(locationId,
-						sourceId, name);
+				if (oneCharityBoxPerSubLocation)
+					subLocationsList = subLocationRepository
+							.findTop10ByLocationIdAndCategoryIdAndNameForInsertSingle(locationId, sourceId, name);
+				else
+					subLocationsList = subLocationRepository
+							.findTop10ByLocationIdAndCategoryIdAndNameForInsertMultiple(locationId, sourceId, name);
 			} else {
-				subLocationsList = subLocationRepository.findTop500ByLocationIdAndCategoryIdForInsert(locationId,
-						sourceId);
+				if (oneCharityBoxPerSubLocation)
+					subLocationsList = subLocationRepository
+							.findTop500ByLocationIdAndCategoryIdForInsertSingle(locationId, sourceId);
+				else
+					subLocationsList = subLocationRepository
+							.findTop500ByLocationIdAndCategoryIdForInsertMultiple(locationId, sourceId);
 			}
 			logger.info("###### findInsertSubLocation,subLocationsList: " + subLocationsList.size());
 			List<SubLocationDTO> resultList = convertSubLocationListToDTO(subLocationsList, false);
@@ -231,6 +241,8 @@ public class CharityBoxWebService extends HAIServiceBase {
 	// @Transactional(rollbackFor = Exception.class)
 	public ServiceResponse createCharityBoxTransfer(CharityBoxTransferDTO charityBoxTransferDTO,
 			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
+
+		String actionType = "";
 		try {
 
 			// التحقق من انه لا يوجد مكان لنفس الحى مضاف مسبقا
@@ -241,7 +253,7 @@ public class CharityBoxWebService extends HAIServiceBase {
 						.writerWithDefaultPrettyPrinter().writeValueAsString(charityBoxTransferDTO)));
 			}
 
-			String actionType = charityBoxTransferDTO.getActionType().getValue();
+			actionType = charityBoxTransferDTO.getActionType().getValue();
 			if (actionType.equals(CharityBoxActionTypeEnum.COLLECT.getValue())
 					|| actionType.equals(CharityBoxActionTypeEnum.WITHDRAWAL.getValue())
 					|| actionType.equals(CharityBoxActionTypeEnum.COLLECTED_MONEY.getValue())) {
@@ -257,13 +269,15 @@ public class CharityBoxWebService extends HAIServiceBase {
 				}
 			}
 
-			if (actionType.equals(CharityBoxActionTypeEnum.INSERT.getValue())
-					&& GeneralUtils.isBigIntegerGreaterThanZero(charityBoxTransferDTO.getSubLocationId())) {
-				List<CharityBox> boxesList = charityBoxRepository.findBySubLocationIdAndStatusId(
-						charityBoxTransferDTO.getSubLocationId(), CharityBoxStatusEnum.ACTIVE.getValue());
-				if (boxesList.size() > 0)
-					return new ServiceResponse(ErrorCodeEnum.SUBLOCATION_ALREADY_HAS_CHARITYBOX, errorCodeRepository,
-							lang);
+			if (oneCharityBoxPerSubLocation) {
+				if (actionType.equals(CharityBoxActionTypeEnum.INSERT.getValue())
+						&& GeneralUtils.isBigIntegerGreaterThanZero(charityBoxTransferDTO.getSubLocationId())) {
+					List<CharityBox> boxesList = charityBoxRepository.findBySubLocationIdAndStatusId(
+							charityBoxTransferDTO.getSubLocationId(), CharityBoxStatusEnum.ACTIVE.getValue());
+					if (boxesList.size() > 0)
+						return new ServiceResponse(ErrorCodeEnum.SUBLOCATION_ALREADY_HAS_CHARITYBOX,
+								errorCodeRepository, lang);
+				}
 			}
 
 			if (actionType.equals(CharityBoxActionTypeEnum.CHECK.getValue())) {
@@ -321,6 +335,10 @@ public class CharityBoxWebService extends HAIServiceBase {
 					logger.info(
 							"##### createCharityBoxTransfer not insert operation,setting subLocation in charityBoxTransfer: "
 									+ charityBox.getSubLocationId());
+				if (charityBox.getSubLocationId() == null) {
+					return new ServiceResponse(ErrorCodeEnum.CHARITYBOX_MUST_BE_ASSIGNED_TO_SUBLOCATION,
+							errorCodeRepository, lang);
+				}
 				detail.setSubLocation(new SubLocation(charityBox.getSubLocationId()));
 			}
 
@@ -364,7 +382,7 @@ public class CharityBoxWebService extends HAIServiceBase {
 			}
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, generalResponseDTO, errorCodeRepository, lang);
 		} catch (Exception e) {
-			logger.error("Exception in createCharityBoxTransfer webservice: ", e);
+			logger.error("Exception in createCharityBoxTransfer webservice,operation: " + actionType, e);
 			logger.error("Exception in createCharityBoxTransfer webservice, JSON: "
 					+ (new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(charityBoxTransferDTO)));
 			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
