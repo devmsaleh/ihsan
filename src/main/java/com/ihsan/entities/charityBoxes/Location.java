@@ -34,6 +34,21 @@ public class Location {
 	@Column(name = "REGION_ID", insertable = false, updatable = false)
 	private BigInteger regionId;
 
+	@Column(name = "LOCATION_LATITUDE")
+	private Float locationLatitude;
+
+	@Column(name = "LOCATION_LONGITUDE")
+	private Float locationLongitude;
+
+	@Column(name = "ADDRESS")
+	private String address;
+
+	@Column(name = "MOBILE")
+	private String mobile;
+
+	@Column(name = "STATUS")
+	private String status;
+
 	@Transient
 	private boolean alreadyExist;
 
@@ -88,6 +103,46 @@ public class Location {
 
 	public void setAlreadyExist(boolean alreadyExist) {
 		this.alreadyExist = alreadyExist;
+	}
+
+	public Float getLocationLatitude() {
+		return locationLatitude;
+	}
+
+	public void setLocationLatitude(Float locationLatitude) {
+		this.locationLatitude = locationLatitude;
+	}
+
+	public Float getLocationLongitude() {
+		return locationLongitude;
+	}
+
+	public void setLocationLongitude(Float locationLongitude) {
+		this.locationLongitude = locationLongitude;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 }

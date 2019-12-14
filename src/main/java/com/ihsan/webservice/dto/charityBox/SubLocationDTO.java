@@ -13,6 +13,8 @@ public class SubLocationDTO {
 	private String regionName;
 	private Float locationLatitude;
 	private Float locationLongitude;
+	private String address;
+	private String mobile;
 
 	public SubLocationDTO() {
 
@@ -89,6 +91,22 @@ public class SubLocationDTO {
 
 	public void setRegionName(String regionName) {
 		this.regionName = regionName;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
 	}
 
 }

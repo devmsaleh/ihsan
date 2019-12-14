@@ -42,6 +42,15 @@ public class SubLocation {
 	@Column(name = "LOCATION_LONGITUDE")
 	private Float locationLongitude;
 
+	@Column(name = "ADDRESS")
+	private String address;
+
+	@Column(name = "MOBILE")
+	private String mobile;
+
+	@Column(name = "STATUS")
+	private String status;
+
 	@Transient
 	private boolean alreadyExist;
 
@@ -130,6 +139,30 @@ public class SubLocation {
 
 	public void setErrorCode(ErrorCodeEnum errorCode) {
 		this.errorCode = errorCode;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 }

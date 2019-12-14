@@ -7,6 +7,8 @@ public class LocationDTO {
 	private BigInteger id;
 	private String name;
 	private BigInteger regionId;
+	private String address;
+	private String mobile;
 
 	public LocationDTO() {
 
@@ -40,6 +42,22 @@ public class LocationDTO {
 
 	public void setRegionId(BigInteger regionId) {
 		this.regionId = regionId;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
 	}
 
 }

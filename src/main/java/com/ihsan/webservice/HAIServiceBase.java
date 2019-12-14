@@ -788,7 +788,8 @@ public class HAIServiceBase {
 
 	public Location createNewLocation(LocationDTO locationDTO) {
 		Location location = new Location(locationDTO.getName().trim(), locationDTO.getRegionId());
-
+		location.setAddress(locationDTO.getAddress());
+		location.setMobile(locationDTO.getMobile());
 		List<Location> resultList = locationRepository.findByNameAndRegionId(location.getName(),
 				location.getRegionId());
 		if (resultList != null && resultList.size() > 0) {
@@ -809,7 +810,8 @@ public class HAIServiceBase {
 	public SubLocation createNewSubLocation(SubLocationDTO subLocationDTO, String actionType) {
 		SubLocation subLocation = new SubLocation(subLocationDTO.getName().trim(), subLocationDTO.getLocationId(),
 				subLocationDTO.getLocationLatitude(), subLocationDTO.getLocationLongitude());
-
+		subLocation.setMobile(subLocationDTO.getMobile());
+		subLocation.setAddress(subLocationDTO.getAddress());
 		List<SubLocation> resultList = subLocationRepository.findByNameAndLocationId(subLocation.getName(),
 				subLocation.getLocationId());
 		logger.info("##### createNewSubLocation,name: " + subLocation.getName() + ",locationId: "
