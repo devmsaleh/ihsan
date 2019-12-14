@@ -28,6 +28,12 @@ public interface SubLocationRepository extends JpaRepository<SubLocation, BigInt
 	List<SubLocation> findTop10ByLocationIdAndNameIgnoreCaseContainingOrderByNameAsc(BigInteger locationId,
 			String name);
 
+	List<SubLocation> findTop10ByLocationRegionIdAndNameIgnoreCaseContainingOrderByNameAsc(BigInteger regionId,
+			String name);
+
+	List<SubLocation> findTop10ByLocationRegionEmarahIdAndNameIgnoreCaseContainingOrderByNameAsc(BigInteger emarahId,
+			String name);
+
 	List<SubLocation> findTop10ByNameIgnoreCaseContainingOrderByNameAsc(String name);
 
 	List<SubLocation> findTop500ByLocationIdOrderByNameAsc(BigInteger locationId);

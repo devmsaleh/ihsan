@@ -53,6 +53,7 @@ import com.ihsan.entities.UserToken;
 import com.ihsan.service.CacheService;
 import com.ihsan.util.GeneralUtils;
 import com.ihsan.webservice.dto.BankDTO;
+import com.ihsan.webservice.dto.CouponReportDTO;
 import com.ihsan.webservice.dto.CouponTypeDTO;
 import com.ihsan.webservice.dto.DelegateDTO;
 import com.ihsan.webservice.dto.DonatorDTO;
@@ -316,7 +317,7 @@ public class HAIService extends HAIServiceBase {
 				if (StringUtils.isNotBlank(receiptDTO.getDonatorPhoneNumber())
 						&& receiptDTO.getDonatorPhoneNumber().length() == 10) {
 					sendSMS(receiptDTO.getDonatorPhoneNumber(), receiptPrintDTO.getTotalAmount().toString(),
-							receipt.getId().toString());
+							receipt.getNumber().toString());
 				}
 			}
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, receiptPrintDTO, errorCodeRepository, lang);
@@ -397,6 +398,32 @@ public class HAIService extends HAIServiceBase {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Path("/findDelegateNotCollectedCoupons/{delegateId}/{fromDate}/{toDate}")
+	@ApiOperation(value = "عرض الكوبونات الغير محصلة التى أنشأها مفوض فى فترة معينة")
+	public ServiceResponse findDelegateNotCollectedCoupons(@PathParam("delegateId") BigInteger delegateId,
+			@PathParam("fromDate") String fromDateStr, @PathParam("toDate") String toDateStr,
+			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
+		try {
+
+			Date fromDate = GeneralUtils.parseDate(fromDateStr);
+			Date toDate = GeneralUtils.parseDate(toDateStr);
+			toDate = DateUtils.setHours(toDate, 23);
+			toDate = DateUtils.setMinutes(toDate, 59);
+			toDate = DateUtils.setSeconds(toDate, 0);
+			List<ReceiptDetail> list = receiptDetailsRepository
+					.findByCreatedByIdAndReceiptCollectedAndCreationDateGreaterThanEqualAndCreationDateLessThanEqualOrderByIdAsc(
+							delegateId, "N", fromDate, toDate);
+
+			List<CouponReportDTO> resultList = convertReceiptDetailsToCouponReportDTO(list, lang);
+			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, resultList, errorCodeRepository, lang);
+		} catch (Exception e) {
+			logger.error("Exception in findDelegatedReceipts webservice: ", e);
+			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
+		}
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	@Path("/findDelegateReceipts/{delegateId}/{fromDate}/{toDate}")
 	@ApiOperation(value = "عرض الايصالات التى أنشأها مفوض فى فترة معينة")
 	public ServiceResponse findDelegateReceipts(@PathParam("delegateId") BigInteger delegateId,
@@ -446,7 +473,11 @@ public class HAIService extends HAIServiceBase {
 			@PathParam("receiptId") BigInteger receiptId, @HeaderParam("token") String token,
 			@HeaderParam("lang") String lang) throws Exception {
 		try {
-			Receipt receipt = receiptRepository.findByIdAndCreatedById(receiptId, delegateId);
+			List<Receipt> receiptsList = receiptRepository.findByNumberAndCreatedById(String.valueOf(receiptId),
+					delegateId);
+			Receipt receipt = null;
+			if (receiptsList != null && receiptsList.size() > 0)
+				receipt = receiptsList.get(0);
 			ReceiptPrintDTO receiptPrintDTO = getReceiptPrint(receipt, lang, false);
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, receiptPrintDTO, errorCodeRepository, lang);
 		} catch (Exception e) {

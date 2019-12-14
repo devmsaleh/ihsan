@@ -41,6 +41,9 @@ public class ReceiptDetail {
 	@JoinColumn(name = "PROJECT_CODE")
 	private CouponType coupon;
 
+	@Column(name = "PROJECT_CODE", insertable = false, updatable = false)
+	private BigInteger couponId;
+
 	@Column(name = "AMOUNT")
 	private BigDecimal amount;
 
@@ -434,6 +437,14 @@ public class ReceiptDetail {
 
 	public void setOldProject(OldProject oldProject) {
 		this.oldProject = oldProject;
+	}
+
+	public BigInteger getCouponId() {
+		return couponId;
+	}
+
+	public void setCouponId(BigInteger couponId) {
+		this.couponId = couponId;
 	}
 
 }

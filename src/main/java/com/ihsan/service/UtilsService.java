@@ -45,6 +45,7 @@ import com.ihsan.entities.charityBoxes.CharityBoxType;
 import com.ihsan.entities.charityBoxes.Location;
 import com.ihsan.entities.charityBoxes.Region;
 import com.ihsan.entities.charityBoxes.SubLocation;
+import com.ihsan.util.GeneralUtils;
 import com.ihsan.webservice.dto.OrphanDTO;
 
 @Service
@@ -109,8 +110,24 @@ public class UtilsService {
 
 	public Receipt createReceipt(Receipt receipt) {
 		receiptRepository.save(receipt);
-		receipt.setNumber(String.valueOf(receipt.getId()));
+		Long receiptNumber = receiptRepository.getMaxReceiptNumber();
+		receipt.setNumber(String.valueOf(receiptNumber));
 		return receiptRepository.save(receipt);
+	}
+
+	public CouponType getCouponFromCache(BigInteger id) {
+		if (!GeneralUtils.isBigIntegerGreaterThanZero(id))
+			return new CouponType();
+		List<CouponType> list = couponRepository.getCoupons();
+		for (CouponType couponTypeLoop : list) {
+			if (couponTypeLoop.getId() == id) {
+				return couponTypeLoop;
+			}
+		}
+		CouponType couponType = couponRepository.findOne(id);
+		if (couponType == null)
+			couponType = new CouponType();
+		return couponType;
 	}
 
 	public CouponType getCouponByBarcode(String barcode) {

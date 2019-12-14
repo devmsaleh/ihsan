@@ -24,7 +24,7 @@ public interface RegionRepository extends JpaRepository<Region, BigInteger> {
 
 	List<Region> findTop10ByEmarahIdAndNameIgnoreCaseContainingOrderByNameAsc(BigInteger emarahId, String name);
 
-	List<Region> findTop10ByEmarahIdOrderByNameAsc(BigInteger emarahId);
+	List<Region> findTop100ByEmarahIdOrderByNameAsc(BigInteger emarahId);
 
 	@Query(value = "from Region where emarahId=:emarahId and name like %:name%")
 	List<Region> findByNameAndEmarahId(@Param("emarahId") BigInteger emarahId, @Param("name") String name,

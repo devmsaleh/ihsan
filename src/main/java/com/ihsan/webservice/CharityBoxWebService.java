@@ -115,8 +115,8 @@ public class CharityBoxWebService extends HAIServiceBase {
 				// Pageable page = new PageRequest(0, 10, new Sort(Sort.Direction.ASC, "name"));
 				regionsList = regionRepository.findTop10ByEmarahIdAndNameIgnoreCaseContainingOrderByNameAsc(emarahId,
 						name.trim());
-			} else {
-				regionsList = regionRepository.findTop10ByEmarahIdOrderByNameAsc(emarahId);
+			} else if (StringUtils.isBlank(name) || name.equalsIgnoreCase("ALL")) {
+				regionsList = regionRepository.findTop100ByEmarahIdOrderByNameAsc(emarahId);
 			}
 			logger.info("###### regionsList: " + regionsList.size());
 			List<RegionDTO> resultList = convertRegionToDTO(regionsList);
@@ -152,22 +152,27 @@ public class CharityBoxWebService extends HAIServiceBase {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	@Path("/findSubLocation/{locationId}/{name}")
-	@ApiOperation(value = "البحث عن مكان بجزء من الاسم")
-	public ServiceResponse findSubLocation(@PathParam("locationId") BigInteger locationId,
+	@Path("/findSubLocation/{emarahId}/{regionId}/{locationId}/{name}")
+	@ApiOperation(value = "البحث عن الموقع الفرعى بجزء من الاسم")
+	public ServiceResponse findSubLocation(@PathParam("emarahId") BigInteger emarahId,
+			@PathParam("regionId") BigInteger regionId, @PathParam("locationId") BigInteger locationId,
 			@PathParam("name") String name, @HeaderParam("token") String token, @HeaderParam("lang") String lang)
 			throws Exception {
 		try {
-
+			logger.info("###### findSubLocation,emarahId: " + emarahId + ",regionId: " + regionId + ",locationId: "
+					+ locationId + ",name: " + name);
 			List<SubLocation> subLocationsList = new ArrayList<SubLocation>();
 			boolean concatDetails = false;
-			if (locationId != null && locationId.compareTo(BigInteger.ZERO) > 0) {
-				if (StringUtils.isNotBlank(name) && !name.equalsIgnoreCase("ALL")) {
-					subLocationsList = subLocationRepository
-							.findTop10ByLocationIdAndNameIgnoreCaseContainingOrderByNameAsc(locationId, name.trim());
-				} else {
-					subLocationsList = subLocationRepository.findTop500ByLocationIdOrderByNameAsc(locationId);
-				}
+			if (GeneralUtils.isBigIntegerGreaterThanZero(locationId)) {
+				subLocationsList = subLocationRepository
+						.findTop10ByLocationIdAndNameIgnoreCaseContainingOrderByNameAsc(locationId, name.trim());
+			} else if (GeneralUtils.isBigIntegerGreaterThanZero(regionId)) {
+				subLocationsList = subLocationRepository
+						.findTop10ByLocationRegionIdAndNameIgnoreCaseContainingOrderByNameAsc(regionId, name.trim());
+			} else if (GeneralUtils.isBigIntegerGreaterThanZero(emarahId)) {
+				subLocationsList = subLocationRepository
+						.findTop10ByLocationRegionEmarahIdAndNameIgnoreCaseContainingOrderByNameAsc(emarahId,
+								name.trim());
 			} else {
 				concatDetails = true;
 				subLocationsList = subLocationRepository.findTop10ByNameIgnoreCaseContainingOrderByNameAsc(name);

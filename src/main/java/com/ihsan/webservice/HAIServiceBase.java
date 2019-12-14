@@ -80,6 +80,7 @@ import com.ihsan.service.DelegateService;
 import com.ihsan.service.UtilsService;
 import com.ihsan.util.GeneralUtils;
 import com.ihsan.webservice.dto.BankDTO;
+import com.ihsan.webservice.dto.CouponReportDTO;
 import com.ihsan.webservice.dto.CouponTypeDTO;
 import com.ihsan.webservice.dto.DelegateDTO;
 import com.ihsan.webservice.dto.DonatorDTO;
@@ -537,6 +538,24 @@ public class HAIServiceBase {
 		return supervisorReportDTO;
 	}
 
+	public List<CouponReportDTO> convertReceiptDetailsToCouponReportDTO(List<ReceiptDetail> list, String lang) {
+		List<CouponReportDTO> resultList = new ArrayList<CouponReportDTO>();
+		for (ReceiptDetail receiptDetail : list) {
+			if (GeneralUtils.isBigIntegerGreaterThanZero(receiptDetail.getCouponId())) {
+				CouponType couponType = utilsService.getCouponFromCache(receiptDetail.getCouponId());
+				CouponReportDTO couponReportDTONew = new CouponReportDTO(couponType, receiptDetail.getAmount());
+				if (!resultList.contains(couponReportDTONew)) {
+					resultList.add(couponReportDTONew);
+				} else {
+					CouponReportDTO couponReportDTOExisting = resultList.get(resultList.indexOf(couponReportDTONew));
+					couponReportDTOExisting
+							.setAmount(couponReportDTOExisting.getAmount().add(couponReportDTONew.getAmount()));
+				}
+			}
+		}
+		return resultList;
+	}
+
 	public ReceiptsReportDTO convertReceiptDetailsToReceiptsReportDTO(List<ReceiptDetail> list, String lang) {
 		ReceiptsReportDTO receiptsReportDTO = new ReceiptsReportDTO();
 		for (ReceiptDetail receiptDetail : list) {
@@ -592,7 +611,7 @@ public class HAIServiceBase {
 		receiptPrintDTO.setNumberOfPrints(receipt.getNumberOfPrints());
 		receiptPrintDTO.setTotalAmount(totalAmount);
 		receiptPrintDTO.setDetails(details);
-		receiptPrintDTO.setReceiptNumber(receipt.getId().toString());
+		receiptPrintDTO.setReceiptNumber(receipt.getNumber().toString());
 		receiptPrintDTO.setDonatorMobile(receipt.getDonatorPhoneNumber());
 		receiptPrintDTO.setDonatorName(receipt.getDonatorName());
 		receiptPrintDTO.setPaymentType(receipt.getPaymentType());

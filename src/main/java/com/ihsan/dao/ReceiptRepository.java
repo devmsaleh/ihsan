@@ -16,6 +16,8 @@ public interface ReceiptRepository extends JpaRepository<Receipt, BigInteger> {
 
 	Receipt findByIdAndCreatedById(BigInteger id, BigInteger delegateId);
 
+	List<Receipt> findByNumberAndCreatedById(String receiptNumber, BigInteger delegateId);
+
 	Receipt findTop1ByCreatedByIdOrderByIdDesc(BigInteger delegateId);
 
 	@Modifying(clearAutomatically = true)
@@ -27,4 +29,7 @@ public interface ReceiptRepository extends JpaRepository<Receipt, BigInteger> {
 	BigDecimal getDelegateTotalAmount(@Param("delegateId") BigInteger delegateId);
 
 	List<Receipt> findByCollectedAndCreatedById(String collected, BigInteger delegateId);
+
+	@Query("SELECT coalesce(max(r.number), 0) FROM Receipt r")
+	Long getMaxReceiptNumber();
 }
