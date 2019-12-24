@@ -259,20 +259,20 @@ public class CharityBoxWebService extends HAIServiceBase {
 								.findTop500ByLocationIdAndCategoryIdForInsertSingle(locationId, sourceId);
 					else if (GeneralUtils.isBigIntegerGreaterThanZero(regionId))
 						subLocationsList = subLocationRepository
-								.findTop500ByLocationIdAndCategoryIdForInsertSingle(locationId, sourceId);
+								.findTop500ByLocationRegionIdAndCategoryIdForInsertSingle(regionId, sourceId);
 					else if (GeneralUtils.isBigIntegerGreaterThanZero(emarahId))
 						subLocationsList = subLocationRepository
-								.findTop500ByLocationIdAndCategoryIdForInsertSingle(locationId, sourceId);
+								.findTop500ByLocationRegionEmarahIdAndCategoryIdForInsertSingle(emarahId, sourceId);
 				} else {
 					if (GeneralUtils.isBigIntegerGreaterThanZero(locationId))
 						subLocationsList = subLocationRepository
 								.findTop500ByLocationIdAndCategoryIdForInsertMultiple(locationId);
 					else if (GeneralUtils.isBigIntegerGreaterThanZero(regionId))
 						subLocationsList = subLocationRepository
-								.findTop500ByLocationIdAndCategoryIdForInsertMultiple(locationId);
+								.findTop500ByLocationRegionIdAndCategoryIdForInsertMultiple(regionId);
 					else if (GeneralUtils.isBigIntegerGreaterThanZero(emarahId))
 						subLocationsList = subLocationRepository
-								.findTop500ByLocationIdAndCategoryIdForInsertMultiple(locationId);
+								.findTop500ByLocationRegionEmarahIdAndCategoryIdForInsertMultiple(emarahId);
 				}
 			}
 			logger.info("###### findInsertSubLocation,subLocationsList: " + subLocationsList.size() + ",locationId: "

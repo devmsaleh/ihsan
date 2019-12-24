@@ -63,12 +63,28 @@ public interface SubLocationRepository extends JpaRepository<SubLocation, BigInt
 	List<SubLocation> findTop10ByLocationRegionEmarahIdAndCategoryIdAndNameForInsertMultiple(
 			@Param("emarahId") BigInteger emarahId, @Param("name") String name);
 
-	@Query(value = "select * from TM_SUB_LOCATIONS sub where sub.LOCATION_ID=:locationId and sub.SUB_LOCATION_ID not in (select SUB_LOCATION_ID from TM_CHARITY_BOXES where CATEGORY_OF_BOXES=:categoryId and STATUS!='1') fetch next 100 rows only", nativeQuery = true)
+	@Query(value = "select * from TM_SUB_LOCATIONS sub where sub.LOCATION_ID=:locationId and sub.SUB_LOCATION_ID not in (select SUB_LOCATION_ID from TM_CHARITY_BOXES where CATEGORY_OF_BOXES=:categoryId and STATUS!='1') fetch next 500 rows only", nativeQuery = true)
 	List<SubLocation> findTop500ByLocationIdAndCategoryIdForInsertSingle(@Param("locationId") BigInteger locationId,
 			@Param("categoryId") String categoryId);
 
-	@Query(value = "select * from TM_SUB_LOCATIONS sub where sub.LOCATION_ID=:locationId order by SUB_LOCATION_NAME fetch next 100 rows only", nativeQuery = true)
+	@Query(value = "select * from TM_SUB_LOCATIONS sub inner join TM_LOCATIONS loc on sub.LOCATION_ID=loc.LOCATION_ID where loc.REGION_ID=:regionId and sub.SUB_LOCATION_ID not in (select SUB_LOCATION_ID from TM_CHARITY_BOXES where CATEGORY_OF_BOXES=:categoryId and STATUS!='1') fetch next 500 rows only", nativeQuery = true)
+	List<SubLocation> findTop500ByLocationRegionIdAndCategoryIdForInsertSingle(@Param("regionId") BigInteger regionId,
+			@Param("categoryId") String categoryId);
+
+	@Query(value = "select * from TM_SUB_LOCATIONS sub inner join TM_LOCATIONS loc on sub.LOCATION_ID=loc.LOCATION_ID inner join TM_REGION reg on loc.REGION_ID=reg.TM_REGION_ID where reg.TM_CITY_ID=:emarahId and sub.SUB_LOCATION_ID not in (select SUB_LOCATION_ID from TM_CHARITY_BOXES where CATEGORY_OF_BOXES=:categoryId and STATUS!='1') fetch next 500 rows only", nativeQuery = true)
+	List<SubLocation> findTop500ByLocationRegionEmarahIdAndCategoryIdForInsertSingle(
+			@Param("emarahId") BigInteger emarahId, @Param("categoryId") String categoryId);
+
+	@Query(value = "select * from TM_SUB_LOCATIONS sub where sub.LOCATION_ID=:locationId order by SUB_LOCATION_NAME fetch next 500 rows only", nativeQuery = true)
 	List<SubLocation> findTop500ByLocationIdAndCategoryIdForInsertMultiple(@Param("locationId") BigInteger locationId);
+
+	@Query(value = "select * from TM_SUB_LOCATIONS sub inner join TM_LOCATIONS loc on sub.LOCATION_ID=loc.LOCATION_ID where loc.REGION_ID=:regionId order by SUB_LOCATION_NAME fetch next 500 rows only", nativeQuery = true)
+	List<SubLocation> findTop500ByLocationRegionIdAndCategoryIdForInsertMultiple(
+			@Param("regionId") BigInteger regionId);
+
+	@Query(value = "select * from TM_SUB_LOCATIONS sub inner join TM_LOCATIONS loc on sub.LOCATION_ID=loc.LOCATION_ID inner join TM_REGION reg on loc.REGION_ID=reg.TM_REGION_ID where reg.TM_CITY_ID=:emarahId order by SUB_LOCATION_NAME fetch next 500 rows only", nativeQuery = true)
+	List<SubLocation> findTop500ByLocationRegionEmarahIdAndCategoryIdForInsertMultiple(
+			@Param("emarahId") BigInteger emarahId);
 
 	@Modifying(clearAutomatically = true)
 	@Transactional
