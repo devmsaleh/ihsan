@@ -43,9 +43,25 @@ public interface SubLocationRepository extends JpaRepository<SubLocation, BigInt
 			@Param("locationId") BigInteger locationId, @Param("categoryId") String categoryId,
 			@Param("name") String name);
 
+	@Query(value = "select * from TM_SUB_LOCATIONS sub inner join TM_LOCATIONS loc on sub.LOCATION_ID=loc.LOCATION_ID where loc.REGION_ID=:regionId and sub.SUB_LOCATION_ID not in (select SUB_LOCATION_ID from TM_CHARITY_BOXES where CATEGORY_OF_BOXES=:categoryId and STATUS!='1') and sub.SUB_LOCATION_NAME like %:name% fetch next 10 rows only", nativeQuery = true)
+	List<SubLocation> findTop10ByLocationRegionIdAndCategoryIdAndNameForInsertSingle(
+			@Param("regionId") BigInteger regionId, @Param("categoryId") String categoryId, @Param("name") String name);
+
+	@Query(value = "select * from TM_SUB_LOCATIONS sub inner join TM_LOCATIONS loc on sub.LOCATION_ID=loc.LOCATION_ID inner join TM_REGION reg on loc.REGION_ID=reg.TM_REGION_ID where reg.TM_CITY_ID=:emarahId and sub.SUB_LOCATION_ID not in (select SUB_LOCATION_ID from TM_CHARITY_BOXES where CATEGORY_OF_BOXES=:categoryId and STATUS!='1') and sub.SUB_LOCATION_NAME like %:name% fetch next 10 rows only", nativeQuery = true)
+	List<SubLocation> findTop10ByLocationRegionEmarahIdAndCategoryIdAndNameForInsertSingle(
+			@Param("emarahId") BigInteger emarahId, @Param("categoryId") String categoryId, @Param("name") String name);
+
 	@Query(value = "select * from TM_SUB_LOCATIONS sub where sub.LOCATION_ID=:locationId and sub.SUB_LOCATION_NAME like %:name% order by SUB_LOCATION_NAME fetch next 10 rows only", nativeQuery = true)
 	List<SubLocation> findTop10ByLocationIdAndCategoryIdAndNameForInsertMultiple(
 			@Param("locationId") BigInteger locationId, @Param("name") String name);
+
+	@Query(value = "select * from TM_SUB_LOCATIONS sub inner join TM_LOCATIONS loc on sub.LOCATION_ID=loc.LOCATION_ID where loc.REGION_ID=:regionId and sub.SUB_LOCATION_NAME like %:name% order by SUB_LOCATION_NAME fetch next 10 rows only", nativeQuery = true)
+	List<SubLocation> findTop10ByLocationRegionIdAndCategoryIdAndNameForInsertMultiple(
+			@Param("regionId") BigInteger regionId, @Param("name") String name);
+
+	@Query(value = "select * from TM_SUB_LOCATIONS sub inner join TM_LOCATIONS loc on sub.LOCATION_ID=loc.LOCATION_ID inner join TM_REGION reg on loc.REGION_ID=reg.TM_REGION_ID where reg.TM_CITY_ID=:emarahId and sub.SUB_LOCATION_NAME like %:name% order by SUB_LOCATION_NAME fetch next 10 rows only", nativeQuery = true)
+	List<SubLocation> findTop10ByLocationRegionEmarahIdAndCategoryIdAndNameForInsertMultiple(
+			@Param("emarahId") BigInteger emarahId, @Param("name") String name);
 
 	@Query(value = "select * from TM_SUB_LOCATIONS sub where sub.LOCATION_ID=:locationId and sub.SUB_LOCATION_ID not in (select SUB_LOCATION_ID from TM_CHARITY_BOXES where CATEGORY_OF_BOXES=:categoryId and STATUS!='1') fetch next 100 rows only", nativeQuery = true)
 	List<SubLocation> findTop500ByLocationIdAndCategoryIdForInsertSingle(@Param("locationId") BigInteger locationId,

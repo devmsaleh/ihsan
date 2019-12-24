@@ -188,28 +188,92 @@ public class CharityBoxWebService extends HAIServiceBase {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	@Path("/findInsertSubLocation/{locationId}/{sourceId}/{name}")
+	@Path("/findSubLocation/{locationId}/{name}")
+	@ApiOperation(value = "البحث عن مكان بجزء من الاسم")
+	public ServiceResponse findSubLocation(@PathParam("locationId") BigInteger locationId,
+			@PathParam("name") String name, @HeaderParam("token") String token, @HeaderParam("lang") String lang)
+			throws Exception {
+		try {
+
+			List<SubLocation> subLocationsList = new ArrayList<SubLocation>();
+			boolean concatDetails = false;
+			if (locationId != null && locationId.compareTo(BigInteger.ZERO) > 0) {
+				if (StringUtils.isNotBlank(name) && !name.equalsIgnoreCase("ALL")) {
+					subLocationsList = subLocationRepository
+							.findTop10ByLocationIdAndNameIgnoreCaseContainingOrderByNameAsc(locationId, name.trim());
+				} else {
+					subLocationsList = subLocationRepository.findTop500ByLocationIdOrderByNameAsc(locationId);
+				}
+			} else {
+				concatDetails = true;
+				subLocationsList = subLocationRepository.findTop10ByNameIgnoreCaseContainingOrderByNameAsc(name);
+			}
+			logger.info("###### findSubLocation,subLocationsList: " + subLocationsList.size());
+			List<SubLocationDTO> resultList = convertSubLocationListToDTO(subLocationsList, concatDetails);
+			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, resultList, errorCodeRepository, lang);
+		} catch (Exception e) {
+			logger.error("Exception in findSubLocation webservice: ", e);
+			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
+		}
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Path("/findInsertSubLocation/{emarahId}/{regionId}/{locationId}/{sourceId}/{name}")
 	@ApiOperation(value = "البحث عن مكان بجزء من الاسم لعملية زرع الحصالة")
-	public ServiceResponse findInsertSubLocation(@PathParam("locationId") BigInteger locationId,
+	public ServiceResponse findInsertSubLocation(@PathParam("emarahId") BigInteger emarahId,
+			@PathParam("regionId") BigInteger regionId, @PathParam("locationId") BigInteger locationId,
 			@PathParam("sourceId") String sourceId, @PathParam("name") String name, @HeaderParam("token") String token,
 			@HeaderParam("lang") String lang) throws Exception {
 		try {
 
 			List<SubLocation> subLocationsList = new ArrayList<SubLocation>();
 			if (StringUtils.isNotBlank(name) && !name.equalsIgnoreCase("ALL")) {
-				if (oneCharityBoxPerSubLocation)
-					subLocationsList = subLocationRepository
-							.findTop10ByLocationIdAndCategoryIdAndNameForInsertSingle(locationId, sourceId, name);
-				else
-					subLocationsList = subLocationRepository
-							.findTop10ByLocationIdAndCategoryIdAndNameForInsertMultiple(locationId, name);
+				if (oneCharityBoxPerSubLocation) {
+					if (GeneralUtils.isBigIntegerGreaterThanZero(locationId))
+						subLocationsList = subLocationRepository
+								.findTop10ByLocationIdAndCategoryIdAndNameForInsertSingle(locationId, sourceId, name);
+					else if (GeneralUtils.isBigIntegerGreaterThanZero(regionId))
+						subLocationsList = subLocationRepository
+								.findTop10ByLocationRegionIdAndCategoryIdAndNameForInsertSingle(regionId, sourceId,
+										name);
+					else if (GeneralUtils.isBigIntegerGreaterThanZero(emarahId))
+						subLocationsList = subLocationRepository
+								.findTop10ByLocationRegionEmarahIdAndCategoryIdAndNameForInsertSingle(emarahId,
+										sourceId, name);
+				} else {
+					if (GeneralUtils.isBigIntegerGreaterThanZero(locationId))
+						subLocationsList = subLocationRepository
+								.findTop10ByLocationIdAndCategoryIdAndNameForInsertMultiple(locationId, name);
+					else if (GeneralUtils.isBigIntegerGreaterThanZero(regionId))
+						subLocationsList = subLocationRepository
+								.findTop10ByLocationRegionIdAndCategoryIdAndNameForInsertMultiple(regionId, name);
+					else if (GeneralUtils.isBigIntegerGreaterThanZero(emarahId))
+						subLocationsList = subLocationRepository
+								.findTop10ByLocationRegionEmarahIdAndCategoryIdAndNameForInsertMultiple(emarahId, name);
+				}
 			} else {
-				if (oneCharityBoxPerSubLocation)
-					subLocationsList = subLocationRepository
-							.findTop500ByLocationIdAndCategoryIdForInsertSingle(locationId, sourceId);
-				else
-					subLocationsList = subLocationRepository
-							.findTop500ByLocationIdAndCategoryIdForInsertMultiple(locationId);
+				if (oneCharityBoxPerSubLocation) {
+					if (GeneralUtils.isBigIntegerGreaterThanZero(locationId))
+						subLocationsList = subLocationRepository
+								.findTop500ByLocationIdAndCategoryIdForInsertSingle(locationId, sourceId);
+					else if (GeneralUtils.isBigIntegerGreaterThanZero(regionId))
+						subLocationsList = subLocationRepository
+								.findTop500ByLocationIdAndCategoryIdForInsertSingle(locationId, sourceId);
+					else if (GeneralUtils.isBigIntegerGreaterThanZero(emarahId))
+						subLocationsList = subLocationRepository
+								.findTop500ByLocationIdAndCategoryIdForInsertSingle(locationId, sourceId);
+				} else {
+					if (GeneralUtils.isBigIntegerGreaterThanZero(locationId))
+						subLocationsList = subLocationRepository
+								.findTop500ByLocationIdAndCategoryIdForInsertMultiple(locationId);
+					else if (GeneralUtils.isBigIntegerGreaterThanZero(regionId))
+						subLocationsList = subLocationRepository
+								.findTop500ByLocationIdAndCategoryIdForInsertMultiple(locationId);
+					else if (GeneralUtils.isBigIntegerGreaterThanZero(emarahId))
+						subLocationsList = subLocationRepository
+								.findTop500ByLocationIdAndCategoryIdForInsertMultiple(locationId);
+				}
 			}
 			logger.info("###### findInsertSubLocation,subLocationsList: " + subLocationsList.size() + ",locationId: "
 					+ locationId + ",sourceId: " + sourceId + ",name: " + name);
