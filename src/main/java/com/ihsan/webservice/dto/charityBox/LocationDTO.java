@@ -9,6 +9,8 @@ public class LocationDTO {
 	private BigInteger regionId;
 	private String address;
 	private String mobile;
+	private Float locationLatitude;
+	private Float locationLongitude;
 
 	public LocationDTO() {
 
@@ -58,6 +60,22 @@ public class LocationDTO {
 
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
+	}
+
+	public Float getLocationLatitude() {
+		return locationLatitude;
+	}
+
+	public void setLocationLatitude(Float locationLatitude) {
+		this.locationLatitude = locationLatitude;
+	}
+
+	public Float getLocationLongitude() {
+		return locationLongitude;
+	}
+
+	public void setLocationLongitude(Float locationLongitude) {
+		this.locationLongitude = locationLongitude;
 	}
 
 }

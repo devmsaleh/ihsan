@@ -790,6 +790,8 @@ public class HAIServiceBase {
 		Location location = new Location(locationDTO.getName().trim(), locationDTO.getRegionId());
 		location.setAddress(locationDTO.getAddress());
 		location.setMobile(locationDTO.getMobile());
+		location.setLocationLatitude(locationDTO.getLocationLatitude());
+		location.setLocationLongitude(locationDTO.getLocationLongitude());
 		List<Location> resultList = locationRepository.findByNameAndRegionId(location.getName(),
 				location.getRegionId());
 		if (resultList != null && resultList.size() > 0) {

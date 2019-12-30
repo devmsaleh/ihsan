@@ -589,10 +589,10 @@ public class CharityBoxWebService extends HAIServiceBase {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	@Path("/getEmarahList")
+	@Path("/getEmarahList/{delegateId}")
 	@ApiOperation(value = "عرض اسماء الامارات")
-	public ServiceResponse getEmarahList(@HeaderParam("token") String token, @HeaderParam("lang") String lang)
-			throws Exception {
+	public ServiceResponse getEmarahList(@PathParam("delegateId") BigInteger delegateId,
+			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
 		try {
 
 			List<Emarah> emarahList = emarahRepository.getEmarahList();
