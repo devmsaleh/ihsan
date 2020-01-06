@@ -436,9 +436,16 @@ public class HAIService extends HAIServiceBase {
 			toDate = DateUtils.setHours(toDate, 23);
 			toDate = DateUtils.setMinutes(toDate, 59);
 			toDate = DateUtils.setSeconds(toDate, 0);
-			List<ReceiptDetail> list = receiptDetailsRepository
-					.findByCreatedByIdAndCreationDateGreaterThanEqualAndCreationDateLessThanEqualOrderByIdAsc(
-							delegateId, fromDate, toDate);
+			boolean notCollectedOnly = true;
+			List<ReceiptDetail> list = new ArrayList<ReceiptDetail>();
+			if (notCollectedOnly)
+				list = receiptDetailsRepository
+						.findByCreatedByIdAndCollectedAndCreationDateGreaterThanEqualAndCreationDateLessThanEqualOrderByIdAsc(
+								delegateId, "N", fromDate, toDate);
+			else
+				list = receiptDetailsRepository
+						.findByCreatedByIdAndCreationDateGreaterThanEqualAndCreationDateLessThanEqualOrderByIdAsc(
+								delegateId, fromDate, toDate);
 
 			ReceiptsReportDTO receiptsReportDTO = convertReceiptDetailsToReceiptsReportDTO(list, lang);
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, receiptsReportDTO, errorCodeRepository, lang);

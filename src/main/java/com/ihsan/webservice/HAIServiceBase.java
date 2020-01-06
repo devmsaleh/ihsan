@@ -431,6 +431,8 @@ public class HAIServiceBase {
 		delegateDTO.setPinCode(delegate.getPinCode());
 		delegateDTO.setSupervisor(delegate.isSupervisor());
 		delegateDTO.setMobile(delegate.getMobile());
+		delegateDTO.setCoupon(delegate.isCoupon());
+		delegateDTO.setCharityBox(delegate.isCharityBox());
 		return delegateDTO;
 	}
 

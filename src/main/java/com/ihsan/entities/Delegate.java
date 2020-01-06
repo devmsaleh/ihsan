@@ -50,6 +50,12 @@ public class Delegate {
 	@Column(name = "BANK_ACCOUNT_ID")
 	private BigInteger bankAccountId;
 
+	@Column(name = "IS_CHARITY_BOX")
+	private boolean charityBox;
+
+	@Column(name = "IS_COUPON")
+	private boolean coupon;
+
 	@Transient
 	private boolean supervisor;
 
@@ -209,6 +215,22 @@ public class Delegate {
 
 	public void setBankAccountId(BigInteger bankAccountId) {
 		this.bankAccountId = bankAccountId;
+	}
+
+	public boolean isCharityBox() {
+		return charityBox;
+	}
+
+	public void setCharityBox(boolean charityBox) {
+		this.charityBox = charityBox;
+	}
+
+	public boolean isCoupon() {
+		return coupon;
+	}
+
+	public void setCoupon(boolean coupon) {
+		this.coupon = coupon;
 	}
 
 }

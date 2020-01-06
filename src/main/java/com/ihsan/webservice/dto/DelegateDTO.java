@@ -18,6 +18,8 @@ public class DelegateDTO {
 	private boolean supervisor;
 	private String mobile;
 	private BigDecimal amountNotCollected = new BigDecimal(0);
+	private boolean charityBox;
+	private boolean coupon;
 
 	public String getId() {
 		return id;
@@ -129,6 +131,22 @@ public class DelegateDTO {
 
 	public void setAmountNotCollected(BigDecimal amountNotCollected) {
 		this.amountNotCollected = amountNotCollected;
+	}
+
+	public boolean isCharityBox() {
+		return charityBox;
+	}
+
+	public void setCharityBox(boolean charityBox) {
+		this.charityBox = charityBox;
+	}
+
+	public boolean isCoupon() {
+		return coupon;
+	}
+
+	public void setCoupon(boolean coupon) {
+		this.coupon = coupon;
 	}
 
 }

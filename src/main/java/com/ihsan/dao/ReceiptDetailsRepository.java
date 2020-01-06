@@ -16,6 +16,9 @@ public interface ReceiptDetailsRepository extends JpaRepository<ReceiptDetail, B
 	List<ReceiptDetail> findByCreatedByIdAndCreationDateGreaterThanEqualAndCreationDateLessThanEqualOrderByIdAsc(
 			BigInteger delegateId, Date fromDate, Date toDate);
 
+	List<ReceiptDetail> findByCreatedByIdAndCollectedAndCreationDateGreaterThanEqualAndCreationDateLessThanEqualOrderByIdAsc(
+			BigInteger delegateId, String collected, Date fromDate, Date toDate);
+
 	List<ReceiptDetail> findByCreatedByIdAndReceiptCollectedAndCreationDateGreaterThanEqualAndCreationDateLessThanEqualOrderByIdAsc(
 			BigInteger delegateId, String collected, Date fromDate, Date toDate);
 }
