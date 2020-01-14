@@ -440,7 +440,7 @@ public class HAIService extends HAIServiceBase {
 			List<ReceiptDetail> list = new ArrayList<ReceiptDetail>();
 			if (notCollectedOnly)
 				list = receiptDetailsRepository
-						.findByCreatedByIdAndCollectedAndCreationDateGreaterThanEqualAndCreationDateLessThanEqualOrderByIdAsc(
+						.findByCreatedByIdAndReceiptCollectedAndCreationDateGreaterThanEqualAndCreationDateLessThanEqualOrderByIdAsc(
 								delegateId, "N", fromDate, toDate);
 			else
 				list = receiptDetailsRepository
