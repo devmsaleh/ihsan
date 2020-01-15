@@ -11,12 +11,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -24,6 +22,7 @@ import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "TM_RECEIPTS")
@@ -31,8 +30,12 @@ import org.hibernate.annotations.DynamicUpdate;
 public class Receipt {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tm_receipts_seq")
-	@SequenceGenerator(sequenceName = "tm_receipts_seq", allocationSize = 1, name = "tm_receipts_seq")
+	@GenericGenerator(name = "receipt_id_generator", strategy = "com.ihsan.entities.ReceiptIdGenerator")
+	@GeneratedValue(generator = "receipt_id_generator")
+	// @GeneratedValue(strategy = GenerationType.SEQUENCE, generator =
+	// "tm_receipts_seq")
+	// @SequenceGenerator(sequenceName = "tm_receipts_seq", allocationSize = 1, name
+	// = "tm_receipts_seq")
 	@Column(name = "RECEIPT_CODE", unique = true)
 	private BigInteger id;
 
