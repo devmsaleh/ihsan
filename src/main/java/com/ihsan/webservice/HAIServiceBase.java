@@ -207,23 +207,26 @@ public class HAIServiceBase {
 	protected boolean debugEnabled;
 
 	protected boolean isSuccess(ErrorCodeEnum errorCode) {
-		return errorCode != null && errorCode.intValue() == ErrorCodeEnum.SUCCESS_CODE.intValue();
+		return errorCode != null
+				&& errorCode.getErrorCode().equalsIgnoreCase(ErrorCodeEnum.SUCCESS_CODE.getErrorCode());
 	}
 
 	protected boolean isError(ErrorCodeEnum errorCode) {
-		return errorCode == null || errorCode.intValue() != ErrorCodeEnum.SUCCESS_CODE.intValue();
+		return errorCode == null
+				|| !errorCode.getErrorCode().equalsIgnoreCase(ErrorCodeEnum.SUCCESS_CODE.getErrorCode());
 	}
 
-	protected boolean isSuccess(int errorCode) {
-		return errorCode == ErrorCodeEnum.SUCCESS_CODE.intValue();
+	protected boolean isSuccess(String errorCode) {
+		return errorCode.equalsIgnoreCase(ErrorCodeEnum.SUCCESS_CODE.getErrorCode());
 	}
 
-	protected boolean isError(int errorCode) {
-		return errorCode != ErrorCodeEnum.SUCCESS_CODE.intValue();
+	protected boolean isError(String errorCode) {
+		return !errorCode.equalsIgnoreCase(ErrorCodeEnum.SUCCESS_CODE.getErrorCode());
 	}
 
 	protected boolean isResponseHasError(ServiceResponse response) {
-		return response == null || response.getErrorCode().intValue() != ErrorCodeEnum.SUCCESS_CODE.intValue();
+		return response == null
+				|| !response.getErrorCode().getErrorCode().equalsIgnoreCase(ErrorCodeEnum.SUCCESS_CODE.getErrorCode());
 	}
 
 	public Receipt convertReceipDTOToReceipt(ReceiptDTO receiptDTO) {

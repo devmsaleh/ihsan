@@ -298,7 +298,7 @@ public class HAIService extends HAIServiceBase {
 
 			ErrorCodeEnum errorCode = validation.validateCreateReceipt(receiptDTO);
 			if (isError(errorCode)) {
-				logger.info("createReceipt Error " + errorCode.intValue() + " , JSON: "
+				logger.info("createReceipt Error " + errorCode.getErrorCode() + " , JSON: "
 						+ (new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(receiptDTO)));
 				return new ServiceResponse(errorCode, errorCodeRepository, lang);
 			}

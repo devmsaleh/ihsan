@@ -385,7 +385,8 @@ public class CharityBoxWebService extends HAIServiceBase {
 			// here we add the new regions/locations/sub locations
 			CharityBoxTransfer charityBoxTransfer = convertCharityBoxTransferDTOToEntity(charityBoxTransferDTO);
 			CharityBoxTransferDetail detail = charityBoxTransfer.getCharityBoxTransferDetail();
-			if (charityBoxTransfer.getErrorCode().intValue() != ErrorCodeEnum.SUCCESS_CODE.intValue()) {
+			if (!charityBoxTransfer.getErrorCode().getErrorCode()
+					.equalsIgnoreCase(ErrorCodeEnum.SUCCESS_CODE.getErrorCode())) {
 				return new ServiceResponse(charityBoxTransfer.getErrorCode(), generalResponseDTO, errorCodeRepository,
 						lang);
 			}
