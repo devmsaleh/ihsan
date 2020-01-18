@@ -13,9 +13,9 @@ import org.hibernate.id.IdentifierGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ReceiptIdGenerator implements IdentifierGenerator {
+public class CharityBoxTransferIdGenerator implements IdentifierGenerator {
 
-	private static final Logger logger = LoggerFactory.getLogger(ReceiptIdGenerator.class);
+	private static final Logger logger = LoggerFactory.getLogger(CharityBoxTransferIdGenerator.class);
 
 	@Override
 	public Serializable generate(SessionImplementor session, Object object) throws HibernateException {
@@ -25,14 +25,14 @@ public class ReceiptIdGenerator implements IdentifierGenerator {
 		try {
 			Statement statement = connection.createStatement();
 
-			ResultSet rs = statement.executeQuery("select max(RECEIPT_CODE) from TM_RECEIPTS");
+			ResultSet rs = statement.executeQuery("select max(TRANSFER_ID) from TM_CHARITY_BOX_TRANSFERS");
 
 			if (rs.next()) {
 				long id = rs.getLong(1);
 				return new BigInteger(String.valueOf(id + 1));
 			}
 		} catch (SQLException e) {
-			logger.error("Exception in ReceiptIdGenerator: ", e);
+			logger.error("Exception in CharityBoxTransferIdGenerator: ", e);
 		}
 
 		return null;

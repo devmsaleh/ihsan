@@ -6,13 +6,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.GenericGenerator;
 
 import com.ihsan.constants.ErrorCodeEnum;
 
@@ -21,8 +21,12 @@ import com.ihsan.constants.ErrorCodeEnum;
 public class SubLocation {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SUB_LOCATION_SEQ")
-	@SequenceGenerator(sequenceName = "SUB_LOCATION_SEQ", allocationSize = 1, name = "SUB_LOCATION_SEQ")
+	@GenericGenerator(name = "subLocation_id_generator", strategy = "com.ihsan.entities.ids.SubLocationIdGenerator")
+	@GeneratedValue(generator = "subLocation_id_generator")
+	// @GeneratedValue(strategy = GenerationType.SEQUENCE, generator =
+	// "SUB_LOCATION_SEQ")
+	// @SequenceGenerator(sequenceName = "SUB_LOCATION_SEQ", allocationSize = 1,
+	// name = "SUB_LOCATION_SEQ")
 	@Column(name = "SUB_LOCATION_ID")
 	private BigInteger id;
 

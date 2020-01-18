@@ -6,21 +6,25 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "TM_LOCATIONS")
 public class Location {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "LOCATION_SEQ")
-	@SequenceGenerator(sequenceName = "LOCATION_SEQ", allocationSize = 1, name = "LOCATION_SEQ")
+	@GenericGenerator(name = "location_id_generator", strategy = "com.ihsan.entities.ids.LocationIdGenerator")
+	@GeneratedValue(generator = "location_id_generator")
+	// @GeneratedValue(strategy = GenerationType.SEQUENCE, generator =
+	// "LOCATION_SEQ")
+	// @SequenceGenerator(sequenceName = "LOCATION_SEQ", allocationSize = 1, name =
+	// "LOCATION_SEQ")
 	@Column(name = "LOCATION_ID")
 	private BigInteger id;
 

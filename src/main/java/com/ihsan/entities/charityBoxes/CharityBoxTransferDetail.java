@@ -11,11 +11,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.GenericGenerator;
 
 import com.ihsan.constants.ErrorCodeEnum;
 import com.ihsan.entities.Delegate;
@@ -25,8 +26,12 @@ import com.ihsan.entities.Delegate;
 public class CharityBoxTransferDetail {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CH_BOX_TRANS_DTL_SEQ")
-	@SequenceGenerator(sequenceName = "CH_BOX_TRANS_DTL_SEQ", allocationSize = 1, name = "CH_BOX_TRANS_DTL_SEQ")
+	@GenericGenerator(name = "charityBoxTransferDetail_id_generator", strategy = "com.ihsan.entities.ids.CharityBoxTransferDetailIdGenerator")
+	@GeneratedValue(generator = "charityBoxTransferDetail_id_generator")
+	// @GeneratedValue(strategy = GenerationType.SEQUENCE, generator =
+	// "CH_BOX_TRANS_DTL_SEQ")
+	// @SequenceGenerator(sequenceName = "CH_BOX_TRANS_DTL_SEQ", allocationSize = 1,
+	// name = "CH_BOX_TRANS_DTL_SEQ")
 	@Column(name = "TRANSFER_LINE_ID")
 	private BigInteger id;
 
@@ -77,6 +82,9 @@ public class CharityBoxTransferDetail {
 
 	@Transient
 	private ErrorCodeEnum errorCode = ErrorCodeEnum.SUCCESS_CODE;
+
+	@Column(name = "IS_TAWASUL_APP")
+	private boolean tawasulApp = true;
 
 	public BigInteger getSafetyCase() {
 		return safetyCase;
@@ -180,6 +188,14 @@ public class CharityBoxTransferDetail {
 
 	public void setCharityBoxTransfer(CharityBoxTransfer charityBoxTransfer) {
 		this.charityBoxTransfer = charityBoxTransfer;
+	}
+
+	public boolean isTawasulApp() {
+		return tawasulApp;
+	}
+
+	public void setTawasulApp(boolean tawasulApp) {
+		this.tawasulApp = tawasulApp;
 	}
 
 }

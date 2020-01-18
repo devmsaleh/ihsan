@@ -752,23 +752,23 @@ public class HAIService extends HAIServiceBase {
 	@Async
 	public String sendSMS(String mobileNumber, String totalDonatedAmount, String receiptNumber) {
 
-		if (true)
-			return "";
 		mobileNumber = "971" + mobileNumber.substring(1);
 		HttpURLConnection connection = null;
 		BufferedReader bufferedReader = null;
 		String result = null;
 		try {
 
-			StringBuffer messageTextSb = new StringBuffer();
-			messageTextSb.append("شكرا لتبرعكم لجمعية الإحسان الخيرية").append("\n").append("تم استلام مبلغ")
-					.append(" ").append(totalDonatedAmount).append(" ").append("درهم").append("\n")
-					.append("رقم الإيصال ").append(receiptNumber);
-			String messageText = URLEncoder.encode(messageTextSb.toString(), "UTF-8");
+			StringBuffer messageTextStringBuffer = new StringBuffer();
+			messageTextStringBuffer.append("نشكركم على تبرعكم بمبلغ").append(totalDonatedAmount).append(" ")
+					.append("درهم").append("\n");
+			messageTextStringBuffer.append("رقم المعاملة : ").append(receiptNumber).append("\n");
+			messageTextStringBuffer.append("مع تحيات جمعية الاحسان الخيرية").append("\n");
+			messageTextStringBuffer.append("www.alihsan.ae");
+			String messageTextStr = URLEncoder.encode(messageTextStringBuffer.toString(), "UTF-8");
 			// http://fuj.smscharity.net:9980/smsgw.aspx?user=fuj191&pass=Passw0rd191$&ProviderID=1019&text=%D8%AA%D8%AC%D8%B1%D8%A8%D8%A9&msisdn=971504339373&encoding=2
 			URL url = new URL(
-					"http://fuj.smscharity.net:9980/smsgw.aspx?user=fuj191&pass=Passw0rd191$&ProviderID=1019&text="
-							+ messageText + "&msisdn=" + mobileNumber + "&encoding=2");
+					"http://alihsan.smscharity.net:9980/smsgw.aspx?user=ihsan209&pass=Pass769w0rd@&ProviderID=1013&text="
+							+ messageTextStr + "&msisdn=" + mobileNumber + "&encoding=2");
 			connection = (HttpURLConnection) url.openConnection();
 			connection.setConnectTimeout(1000 * 30);
 			connection.setReadTimeout(1000 * 30);
@@ -785,6 +785,12 @@ public class HAIService extends HAIServiceBase {
 				sb.append(line).append("\n");
 			}
 			result = sb.toString();
+			boolean success = false;
+			if (StringUtils.isNotBlank(result) && result.trim().toLowerCase().contains("ok")) {
+				success = true;
+			} else {
+				logger.info("########## UNABLE TO SEND SMS,RESULT IS: " + result);
+			}
 		} catch (Exception e) {
 			logger.error("Exception in sendSMS: ", e);
 		} finally {

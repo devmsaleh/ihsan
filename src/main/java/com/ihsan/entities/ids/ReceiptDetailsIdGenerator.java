@@ -32,7 +32,7 @@ public class ReceiptDetailsIdGenerator implements IdentifierGenerator {
 				return new BigInteger(String.valueOf(id + 1));
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.error("Exception in ReceiptDetailsIdGenerator: ", e);
 		}
 
 		return null;
