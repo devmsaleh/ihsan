@@ -7,22 +7,26 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "TM_RECEIPT_PAYMENTS")
 public class ReceiptPayment {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tm_receipt_payments_seq")
-	@SequenceGenerator(sequenceName = "tm_receipt_payments_seq", allocationSize = 1, name = "tm_receipt_payments_seq")
+	@GenericGenerator(name = "receiptPayment_id_generator", strategy = "com.ihsan.entities.ids.ReceiptPaymentIdGenerator")
+	@GeneratedValue(generator = "receiptPayment_id_generator")
+	// @GeneratedValue(strategy = GenerationType.SEQUENCE, generator =
+	// "tm_receipt_payments_seq")
+	// @SequenceGenerator(sequenceName = "tm_receipt_payments_seq", allocationSize =
+	// 1, name = "tm_receipt_payments_seq")
 	@Column(name = "PAYMENT_CODE", unique = true)
 	private BigInteger id;
 

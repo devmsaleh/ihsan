@@ -30,6 +30,6 @@ public interface ReceiptRepository extends JpaRepository<Receipt, BigInteger> {
 
 	List<Receipt> findByCollectedAndCreatedById(String collected, BigInteger delegateId);
 
-	@Query("SELECT coalesce(max(r.number), 0) FROM Receipt r")
+	@Query(value = "SELECT MAX(TO_NUMBER(receipt_number)) FROM tm_receipts", nativeQuery = true)
 	Long getMaxReceiptNumber();
 }

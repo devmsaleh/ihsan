@@ -20,6 +20,7 @@ import com.ihsan.dao.GiftTypeRepository;
 import com.ihsan.dao.NationalityRepository;
 import com.ihsan.dao.NewProjectTypeRepository;
 import com.ihsan.dao.OrphanRepository;
+import com.ihsan.dao.ReceiptDetailsRepository;
 import com.ihsan.dao.ReceiptRepository;
 import com.ihsan.dao.charityBoxes.CharityBoxActionTypeRepository;
 import com.ihsan.dao.charityBoxes.CharityBoxCategoryRepository;
@@ -108,9 +109,13 @@ public class UtilsService {
 	@Autowired
 	private FamilyRepository familyRepository;
 
+	@Autowired
+	private ReceiptDetailsRepository receiptDetailsRepository;
+
 	public Receipt createReceipt(Receipt receipt) {
 		receiptRepository.save(receipt);
 		Long receiptNumber = receiptRepository.getMaxReceiptNumber();
+		receiptNumber = receiptNumber + 1;
 		receipt.setNumber(String.valueOf(receiptNumber));
 		return receiptRepository.save(receipt);
 	}
@@ -377,6 +382,25 @@ public class UtilsService {
 			orphanDTO.setNationality("");
 		}
 		return orphanDTO;
+	}
+
+	public void checkReceiptDetailsSequence() {
+		log.info("######## checkReceiptDetailsSequence ###########");
+		Long maxReceiptId = receiptDetailsRepository.getMaxReceiptDetailId();
+		Long currentSequenceValue = receiptDetailsRepository.getReceiptDetailsSequenceCurrentValue();
+		Long difference = maxReceiptId - currentSequenceValue;
+		log.info("######## maxReceiptId: " + maxReceiptId);
+		log.info("######## currentSequenceValue: " + currentSequenceValue);
+		log.info("######## difference: " + difference);
+		if (currentSequenceValue < maxReceiptId) {
+			difference = difference + 1;
+			for (int i = 0; i < difference; i++) {
+				Long nextSequenceValue = receiptDetailsRepository.getReceiptDetailsSequenceNextValue();
+				log.info("######## nextSequenceValue: " + nextSequenceValue);
+			}
+		} else {
+			log.info("######## SEQUENCE MATCHES MAX ID >>> NO ACTION REQUIRED ###########");
+		}
 	}
 
 }

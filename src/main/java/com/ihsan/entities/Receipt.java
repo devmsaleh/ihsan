@@ -30,7 +30,7 @@ import org.hibernate.annotations.GenericGenerator;
 public class Receipt {
 
 	@Id
-	@GenericGenerator(name = "receipt_id_generator", strategy = "com.ihsan.entities.ReceiptIdGenerator")
+	@GenericGenerator(name = "receipt_id_generator", strategy = "com.ihsan.entities.ids.ReceiptIdGenerator")
 	@GeneratedValue(generator = "receipt_id_generator")
 	// @GeneratedValue(strategy = GenerationType.SEQUENCE, generator =
 	// "tm_receipts_seq")
@@ -98,6 +98,9 @@ public class Receipt {
 
 	@Column(name = "NOTES", columnDefinition = "nvarchar2 (150)")
 	private String notes;
+
+	@Column(name = "IS_TAWASUL_APP")
+	private boolean tawasulApp = true;
 
 	public String getNotes() {
 		return notes;
@@ -256,6 +259,14 @@ public class Receipt {
 
 	public void setStatus(Integer status) {
 		this.status = status;
+	}
+
+	public boolean isTawasulApp() {
+		return tawasulApp;
+	}
+
+	public void setTawasulApp(boolean tawasulApp) {
+		this.tawasulApp = tawasulApp;
 	}
 
 }

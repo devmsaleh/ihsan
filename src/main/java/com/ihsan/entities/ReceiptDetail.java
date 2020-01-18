@@ -24,6 +24,9 @@ import javax.persistence.TemporalType;
 public class ReceiptDetail {
 
 	@Id
+	// @GenericGenerator(name = "receiptDetail_id_generator", strategy =
+	// "com.ihsan.entities.ids.ReceiptDetailsIdGenerator")
+	// @GeneratedValue(generator = "receiptDetail_id_generator")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tm_receipt_details_seq")
 	@SequenceGenerator(sequenceName = "tm_receipt_details_seq", allocationSize = 1, name = "tm_receipt_details_seq")
 	@Column(name = "RECEIPT_DETAIL_CODE", unique = true)
@@ -150,6 +153,9 @@ public class ReceiptDetail {
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "SC_PROJECT_ID")
 	private OldProject oldProject;
+
+	@Column(name = "IS_TAWASUL_APP")
+	private boolean tawasulApp = true;
 
 	public BigInteger getId() {
 		return id;
@@ -445,6 +451,14 @@ public class ReceiptDetail {
 
 	public void setCouponId(BigInteger couponId) {
 		this.couponId = couponId;
+	}
+
+	public boolean isTawasulApp() {
+		return tawasulApp;
+	}
+
+	public void setTawasulApp(boolean tawasulApp) {
+		this.tawasulApp = tawasulApp;
 	}
 
 }

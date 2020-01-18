@@ -1,4 +1,4 @@
-package com.ihsan.entities;
+package com.ihsan.entities.ids;
 
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -29,7 +29,6 @@ public class ReceiptIdGenerator implements IdentifierGenerator {
 
 			if (rs.next()) {
 				long id = rs.getLong(1);
-				logger.info("########## CUSTOM ID GENERATOR,id: " + id + " ###############");
 				return new BigInteger(String.valueOf(id + 1));
 			}
 		} catch (SQLException e) {

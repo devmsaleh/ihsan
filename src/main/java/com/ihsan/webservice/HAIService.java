@@ -303,6 +303,8 @@ public class HAIService extends HAIServiceBase {
 				return new ServiceResponse(errorCode, errorCodeRepository, lang);
 			}
 
+			utilsService.checkReceiptDetailsSequence();
+
 			Receipt receipt = convertReceipDTOToReceipt(receiptDTO);
 			receipt = utilsService.createReceipt(receipt);
 			ReceiptPrintDTO receiptPrintDTO = getReceiptPrint(receipt, lang, true);
