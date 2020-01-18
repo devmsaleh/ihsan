@@ -759,7 +759,7 @@ public class HAIService extends HAIServiceBase {
 		try {
 
 			StringBuffer messageTextStringBuffer = new StringBuffer();
-			messageTextStringBuffer.append("نشكركم على تبرعكم بمبلغ").append(totalDonatedAmount).append(" ")
+			messageTextStringBuffer.append("نشكركم على تبرعكم بمبلغ").append(" ").append(totalDonatedAmount).append(" ")
 					.append("درهم").append("\n");
 			messageTextStringBuffer.append("رقم المعاملة : ").append(receiptNumber).append("\n");
 			messageTextStringBuffer.append("مع تحيات جمعية الاحسان الخيرية").append("\n");
