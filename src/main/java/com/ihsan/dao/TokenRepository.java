@@ -12,16 +12,17 @@ import com.ihsan.entities.UserToken;
 
 public interface TokenRepository extends JpaRepository<UserToken, String> {
 
-    @Modifying(clearAutomatically = true)
-    @Query(value = "update UserToken set expiryDate=:expirationDate where token=:token")
-    int updateTokenExpirationDate(@Param("token") String token, @Param("expirationDate") Date expirationDate);
+	@Modifying(clearAutomatically = true)
+	@Query(value = "update UserToken set expiryDate=:expirationDate where token=:token")
+	int updateTokenExpirationDate(@Param("token") String token, @Param("expirationDate") Date expirationDate);
 
-    @Modifying(clearAutomatically = true)
-    @Query(value = "delete from UserToken where expiryDate <=:givenDate")
-    @Transactional
-    int deleteOldTokens(@Param("givenDate") Date givenDate);
+	@Modifying(clearAutomatically = true)
+	@Query(value = "delete from UserToken where expiryDate <=:givenDate")
+	@Transactional
+	int deleteOldTokens(@Param("givenDate") Date givenDate);
 
-    @Query("select count(*) from UserToken where token=:token and expiryDate > :date")
-    long isValidToken(@Param("token") String token, @Param("date") Date date);
+	@Query("select count(*) from UserToken where token=:token and expiryDate > :date")
+	long isValidToken(@Param("token") String token, @Param("date") Date date);
 
+	UserToken findByToken(String token);
 }

@@ -1,5 +1,6 @@
 package com.ihsan.webservice;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ihsan.constants.ErrorCodeEnum;
 import com.ihsan.entities.Delegate;
+import com.ihsan.entities.UserToken;
 import com.ihsan.entities.charityBoxes.Attachment;
 import com.ihsan.entities.charityBoxes.CharityBox;
 import com.ihsan.entities.charityBoxes.CharityBoxStatus;
@@ -384,7 +386,7 @@ public class CharityBoxWebService extends HAIServiceBase {
 			GeneralResponseDTO generalResponseDTO = new GeneralResponseDTO();
 			// here we add the new regions/locations/sub locations
 			CharityBoxTransfer charityBoxTransfer = convertCharityBoxTransferDTOToEntity(charityBoxTransferDTO);
-			CharityBoxTransferDetail detail = charityBoxTransfer.getCharityBoxTransferDetail();
+			CharityBoxTransferDetail charityBoxTransferDetail = charityBoxTransfer.getCharityBoxTransferDetail();
 			if (!charityBoxTransfer.getErrorCode().getErrorCode()
 					.equalsIgnoreCase(ErrorCodeEnum.SUCCESS_CODE.getErrorCode())) {
 				return new ServiceResponse(charityBoxTransfer.getErrorCode(), generalResponseDTO, errorCodeRepository,
@@ -400,7 +402,7 @@ public class CharityBoxWebService extends HAIServiceBase {
 
 			// set charityBoxTransfer sublocation
 			if (actionType.equals(CharityBoxActionTypeEnum.INSERT.getValue())) {
-				charityBox.setSubLocation(detail.getSubLocation());
+				charityBox.setSubLocation(charityBoxTransferDetail.getSubLocation());
 			} else {
 				if (debugEnabled)
 					logger.info(
@@ -410,7 +412,7 @@ public class CharityBoxWebService extends HAIServiceBase {
 					return new ServiceResponse(ErrorCodeEnum.CHARITYBOX_MUST_BE_ASSIGNED_TO_SUBLOCATION,
 							errorCodeRepository, lang);
 				}
-				detail.setSubLocation(new SubLocation(charityBox.getSubLocationId()));
+				charityBoxTransferDetail.setSubLocation(new SubLocation(charityBox.getSubLocationId()));
 			}
 
 			charityBoxTransferRepository.save(charityBoxTransfer);
@@ -535,7 +537,11 @@ public class CharityBoxWebService extends HAIServiceBase {
 			@HeaderParam("lang") String lang) throws Exception {
 		try {
 
-			Location location = createNewLocation(locationDTO);
+			UserToken userToken = userTokenRepository.findByToken(token);
+			BigInteger delegateId = null;
+			if (userToken != null)
+				delegateId = userToken.getDelegateId();
+			Location location = createNewLocation(locationDTO, delegateId);
 			if (!location.isAlreadyExist())
 				return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE,
 						new GeneralResponseDTO(location.getId().toString()), errorCodeRepository, lang);
@@ -556,7 +562,11 @@ public class CharityBoxWebService extends HAIServiceBase {
 			@HeaderParam("lang") String lang) throws Exception {
 		try {
 
-			SubLocation subLocation = createNewSubLocation(subLocationDTO, null);
+			UserToken userToken = userTokenRepository.findByToken(token);
+			BigInteger delegateId = null;
+			if (userToken != null)
+				delegateId = userToken.getDelegateId();
+			SubLocation subLocation = createNewSubLocation(subLocationDTO, null, delegateId);
 			if (!subLocation.isAlreadyExist())
 				return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE,
 						new GeneralResponseDTO(subLocation.getId().toString()), errorCodeRepository, lang);
@@ -596,8 +606,20 @@ public class CharityBoxWebService extends HAIServiceBase {
 			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
 		try {
 
-			List<Emarah> emarahList = emarahRepository.getEmarahList();
-			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, emarahList, errorCodeRepository, lang);
+			List<Emarah> allEmarahList = emarahRepository.getEmarahList();
+			List<Emarah> emarahListFinal = new ArrayList<Emarah>();
+			Delegate delegate = delegateRepository.findOne(delegateId);
+			if (!delegate.isAdmin()) {
+				List<BigDecimal> authorizedList = delegateRepository.getAutorizedEmaratesList(delegateId);
+				for (BigDecimal emarahId : authorizedList) {
+					Emarah emarah = findEmarahById(allEmarahList, emarahId.toBigInteger());
+					if (emarah != null)
+						emarahListFinal.add(emarah);
+				}
+			} else {
+				emarahListFinal.addAll(allEmarahList);
+			}
+			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, emarahListFinal, errorCodeRepository, lang);
 		} catch (Exception e) {
 			logger.error("Exception in getEmarahList webservice: ", e);
 			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);

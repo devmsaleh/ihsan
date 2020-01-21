@@ -74,6 +74,10 @@ public class CharityBoxTransfer {
 	@Column(name = "IS_TAWASUL_APP")
 	private boolean tawasulApp = true;
 
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "SUB_LOCATION_ID")
+	private SubLocation subLocation;
+
 	public CharityBoxTransfer() {
 
 	}
@@ -172,6 +176,14 @@ public class CharityBoxTransfer {
 
 	public void setTawasulApp(boolean tawasulApp) {
 		this.tawasulApp = tawasulApp;
+	}
+
+	public SubLocation getSubLocation() {
+		return subLocation;
+	}
+
+	public void setSubLocation(SubLocation subLocation) {
+		this.subLocation = subLocation;
 	}
 
 }

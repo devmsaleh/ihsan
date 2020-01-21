@@ -1,6 +1,7 @@
 package com.ihsan.entities.charityBoxes;
 
 import java.math.BigInteger;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,9 +11,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
+
+import com.ihsan.entities.Delegate;
 
 @Entity
 @Table(name = "TM_LOCATIONS")
@@ -51,7 +56,21 @@ public class Location {
 	private String mobile;
 
 	@Column(name = "STATUS")
-	private String status;
+	private String status = "A";
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "CREATION_DATE")
+	private Date creationDate = new Date();
+
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "CREATED_BY")
+	private Delegate createdBy;
+
+	@Column(name = "IS_TAWASUL_APP")
+	private boolean tawasulApp = true;
+
+	@Column(name = "LOCATION_NUMBER")
+	private String number;
 
 	@Transient
 	private boolean alreadyExist;
@@ -147,6 +166,38 @@ public class Location {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public Delegate getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(Delegate createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public boolean isTawasulApp() {
+		return tawasulApp;
+	}
+
+	public void setTawasulApp(boolean tawasulApp) {
+		this.tawasulApp = tawasulApp;
+	}
+
+	public String getNumber() {
+		return number;
+	}
+
+	public void setNumber(String number) {
+		this.number = number;
 	}
 
 }

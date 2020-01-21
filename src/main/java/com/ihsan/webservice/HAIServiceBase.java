@@ -70,6 +70,7 @@ import com.ihsan.entities.charityBoxes.CharityBox;
 import com.ihsan.entities.charityBoxes.CharityBoxActionType;
 import com.ihsan.entities.charityBoxes.CharityBoxTransfer;
 import com.ihsan.entities.charityBoxes.CharityBoxTransferDetail;
+import com.ihsan.entities.charityBoxes.Emarah;
 import com.ihsan.entities.charityBoxes.Location;
 import com.ihsan.entities.charityBoxes.Region;
 import com.ihsan.entities.charityBoxes.RouteDetail;
@@ -202,6 +203,9 @@ public class HAIServiceBase {
 
 	@Autowired
 	protected FirstTitleRepository firstTitleRepository;
+
+	@Autowired
+	protected TokenRepository userTokenRepository;
 
 	@Value("${debugEnabled}")
 	protected boolean debugEnabled;
@@ -791,9 +795,11 @@ public class HAIServiceBase {
 		return region;
 	}
 
-	public Location createNewLocation(LocationDTO locationDTO) {
+	public Location createNewLocation(LocationDTO locationDTO, BigInteger delegateId) {
 		Location location = new Location(locationDTO.getName().trim(), locationDTO.getRegionId());
 		location.setAddress(locationDTO.getAddress());
+		if (delegateId != null)
+			location.setCreatedBy(new Delegate(delegateId));
 		location.setMobile(locationDTO.getMobile());
 		location.setLocationLatitude(locationDTO.getLocationLatitude());
 		location.setLocationLongitude(locationDTO.getLocationLongitude());
@@ -814,9 +820,13 @@ public class HAIServiceBase {
 		return location;
 	}
 
-	public SubLocation createNewSubLocation(SubLocationDTO subLocationDTO, String actionType) {
+	public SubLocation createNewSubLocation(SubLocationDTO subLocationDTO, String actionType, BigInteger delegateId) {
 		SubLocation subLocation = new SubLocation(subLocationDTO.getName().trim(), subLocationDTO.getLocationId(),
 				subLocationDTO.getLocationLatitude(), subLocationDTO.getLocationLongitude());
+		if (delegateId != null) {
+			subLocation.setCreatedBy(new Delegate(delegateId));
+			subLocation.setDelegate(new Delegate(delegateId));
+		}
 		subLocation.setMobile(subLocationDTO.getMobile());
 		subLocation.setAddress(subLocationDTO.getAddress());
 		List<SubLocation> resultList = subLocationRepository.findByNameAndLocationId(subLocation.getName(),
@@ -861,7 +871,8 @@ public class HAIServiceBase {
 				&& !charityBoxTransferDTO.getNewLocationDTO().getName().equalsIgnoreCase("string")) {
 			if (charityBoxTransferDTO.getNewLocationDTO().getRegionId() == null)
 				charityBoxTransferDTO.getNewLocationDTO().setRegionId(charityBoxTransferDTO.getRegionId());
-			Location location = createNewLocation(charityBoxTransferDTO.getNewLocationDTO());
+			Location location = createNewLocation(charityBoxTransferDTO.getNewLocationDTO(),
+					charityBoxTransferDTO.getDelegateId());
 			if (location != null)
 				charityBoxTransferDTO.setLocationId(location.getId());
 		}
@@ -878,7 +889,7 @@ public class HAIServiceBase {
 			if (charityBoxTransferDTO.getNewSubLocationDTO().getLocationId() == null)
 				charityBoxTransferDTO.getNewSubLocationDTO().setLocationId(charityBoxTransferDTO.getLocationId());
 			SubLocation subLocation = createNewSubLocation(charityBoxTransferDTO.getNewSubLocationDTO(),
-					charityBoxTransferDTO.getActionType().getValue());
+					charityBoxTransferDTO.getActionType().getValue(), charityBoxTransferDTO.getDelegateId());
 			if (subLocation != null) {
 				if (subLocation.getErrorCode() != null) {
 					charityBoxTransfer.setErrorCode(subLocation.getErrorCode());
@@ -903,8 +914,10 @@ public class HAIServiceBase {
 		if (!GeneralUtils.isEmptyNumber(charityBoxTransferDTO.getNewCharityBoxId()))
 			detail.setNewCharityBox(new CharityBox(charityBoxTransferDTO.getNewCharityBoxId()));
 		detail.setNotes(charityBoxTransferDTO.getNotes());
-		if (!GeneralUtils.isEmptyNumber(charityBoxTransferDTO.getSubLocationId()))
+		if (!GeneralUtils.isEmptyNumber(charityBoxTransferDTO.getSubLocationId())) {
 			detail.setSubLocation(new SubLocation(charityBoxTransferDTO.getSubLocationId()));
+			charityBoxTransfer.setSubLocation(detail.getSubLocation());
+		}
 		detail.setSupervisor(new Delegate(charityBoxTransferDTO.getDelegateId()));
 		if (!GeneralUtils.isEmptyNumber(charityBoxTransferDTO.getSafetyCaseId()))
 			detail.setSafetyCase(charityBoxTransferDTO.getSafetyCaseId());
@@ -1000,6 +1013,17 @@ public class HAIServiceBase {
 					orphan.getCaseNumber(), genderStr));
 		}
 		return list;
+	}
+
+	public Emarah findEmarahById(List<Emarah> list, BigInteger emarahId) {
+		if (list == null)
+			return null;
+		for (Emarah emarah : list) {
+			if (new BigInteger(emarah.getId()).compareTo(emarahId) == 0) {
+				return emarah;
+			}
+		}
+		return null;
 	}
 
 }
