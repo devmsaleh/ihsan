@@ -811,6 +811,9 @@ public class HAIServiceBase {
 			location.setAlreadyExist(true);
 			logger.info("##### NEW LOCATION ALREADY EXISTS: " + location.getId());
 		} else {
+			Long locationNumber = locationRepository.getMaxLocationNumber();
+			locationNumber = locationNumber + 1;
+			location.setNumber(locationNumber.toString());
 			locationRepository.save(location);
 			if (debugEnabled)
 				logger.info("##### CREATED NEW LOCATION: " + location.getId());
@@ -858,6 +861,9 @@ public class HAIServiceBase {
 	public CharityBoxTransfer convertCharityBoxTransferDTOToEntity(CharityBoxTransferDTO charityBoxTransferDTO) {
 
 		CharityBoxTransfer charityBoxTransfer = new CharityBoxTransfer();
+		Long transferNumber = charityBoxTransferRepository.getMaxTransferNumber();
+		transferNumber = transferNumber + 1;
+		charityBoxTransfer.setTransferNumber(new BigInteger(transferNumber.toString()));
 		CharityBoxTransferDetail detail = new CharityBoxTransferDetail();
 		if (charityBoxTransferDTO.getNewRegionDTO() != null
 				&& StringUtils.isNotBlank(charityBoxTransferDTO.getNewRegionDTO().getName())
@@ -901,6 +907,7 @@ public class HAIServiceBase {
 
 		}
 		detail.setActionType(new CharityBoxActionType(charityBoxTransferDTO.getActionType().getValue()));
+		detail.setTransferType(new BigInteger(detail.getActionType().getId()));
 		detail.setCharityBox(new CharityBox(charityBoxTransferDTO.getCharityBoxId()));
 		if (charityBoxTransferDTO.getActionType().getValue().equals(CharityBoxActionTypeEnum.INSERT.getValue())) {
 			detail.setNewCharityBox(new CharityBox(charityBoxTransferDTO.getCharityBoxId()));

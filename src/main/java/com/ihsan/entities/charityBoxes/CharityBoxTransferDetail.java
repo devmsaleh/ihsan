@@ -86,6 +86,9 @@ public class CharityBoxTransferDetail {
 	@Column(name = "IS_TAWASUL_APP")
 	private boolean tawasulApp = true;
 
+	@Column(name = "TRANSFER_TYPE")
+	private BigInteger transferType;
+
 	public BigInteger getSafetyCase() {
 		return safetyCase;
 	}
@@ -196,6 +199,14 @@ public class CharityBoxTransferDetail {
 
 	public void setTawasulApp(boolean tawasulApp) {
 		this.tawasulApp = tawasulApp;
+	}
+
+	public BigInteger getTransferType() {
+		return transferType;
+	}
+
+	public void setTransferType(BigInteger transferType) {
+		this.transferType = transferType;
 	}
 
 }

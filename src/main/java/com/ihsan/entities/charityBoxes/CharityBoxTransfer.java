@@ -8,7 +8,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -61,8 +60,7 @@ public class CharityBoxTransfer {
 	@Column(name = "NOTES")
 	private String notes;
 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "TRANSFER_NUMBER", insertable = false, updatable = false)
+	@Column(name = "TRANSFER_NUMBER")
 	private BigInteger transferNumber;
 
 	@OneToOne(mappedBy = "charityBoxTransfer", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
