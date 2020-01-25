@@ -468,6 +468,7 @@ public class HAIServiceBase {
 		couponDTO.setPriority(coupon.getPriority());
 		couponDTO.setQrCode(coupon.getQrCode());
 		couponDTO.setValue(coupon.getValue());
+		couponDTO.setVersion(coupon.getVersion());
 		if (coupon.getType() == CouponTypeEnum.YEARLY.getValue()) {
 			couponDTO.setType(CouponTypeEnum.YEARLY);
 		} else if (coupon.getType() == CouponTypeEnum.QUICK_PAY.getValue()) {

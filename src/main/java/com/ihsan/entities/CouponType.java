@@ -48,6 +48,9 @@ public class CouponType {
 	@Column(name = "YEARLYPROJECT")
 	private Integer type;
 
+	@Column(name = "COUPON_VERSION")
+	private Integer version;
+
 	public CouponType() {
 
 	}
@@ -156,6 +159,16 @@ public class CouponType {
 
 	public void setType(Integer type) {
 		this.type = type;
+	}
+
+	public Integer getVersion() {
+		if (version == null)
+			version = 1;
+		return version;
+	}
+
+	public void setVersion(Integer version) {
+		this.version = version;
 	}
 
 }

@@ -22,6 +22,8 @@ public class CouponTypeDTO {
 
 	private boolean favorite;
 
+	private int version;
+
 	public String getId() {
 		return id;
 	}
@@ -92,6 +94,14 @@ public class CouponTypeDTO {
 
 	public void setFavorite(boolean favorite) {
 		this.favorite = favorite;
+	}
+
+	public int isVersion() {
+		return version;
+	}
+
+	public void setVersion(int version) {
+		this.version = version;
 	}
 
 }

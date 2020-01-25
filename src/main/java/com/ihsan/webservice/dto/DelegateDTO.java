@@ -20,6 +20,7 @@ public class DelegateDTO {
 	private BigDecimal amountNotCollected = new BigDecimal(0);
 	private boolean charityBox;
 	private boolean coupon;
+	private boolean updateCoupons;
 
 	public String getId() {
 		return id;
@@ -147,6 +148,14 @@ public class DelegateDTO {
 
 	public void setCoupon(boolean coupon) {
 		this.coupon = coupon;
+	}
+
+	public boolean isUpdateCoupons() {
+		return updateCoupons;
+	}
+
+	public void setUpdateCoupons(boolean updateCoupons) {
+		this.updateCoupons = updateCoupons;
 	}
 
 }
