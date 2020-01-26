@@ -96,7 +96,7 @@ public class CouponTypeDTO {
 		this.favorite = favorite;
 	}
 
-	public int isVersion() {
+	public int getVersion() {
 		return version;
 	}
 
