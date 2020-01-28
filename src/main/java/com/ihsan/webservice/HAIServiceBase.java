@@ -407,6 +407,7 @@ public class HAIServiceBase {
 		ReceiptPayment receiptPayment = new ReceiptPayment();
 		receiptPayment.setReceipt(receipt);
 		receiptPayment.setCashValue(receipt.getTotalAmount());
+		receiptPayment.setPaymentType(receiptDTO.getPaymentType().getValue());
 		if (receiptDTO.getPaymentType() == PaymentTypeEnum.CHEQUE) {
 			// receiptPayment.setBankCode(paymentDTO.getBankCode());
 			receiptPayment.setChequeDate(GeneralUtils.parseDate(paymentDTO.getChequeDate()));
@@ -515,8 +516,12 @@ public class HAIServiceBase {
 		receiptDetailDTO.setAmount(receiptDetail.getAmount());
 
 		receiptDetailDTO.setName(receiptDetail.getName());
-		if (receiptDetail.getReceiptId() != null)
+		if (receiptDetail.getReceiptId() != null) {
 			receiptDetailDTO.setReceiptId(receiptDetail.getReceiptId().toString());
+			Receipt receipt = receiptRepository.findOne(receiptDetail.getReceiptId());
+			if (receipt != null)
+				receiptDetailDTO.setReceiptNumber(receipt.getNumber());
+		}
 		receiptDetailDTO.setDate(GeneralUtils.formateDateTime(receiptDetail.getCreationDate(), lang));
 		if (StringUtils.isBlank(receiptDetailDTO.getName())) {
 			receiptDetailDTO.setName(findReceiptDetailName(receiptDetail));

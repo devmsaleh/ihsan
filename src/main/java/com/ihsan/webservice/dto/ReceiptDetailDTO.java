@@ -7,6 +7,7 @@ import com.ihsan.entities.PaymentTypeEnum;
 public class ReceiptDetailDTO {
 
 	private String receiptId;
+	private String receiptNumber;
 	private String name;
 	private BigDecimal amount;
 	private String date;
@@ -107,6 +108,14 @@ public class ReceiptDetailDTO {
 
 	public void setSponsorFor(String sponsorFor) {
 		this.sponsorFor = sponsorFor;
+	}
+
+	public String getReceiptNumber() {
+		return receiptNumber;
+	}
+
+	public void setReceiptNumber(String receiptNumber) {
+		this.receiptNumber = receiptNumber;
 	}
 
 }

@@ -115,6 +115,8 @@ public class UtilsService {
 	public Receipt createReceipt(Receipt receipt) {
 		receiptRepository.save(receipt);
 		Long receiptNumber = receiptRepository.getMaxReceiptNumber();
+		if (receiptNumber == null)
+			receiptNumber = 0l;
 		receiptNumber = receiptNumber + 1;
 		receipt.setNumber(String.valueOf(receiptNumber));
 		return receiptRepository.save(receipt);
@@ -387,7 +389,11 @@ public class UtilsService {
 	public void checkReceiptDetailsSequence() {
 		log.info("######## checkReceiptDetailsSequence ###########");
 		Long maxReceiptId = receiptDetailsRepository.getMaxReceiptDetailId();
+		if (maxReceiptId == null)
+			maxReceiptId = 0l;
 		Long currentSequenceValue = receiptDetailsRepository.getReceiptDetailsSequenceCurrentValue();
+		if (currentSequenceValue == null)
+			currentSequenceValue = 0l;
 		Long difference = maxReceiptId - currentSequenceValue;
 		log.info("######## maxReceiptId: " + maxReceiptId);
 		log.info("######## currentSequenceValue: " + currentSequenceValue);

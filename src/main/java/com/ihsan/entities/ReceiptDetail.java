@@ -53,7 +53,7 @@ public class ReceiptDetail {
 	@Column(name = "RECEIPT_CODE", insertable = false, updatable = false)
 	private BigInteger receiptId;
 
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinColumn(name = "RECEIPT_CODE")
 	private Receipt receipt;
 
