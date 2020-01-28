@@ -50,6 +50,7 @@ import com.ihsan.entities.ProjectStudy;
 import com.ihsan.entities.Receipt;
 import com.ihsan.entities.ReceiptDetail;
 import com.ihsan.entities.UserToken;
+import com.ihsan.enums.PermissionTypeEnum;
 import com.ihsan.service.CacheService;
 import com.ihsan.util.GeneralUtils;
 import com.ihsan.webservice.dto.BankDTO;
@@ -101,10 +102,19 @@ public class HAIService extends HAIServiceBase {
 			} else if (delegate.getExpiryDate().before(new Date())) {
 				return new ServiceResponse(ErrorCodeEnum.USER_EXPIRED, errorCodeRepository, lang);
 			}
+			List<Integer> permissionsList = delegateRepository.getDelegatePermissions(delegate.getId().toString());
+			logger.info("########### delegateId: " + delegate.getId() + " HAS PERMISSIONS: " + permissionsList);
+			if (permissionsList == null || permissionsList.size() == 0) {
+				return new ServiceResponse(ErrorCodeEnum.USER_DISABLED, errorCodeRepository, lang);
+			}
 			UserToken token = new UserToken(delegate.getId());
 			tokenRepository.save(token);
 			delegate.setToken(token.getToken());
 			DelegateDTO delegateDTO = convertDelegateToDTO(delegate);
+			delegateDTO.setCharityBox(permissionsList.contains(PermissionTypeEnum.CHARITY_BOX.getValue()));
+			delegateDTO.setCoupon(permissionsList.contains(PermissionTypeEnum.COUPON.getValue()));
+			delegateDTO.setSponsorship(permissionsList.contains(PermissionTypeEnum.SPONSORSHIP.getValue()));
+			delegateDTO.setProject(permissionsList.contains(PermissionTypeEnum.PROJECT.getValue()));
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, delegateDTO, errorCodeRepository, lang);
 		} catch (Exception e) {
 			logger.error("Exception in login webservice: ", e);
@@ -128,10 +138,19 @@ public class HAIService extends HAIServiceBase {
 			} else if (delegate.getExpiryDate().before(new Date())) {
 				return new ServiceResponse(ErrorCodeEnum.USER_EXPIRED, errorCodeRepository, lang);
 			}
+			List<Integer> permissionsList = delegateRepository.getDelegatePermissions(delegate.getId().toString());
+			logger.info("########### delegateId: " + delegate.getId() + " HAS PERMISSIONS: " + permissionsList);
+			if (permissionsList == null || permissionsList.size() == 0) {
+				return new ServiceResponse(ErrorCodeEnum.USER_DISABLED, errorCodeRepository, lang);
+			}
 			UserToken token = new UserToken(delegate.getId());
 			tokenRepository.save(token);
 			delegate.setToken(token.getToken());
 			DelegateDTO delegateDTO = convertDelegateToDTO(delegate);
+			delegateDTO.setCharityBox(permissionsList.contains(PermissionTypeEnum.CHARITY_BOX.getValue()));
+			delegateDTO.setCoupon(permissionsList.contains(PermissionTypeEnum.COUPON.getValue()));
+			delegateDTO.setSponsorship(permissionsList.contains(PermissionTypeEnum.SPONSORSHIP.getValue()));
+			delegateDTO.setProject(permissionsList.contains(PermissionTypeEnum.PROJECT.getValue()));
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, delegateDTO, errorCodeRepository, lang);
 		} catch (Exception e) {
 			logger.error("Exception in loginLocation webservice: ", e);
@@ -211,7 +230,7 @@ public class HAIService extends HAIServiceBase {
 			@HeaderParam("lang") String lang) throws Exception {
 		try {
 
-			List<CouponType> couponsList = couponRepository.findByNameStartingWithAndStatus(name, "A");
+			List<CouponType> couponsList = couponRepository.findByNameStartingWithAndStatusCode(name, 0);
 			logger.info("###### findCoupons,couponsList: " + couponsList.size());
 			List<CouponTypeDTO> resultList = convertCouponListToDTO(couponsList);
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, resultList, errorCodeRepository, lang);

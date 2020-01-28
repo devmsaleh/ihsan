@@ -13,7 +13,7 @@ import com.ihsan.util.Constants;
 
 public interface CouponTypeRepository extends JpaRepository<CouponType, BigInteger> {
 
-	@Query("from CouponType where status='A' and expiryDate > CURRENT_DATE order by priority")
+	@Query("from CouponType where statusCode=0 and expiryDate > CURRENT_DATE order by priority")
 	// @Cacheable(cacheNames = Constants.CACHE_NAME_COUPONS_TYPES)
 	List<CouponType> getCoupons();
 
@@ -31,6 +31,6 @@ public interface CouponTypeRepository extends JpaRepository<CouponType, BigInteg
 	@CacheEvict(cacheNames = Constants.CACHE_NAME_COUPON_IMAGE, allEntries = true)
 	void clearCouponImageCache();
 
-	List<CouponType> findByNameStartingWithAndStatus(String name, String status);
+	List<CouponType> findByNameStartingWithAndStatusCode(String name, int statusCode);
 
 }

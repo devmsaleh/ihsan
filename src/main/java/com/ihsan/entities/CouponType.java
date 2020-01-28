@@ -51,6 +51,9 @@ public class CouponType {
 	@Column(name = "COUPON_VERSION")
 	private Integer version;
 
+	@Column(name = "STATUS_CODE")
+	private Integer statusCode = 0; // 0 = active , 1 not active
+
 	public CouponType() {
 
 	}
@@ -169,6 +172,16 @@ public class CouponType {
 
 	public void setVersion(Integer version) {
 		this.version = version;
+	}
+
+	public Integer getStatusCode() {
+		if (statusCode == null)
+			statusCode = 0;
+		return statusCode;
+	}
+
+	public void setStatusCode(Integer statusCode) {
+		this.statusCode = statusCode;
 	}
 
 }

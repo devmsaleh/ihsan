@@ -20,6 +20,8 @@ public class DelegateDTO {
 	private BigDecimal amountNotCollected = new BigDecimal(0);
 	private boolean charityBox;
 	private boolean coupon;
+	private boolean sponsorship;
+	private boolean project;
 	private boolean updateCoupons;
 
 	public String getId() {
@@ -156,6 +158,22 @@ public class DelegateDTO {
 
 	public void setUpdateCoupons(boolean updateCoupons) {
 		this.updateCoupons = updateCoupons;
+	}
+
+	public boolean isSponsorship() {
+		return sponsorship;
+	}
+
+	public void setSponsorship(boolean sponsorship) {
+		this.sponsorship = sponsorship;
+	}
+
+	public boolean isProject() {
+		return project;
+	}
+
+	public void setProject(boolean project) {
+		this.project = project;
 	}
 
 }

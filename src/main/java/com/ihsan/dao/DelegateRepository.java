@@ -17,4 +17,7 @@ public interface DelegateRepository extends JpaRepository<Delegate, BigInteger> 
 
 	@Query(value = "select distinct CITY_ID from TM_DELEGATE_PRIVILEGES where DELEGATE_ID=:delegateId", nativeQuery = true)
 	List<BigDecimal> getAutorizedEmaratesList(@Param("delegateId") BigInteger delegateId);
+
+	@Query(value = "select PROJECTNAME from POSPERMISSIONS where DELEGATEID:delegateId and STATUS=0", nativeQuery = true)
+	List<Integer> getDelegatePermissions(@Param("delegateId") String delegateId);
 }
