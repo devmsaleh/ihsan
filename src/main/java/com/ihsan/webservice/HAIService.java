@@ -102,7 +102,7 @@ public class HAIService extends HAIServiceBase {
 			} else if (delegate.getExpiryDate().before(new Date())) {
 				return new ServiceResponse(ErrorCodeEnum.USER_EXPIRED, errorCodeRepository, lang);
 			}
-			List<Integer> permissionsList = delegateRepository.getDelegatePermissions(delegate.getId().toString());
+			List<BigDecimal> permissionsList = delegateRepository.getDelegatePermissions(delegate.getId().toString());
 			logger.info("########### delegateId: " + delegate.getId() + " HAS PERMISSIONS: " + permissionsList);
 			if (permissionsList == null || permissionsList.size() == 0) {
 				return new ServiceResponse(ErrorCodeEnum.USER_DISABLED, errorCodeRepository, lang);
@@ -111,15 +111,25 @@ public class HAIService extends HAIServiceBase {
 			tokenRepository.save(token);
 			delegate.setToken(token.getToken());
 			DelegateDTO delegateDTO = convertDelegateToDTO(delegate);
-			delegateDTO.setCharityBox(permissionsList.contains(PermissionTypeEnum.CHARITY_BOX.getValue()));
-			delegateDTO.setCoupon(permissionsList.contains(PermissionTypeEnum.COUPON.getValue()));
-			delegateDTO.setSponsorship(permissionsList.contains(PermissionTypeEnum.SPONSORSHIP.getValue()));
-			delegateDTO.setProject(permissionsList.contains(PermissionTypeEnum.PROJECT.getValue()));
+			delegateDTO.setCharityBox(isUserHasPermission(permissionsList, PermissionTypeEnum.CHARITY_BOX));
+			delegateDTO.setCoupon(isUserHasPermission(permissionsList, PermissionTypeEnum.COUPON));
+			delegateDTO.setSponsorship(isUserHasPermission(permissionsList, PermissionTypeEnum.SPONSORSHIP));
+			delegateDTO.setProject(isUserHasPermission(permissionsList, PermissionTypeEnum.PROJECT));
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, delegateDTO, errorCodeRepository, lang);
 		} catch (Exception e) {
 			logger.error("Exception in login webservice: ", e);
 			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
 		}
+	}
+
+	private boolean isUserHasPermission(List<BigDecimal> permissionsList, PermissionTypeEnum permissionTypeEnum) {
+		if (permissionsList == null || permissionsList.size() == 0)
+			return false;
+		for (BigDecimal permissionValue : permissionsList) {
+			if (permissionValue.intValue() == permissionTypeEnum.getValue())
+				return true;
+		}
+		return false;
 	}
 
 	@POST
@@ -138,7 +148,7 @@ public class HAIService extends HAIServiceBase {
 			} else if (delegate.getExpiryDate().before(new Date())) {
 				return new ServiceResponse(ErrorCodeEnum.USER_EXPIRED, errorCodeRepository, lang);
 			}
-			List<Integer> permissionsList = delegateRepository.getDelegatePermissions(delegate.getId().toString());
+			List<BigDecimal> permissionsList = delegateRepository.getDelegatePermissions(delegate.getId().toString());
 			logger.info("########### delegateId: " + delegate.getId() + " HAS PERMISSIONS: " + permissionsList);
 			if (permissionsList == null || permissionsList.size() == 0) {
 				return new ServiceResponse(ErrorCodeEnum.USER_DISABLED, errorCodeRepository, lang);
@@ -147,10 +157,10 @@ public class HAIService extends HAIServiceBase {
 			tokenRepository.save(token);
 			delegate.setToken(token.getToken());
 			DelegateDTO delegateDTO = convertDelegateToDTO(delegate);
-			delegateDTO.setCharityBox(permissionsList.contains(PermissionTypeEnum.CHARITY_BOX.getValue()));
-			delegateDTO.setCoupon(permissionsList.contains(PermissionTypeEnum.COUPON.getValue()));
-			delegateDTO.setSponsorship(permissionsList.contains(PermissionTypeEnum.SPONSORSHIP.getValue()));
-			delegateDTO.setProject(permissionsList.contains(PermissionTypeEnum.PROJECT.getValue()));
+			delegateDTO.setCharityBox(isUserHasPermission(permissionsList, PermissionTypeEnum.CHARITY_BOX));
+			delegateDTO.setCoupon(isUserHasPermission(permissionsList, PermissionTypeEnum.COUPON));
+			delegateDTO.setSponsorship(isUserHasPermission(permissionsList, PermissionTypeEnum.SPONSORSHIP));
+			delegateDTO.setProject(isUserHasPermission(permissionsList, PermissionTypeEnum.PROJECT));
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, delegateDTO, errorCodeRepository, lang);
 		} catch (Exception e) {
 			logger.error("Exception in loginLocation webservice: ", e);

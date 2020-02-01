@@ -4,13 +4,13 @@ public enum PermissionTypeEnum {
 
 	COUPON(1), CHARITY_BOX(2), SPONSORSHIP(3), PROJECT(4);
 
-	private Integer value;
+	private int value;
 
-	public Integer getValue() {
+	public int getValue() {
 		return value;
 	}
 
-	private PermissionTypeEnum(Integer value) {
+	private PermissionTypeEnum(int value) {
 		this.value = value;
 	}
 
