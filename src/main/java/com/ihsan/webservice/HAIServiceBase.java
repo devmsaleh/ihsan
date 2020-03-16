@@ -508,11 +508,9 @@ public class HAIServiceBase {
 
 	public ReceiptDetailDTO convertReceiptDetailToDTO(ReceiptDetail receiptDetail, String lang) {
 		ReceiptDetailDTO receiptDetailDTO = new ReceiptDetailDTO();
+		receiptDetailDTO.setPaymentType(receiptDetail.getPaymentType());
 
-		if (StringUtils.isBlank(receiptDetailDTO.getPaymentType())) {
-			receiptDetailDTO.setPaymentType(receiptDetail.getReceipt().getPaymentType());
-		}
-		receiptDetailDTO.setPaymentTypeDisplay(receiptDetailDTO.getPaymentType());
+		receiptDetailDTO.setPaymentTypeDisplay(receiptDetail.getPaymentType());
 		receiptDetailDTO.setAmount(receiptDetail.getAmount());
 
 		receiptDetailDTO.setName(receiptDetail.getName());
@@ -527,7 +525,7 @@ public class HAIServiceBase {
 			receiptDetailDTO.setName(findReceiptDetailName(receiptDetail));
 		}
 		receiptDetailDTO.setTotalAmount(receiptDetailDTO.getTotalAmount().add(receiptDetailDTO.getAmount()));
-		receiptDetailDTO.setType(TransactionTypeEnum.COUPON.getValue());
+		receiptDetailDTO.setType(receiptDetail.getTransactionType());
 		return receiptDetailDTO;
 	}
 
