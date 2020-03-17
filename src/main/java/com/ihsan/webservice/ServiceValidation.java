@@ -44,7 +44,12 @@ public class ServiceValidation extends HAIServiceBase {
 	}
 
 	public ErrorCodeEnum validateReceiptPayment(ReceiptDTO receiptDTO) {
-		if (CollectionUtils.isEmpty(receiptDTO.getCouponsList())) {
+
+		if (CollectionUtils.isEmpty(receiptDTO.getCouponsList())
+				&& CollectionUtils.isEmpty(receiptDTO.getNewProjectsList())
+				&& CollectionUtils.isEmpty(receiptDTO.getOldProjectsList())
+				&& CollectionUtils.isEmpty(receiptDTO.getNewSponsorshipList())
+				&& CollectionUtils.isEmpty(receiptDTO.getOldSponsorshipList())) {
 			return ErrorCodeEnum.RECEIPT_DETAILS_REQUIRED;
 		}
 
