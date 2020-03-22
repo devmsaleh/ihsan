@@ -7,10 +7,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 @Entity
-@Table(name = "SC_PROJECT")
+@Table(name = "POS_CP_PROJECTS_V")
 public class OldProject {
 
 	@Id
@@ -23,8 +22,7 @@ public class OldProject {
 	@Column(name = "PROJECT_DESC")
 	private String description;
 
-	// @Column(name = "COST")
-	@Transient
+	@Column(name = "COST")
 	private BigDecimal cost;
 
 	@Column(name = "COUNTRY_ID")
@@ -87,6 +85,12 @@ public class OldProject {
 
 	public void setProjectCategoryId(String projectCategoryId) {
 		this.projectCategoryId = projectCategoryId;
+	}
+
+	@Override
+	public String toString() {
+		return "OldProject [id=" + id + ", name=" + name + ", description=" + description + ", cost=" + cost
+				+ ", countryId=" + countryId + ", projectCategoryId=" + projectCategoryId + "]";
 	}
 
 }

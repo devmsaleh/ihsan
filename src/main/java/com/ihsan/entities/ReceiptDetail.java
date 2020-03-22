@@ -74,7 +74,7 @@ public class ReceiptDetail {
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "DONATOR_COUNTRY_ID")
-	private Country donatorCountry;
+	private NewProjectCountry donatorCountry;
 
 	@Column(name = "DONATOR_MOBILE")
 	private String donatorMobile;
@@ -134,7 +134,7 @@ public class ReceiptDetail {
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "PROJECT_COUNTRY_ID")
-	private Country projectCountry;
+	private NewProjectCountry projectCountry;
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "DONATOR_ID_PROJECT")
@@ -253,11 +253,11 @@ public class ReceiptDetail {
 		this.donatorName = donatorName;
 	}
 
-	public Country getDonatorCountry() {
+	public NewProjectCountry getDonatorCountry() {
 		return donatorCountry;
 	}
 
-	public void setDonatorCountry(Country donatorCountry) {
+	public void setDonatorCountry(NewProjectCountry donatorCountry) {
 		this.donatorCountry = donatorCountry;
 	}
 
@@ -381,11 +381,11 @@ public class ReceiptDetail {
 		this.projectStudy = projectStudy;
 	}
 
-	public Country getProjectCountry() {
+	public NewProjectCountry getProjectCountry() {
 		return projectCountry;
 	}
 
-	public void setProjectCountry(Country projectCountry) {
+	public void setProjectCountry(NewProjectCountry projectCountry) {
 		this.projectCountry = projectCountry;
 	}
 

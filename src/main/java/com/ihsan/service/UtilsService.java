@@ -10,18 +10,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ihsan.dao.CountryRepository;
 import com.ihsan.dao.CouponTypeRepository;
 import com.ihsan.dao.DelegateRepository;
 import com.ihsan.dao.FamilyRepository;
 import com.ihsan.dao.FirstTitleRepository;
 import com.ihsan.dao.GenderRepository;
 import com.ihsan.dao.GiftTypeRepository;
-import com.ihsan.dao.NationalityRepository;
+import com.ihsan.dao.NewProjectCountryRepository;
 import com.ihsan.dao.NewProjectTypeRepository;
 import com.ihsan.dao.OrphanRepository;
 import com.ihsan.dao.ReceiptDetailsRepository;
 import com.ihsan.dao.ReceiptRepository;
+import com.ihsan.dao.SponsorshipCountryRepository;
 import com.ihsan.dao.charityBoxes.CharityBoxActionTypeRepository;
 import com.ihsan.dao.charityBoxes.CharityBoxCategoryRepository;
 import com.ihsan.dao.charityBoxes.CharityBoxStatusRepository;
@@ -29,16 +29,16 @@ import com.ihsan.dao.charityBoxes.CharityBoxTypeRepository;
 import com.ihsan.dao.charityBoxes.LocationRepository;
 import com.ihsan.dao.charityBoxes.RegionRepository;
 import com.ihsan.dao.charityBoxes.SubLocationRepository;
-import com.ihsan.entities.Country;
 import com.ihsan.entities.CouponType;
 import com.ihsan.entities.Family;
 import com.ihsan.entities.FirstTitle;
 import com.ihsan.entities.Gender;
 import com.ihsan.entities.GiftType;
-import com.ihsan.entities.Nationality;
+import com.ihsan.entities.NewProjectCountry;
 import com.ihsan.entities.NewProjectType;
 import com.ihsan.entities.Orphan;
 import com.ihsan.entities.Receipt;
+import com.ihsan.entities.SponsorshipCountry;
 import com.ihsan.entities.charityBoxes.CharityBoxActionType;
 import com.ihsan.entities.charityBoxes.CharityBoxCategory;
 import com.ihsan.entities.charityBoxes.CharityBoxStatus;
@@ -89,7 +89,7 @@ public class UtilsService {
 	private CharityBoxActionTypeRepository charityBoxActionTypeRepository;
 
 	@Autowired
-	private CountryRepository countryRepository;
+	private NewProjectCountryRepository newProjectCountryRepository;
 
 	@Autowired
 	private GiftTypeRepository giftTypeRepository;
@@ -104,7 +104,7 @@ public class UtilsService {
 	private OrphanRepository orphanRepository;
 
 	@Autowired
-	private NationalityRepository nationalityRepository;
+	private SponsorshipCountryRepository sponsorshipCountryRepository;
 
 	@Autowired
 	private FamilyRepository familyRepository;
@@ -273,33 +273,33 @@ public class UtilsService {
 		return charityBoxActionType;
 	}
 
-	public Country getCountryFromCache(String countryId) {
+	public NewProjectCountry getCountryFromCache(String countryId) {
 		if (countryId == null)
-			return new Country();
-		List<Country> list = countryRepository.findAll();
-		for (Country countryLoop : list) {
+			return new NewProjectCountry();
+		List<NewProjectCountry> list = newProjectCountryRepository.findAll();
+		for (NewProjectCountry countryLoop : list) {
 			if (countryLoop.getId().equals(countryId)) {
 				return countryLoop;
 			}
 		}
-		Country country = countryRepository.findOne(countryId);
-		if (country == null)
-			country = new Country();
-		return country;
+		NewProjectCountry newProjectCountry = newProjectCountryRepository.findOne(countryId);
+		if (newProjectCountry == null)
+			newProjectCountry = new NewProjectCountry();
+		return newProjectCountry;
 	}
 
-	public Nationality getNationalityFromCache(String nationalityId) {
+	public SponsorshipCountry getNationalityFromCache(String nationalityId) {
 		if (StringUtils.isBlank(nationalityId))
-			return new Nationality();
-		List<Nationality> list = nationalityRepository.findAll();
-		for (Nationality loopObj : list) {
+			return new SponsorshipCountry();
+		List<SponsorshipCountry> list = sponsorshipCountryRepository.findAll();
+		for (SponsorshipCountry loopObj : list) {
 			if (loopObj.getId().equals(nationalityId)) {
 				return loopObj;
 			}
 		}
-		Nationality obj = nationalityRepository.findOne(nationalityId);
+		SponsorshipCountry obj = sponsorshipCountryRepository.findOne(nationalityId);
 		if (StringUtils.isBlank(nationalityId))
-			obj = new Nationality();
+			obj = new SponsorshipCountry();
 		return obj;
 	}
 
@@ -352,17 +352,11 @@ public class UtilsService {
 
 	public OrphanDTO getOrphanDetails(BigInteger id) {
 		Orphan orphan = orphanRepository.findOne(id);
-		String genderId = null;
-		if (orphan.getGenderId() != null)
-			genderId = orphan.getGenderId().toString();
-		Gender gender = getGenderFromCache(genderId);
 		OrphanDTO orphanDTO = new OrphanDTO(orphan.getId().toString(), orphan.getName(), orphan.getBirthDateStr(),
-				orphan.getCaseNumber(), gender.getName());
+				orphan.getCaseNumber(), orphan.getGenderName());
 
-		if (orphan.getNationalityId() != null) {
-			Nationality nationality = getNationalityFromCache(orphan.getNationalityId().toString());
-			orphanDTO.setNationality(nationality.getName());
-		}
+		orphanDTO.setNationality(orphan.getNationalityName());
+
 		if (orphan.getFamilyId() != null) {
 			Family family = familyRepository.findOne(orphan.getFamilyId());
 			if (family != null) {

@@ -11,13 +11,13 @@ import org.springframework.stereotype.Service;
 
 import com.ihsan.dao.BankChequeRepository;
 import com.ihsan.dao.BankTransferRepository;
-import com.ihsan.dao.CountryRepository;
+import com.ihsan.dao.NewProjectCountryRepository;
 import com.ihsan.dao.CouponTypeRepository;
 import com.ihsan.dao.ErrorCodeRepository;
 import com.ihsan.dao.FirstTitleRepository;
 import com.ihsan.dao.GenderRepository;
 import com.ihsan.dao.GiftTypeRepository;
-import com.ihsan.dao.NationalityRepository;
+import com.ihsan.dao.SponsorshipCountryRepository;
 import com.ihsan.dao.NewProjectTypeRepository;
 import com.ihsan.dao.SponsorshipTypeRepository;
 import com.ihsan.dao.charityBoxes.CharityBoxActionTypeRepository;
@@ -30,12 +30,12 @@ import com.ihsan.dao.charityBoxes.RegionRepository;
 import com.ihsan.dao.charityBoxes.SubLocationRepository;
 import com.ihsan.entities.BankCheque;
 import com.ihsan.entities.BankTransfer;
-import com.ihsan.entities.Country;
+import com.ihsan.entities.NewProjectCountry;
 import com.ihsan.entities.CouponType;
 import com.ihsan.entities.FirstTitle;
 import com.ihsan.entities.Gender;
 import com.ihsan.entities.GiftType;
-import com.ihsan.entities.Nationality;
+import com.ihsan.entities.SponsorshipCountry;
 import com.ihsan.entities.NewProjectType;
 import com.ihsan.entities.SponsorshipType;
 import com.ihsan.entities.charityBoxes.CharityBoxActionType;
@@ -98,13 +98,13 @@ public class CacheService {
 	private FirstTitleRepository firstTitleRepository;
 
 	@Autowired
-	private NationalityRepository nationalityRepository;
+	private SponsorshipCountryRepository sponsorshipCountryRepository;
 
 	@Autowired
 	private SponsorshipTypeRepository sponsorshipTypeRepository;
 
 	@Autowired
-	private CountryRepository countryRepository;
+	private NewProjectCountryRepository newProjectCountryRepository;
 
 	@Autowired
 	private GenderRepository genderRepository;
@@ -175,23 +175,23 @@ public class CacheService {
 		List<SponsorshipType> sponsorshipTypeList = sponsorshipTypeRepository.getSponsorshipTypes();
 		logger.info("######### sponsorshipTypeList: " + sponsorshipTypeList.size());
 
-		countryRepository.clearAllCountriesCache();
-		List<Country> countriesList = countryRepository.findAll();
+		newProjectCountryRepository.clearAllCountriesCache();
+		List<NewProjectCountry> countriesList = newProjectCountryRepository.findAll();
 		logger.info("######### countriesList: " + countriesList.size());
 		genderRepository.clearAllGendersCache();
 		List<Gender> genderList = genderRepository.findAll();
 		logger.info("######### genderList: " + genderList.size());
 
-		nationalityRepository.clearAllNationalitiesCache();
-		List<Nationality> nationalitiesList = nationalityRepository.findAll();
+		sponsorshipCountryRepository.clearAllNationalitiesCache();
+		List<SponsorshipCountry> nationalitiesList = sponsorshipCountryRepository.findAll();
 		logger.info("######### nationalitiesList: " + nationalitiesList.size());
 
 		errorCodeRepository.clearErrorCodesCache();
-		countryRepository.clearNewProjectCountriesCache();
+		newProjectCountryRepository.clearNewProjectCountriesCache();
 		couponTypeRepository.clearCouponImageCache();
-		countryRepository.clearCountryImageCache();
-		nationalityRepository.clearSponsorshipTypeCountriesCache();
-		nationalityRepository.clearCountrySponsorshipImageCache();
+		newProjectCountryRepository.clearCountryImageCache();
+		sponsorshipCountryRepository.clearSponsorshipTypeCountriesCache();
+		sponsorshipCountryRepository.clearCountrySponsorshipImageCache();
 		newProjectTypeRepository.clearNewProjectTypeImageCache();
 
 	}

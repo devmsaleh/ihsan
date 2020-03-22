@@ -27,8 +27,8 @@ import com.ihsan.constants.ErrorCodeEnum;
 import com.ihsan.entities.Donator;
 import com.ihsan.entities.FirstTitle;
 import com.ihsan.entities.GiftType;
-import com.ihsan.entities.Nationality;
 import com.ihsan.entities.Orphan;
+import com.ihsan.entities.SponsorshipCountry;
 import com.ihsan.entities.SponsorshipType;
 import com.ihsan.webservice.dto.GeneralResponseDTO;
 import com.ihsan.webservice.dto.OrphanDTO;
@@ -72,7 +72,7 @@ public class SponsorShipWebService extends HAIServiceBase {
 			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
 		try {
 
-			List<Nationality> list = countrySponsorshipRepository.findSponsorshipCountries(sponsorshipTypeId);
+			List<SponsorshipCountry> list = countrySponsorshipRepository.findSponsorshipCountries(sponsorshipTypeId);
 			logger.info("###### findSponsorshipCountries size: " + list.size());
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, list, errorCodeRepository, lang);
 		} catch (Exception e) {
@@ -89,7 +89,7 @@ public class SponsorShipWebService extends HAIServiceBase {
 			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
 		try {
 
-			byte[] image = countrySponsorshipRepository.getImageById(countryId);
+			byte[] image = countrySponsorshipRepository.getImageById(new BigInteger(countryId));
 			String mimeType = "image/png";
 			mimeType = StringUtils.isEmpty(mimeType) ? "image/*" : mimeType;
 			String fileName = "SponsorshipCountry_" + countryId;
@@ -156,8 +156,8 @@ public class SponsorShipWebService extends HAIServiceBase {
 			int startFromRowNumber = (pageNumber * pageSize) - pageSize;
 			logger.info("######### findOrphans,countryId: " + countryId + ",sponsorshipTypeId: " + sponsorshipTypeId
 					+ ",startFromRowNumber: " + startFromRowNumber);
-			List<Orphan> orphansList = orphanRepository.findOrphans(countryId, sponsorshipTypeId, startFromRowNumber,
-					pageSize);
+			List<Orphan> orphansList = orphanRepository.findOrphans(new BigInteger(countryId), sponsorshipTypeId,
+					startFromRowNumber, pageSize);
 			logger.info("###### findOrphans size: " + orphansList.size());
 			List<OrphanDTO> list = convertOrphansToDTO(orphansList);
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, list, errorCodeRepository, lang);
@@ -224,7 +224,10 @@ public class SponsorShipWebService extends HAIServiceBase {
 		try {
 
 			GeneralResponseDTO generalResponseDTO = new GeneralResponseDTO();
-			if (!orphanRepository.isFlagged(id)) {
+			Boolean isFlagged = orphanRepository.isFlagged(id);
+			if (isFlagged == null)
+				isFlagged = false;
+			if (!isFlagged) {
 				int result = orphanRepository.flag(id);
 
 				generalResponseDTO.setSuccess(result > 0);

@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ihsan.constants.ErrorCodeEnum;
 import com.ihsan.dao.BankChequeRepository;
 import com.ihsan.dao.BankTransferRepository;
-import com.ihsan.dao.CountryRepository;
 import com.ihsan.dao.CouponTypeRepository;
 import com.ihsan.dao.DelegateCouponRepository;
 import com.ihsan.dao.DelegateRepository;
@@ -31,13 +30,14 @@ import com.ihsan.dao.DonatorRepository;
 import com.ihsan.dao.ErrorCodeRepository;
 import com.ihsan.dao.FirstTitleRepository;
 import com.ihsan.dao.GiftTypeRepository;
-import com.ihsan.dao.NationalityRepository;
+import com.ihsan.dao.NewProjectCountryRepository;
 import com.ihsan.dao.NewProjectTypeRepository;
 import com.ihsan.dao.OldProjectRepository;
 import com.ihsan.dao.OrphanRepository;
 import com.ihsan.dao.ProjectStudyRepository;
 import com.ihsan.dao.ReceiptDetailsRepository;
 import com.ihsan.dao.ReceiptRepository;
+import com.ihsan.dao.SponsorshipCountryRepository;
 import com.ihsan.dao.SponsorshipTypeRepository;
 import com.ihsan.dao.TokenRepository;
 import com.ihsan.dao.UtilsRepository;
@@ -51,13 +51,12 @@ import com.ihsan.dao.charityBoxes.RouteDetailRepository;
 import com.ihsan.dao.charityBoxes.SubLocationRepository;
 import com.ihsan.entities.BankCheque;
 import com.ihsan.entities.BankTransfer;
-import com.ihsan.entities.Country;
 import com.ihsan.entities.CouponType;
 import com.ihsan.entities.Delegate;
 import com.ihsan.entities.Donator;
 import com.ihsan.entities.FirstTitle;
-import com.ihsan.entities.Gender;
 import com.ihsan.entities.GiftType;
+import com.ihsan.entities.NewProjectCountry;
 import com.ihsan.entities.NewProjectType;
 import com.ihsan.entities.OldProject;
 import com.ihsan.entities.Orphan;
@@ -178,7 +177,7 @@ public class HAIServiceBase {
 	protected RouteDetailRepository routeDetailRepository;
 
 	@Autowired
-	protected CountryRepository countryRepository;
+	protected NewProjectCountryRepository newProjectCountryRepository;
 
 	@Autowired
 	protected DonatorRepository sponsorRepository;
@@ -193,7 +192,7 @@ public class HAIServiceBase {
 	protected SponsorshipTypeRepository sponsorshipTypeRepository;
 
 	@Autowired
-	protected NationalityRepository countrySponsorshipRepository;
+	protected SponsorshipCountryRepository countrySponsorshipRepository;
 
 	@Autowired
 	protected GiftTypeRepository giftTypeRepository;
@@ -265,7 +264,7 @@ public class HAIServiceBase {
 				receiptDetails.setAmount(newProjectDTO.getAmount());
 				receiptDetails.setCreatedBy(receipt.getCreatedBy());
 				receiptDetails.setProjectStudy(new ProjectStudy(newProjectDTO.getProjectStudyId()));
-				receiptDetails.setProjectCountry(new Country(newProjectDTO.getProjectCountryId()));
+				receiptDetails.setProjectCountry(new NewProjectCountry(newProjectDTO.getProjectCountryId()));
 				receiptDetails.setReceiptType(new NewProjectType(newProjectDTO.getNewProjectTypeId()));
 				receiptDetails.setProjectCommitment(newProjectDTO.getCommitment());
 				receiptDetails.setProjectName(newProjectDTO.getProjectName());
@@ -273,8 +272,8 @@ public class HAIServiceBase {
 					receiptDetails.setDonator(new Donator(newProjectDTO.getDonatorId()));
 				} else {
 					if (!GeneralUtils.isEmptyNumber(newProjectDTO.getNewDonatorDTO().getDonatorCountryId())) {
-						receiptDetails
-								.setDonatorCountry(new Country(newProjectDTO.getNewDonatorDTO().getDonatorCountryId()));
+						receiptDetails.setDonatorCountry(
+								new NewProjectCountry(newProjectDTO.getNewDonatorDTO().getDonatorCountryId()));
 					}
 					receiptDetails.setDonatorEmail(newProjectDTO.getNewDonatorDTO().getDonatorEmail());
 					receiptDetails.setDonatorMobile(newProjectDTO.getNewDonatorDTO().getDonatorMobile());
@@ -337,7 +336,7 @@ public class HAIServiceBase {
 					} else {
 						if (!GeneralUtils.isEmptyNumber(newSponsorshipDTO.getNewDonatorDTO().getDonatorCountryId())) {
 							receiptDetails.setDonatorCountry(
-									new Country(newSponsorshipDTO.getNewDonatorDTO().getDonatorCountryId()));
+									new NewProjectCountry(newSponsorshipDTO.getNewDonatorDTO().getDonatorCountryId()));
 						}
 						receiptDetails.setDonatorEmail(newSponsorshipDTO.getNewDonatorDTO().getDonatorEmail());
 						receiptDetails.setDonatorMobile(newSponsorshipDTO.getNewDonatorDTO().getDonatorMobile());
@@ -950,11 +949,15 @@ public class HAIServiceBase {
 			projectStudyDTO.setName(projectStudy.getName());
 			projectStudyDTO.setDescription(projectStudy.getDescription());
 			projectStudyDTO.setCost(projectStudy.getCost());
+			logger.info("####### processing projectStudy: " + projectStudy.getId() + ",typeId: "
+					+ projectStudy.getProjectTypeId());
 			if (projectStudy.getProjectTypeId() != null) {
 				projectStudyDTO.setProjectCategoryId(projectStudy.getProjectTypeId().toString());
-				if (projectStudy.getProjectTypeId() != null)
-					projectStudyDTO.setProjectCategoryName(utilsService
-							.getNewProjectTypeFromCache(projectStudy.getProjectTypeId().toString()).getName());
+				NewProjectType newProjectType = utilsService
+						.getNewProjectTypeFromCache(projectStudy.getProjectTypeId().toString());
+				logger.info("####### processing projectStudy: " + projectStudy.getId() + ",NewProjectType: "
+						+ newProjectType);
+				projectStudyDTO.setProjectCategoryName(newProjectType.getName());
 			}
 			newList.add(projectStudyDTO);
 		}
@@ -1000,28 +1003,26 @@ public class HAIServiceBase {
 				oldProjectDTO.setCategoryName(newProjectType.getName());
 			}
 			if (oldProject.getCountryId() != null) {
-				Country country = utilsService.getCountryFromCache(oldProject.getCountryId().toString());
-				oldProjectDTO.setCountryName(country.getName());
+				NewProjectCountry newProjectCountry = utilsService
+						.getCountryFromCache(oldProject.getCountryId().toString());
+				oldProjectDTO.setCountryName(newProjectCountry.getName());
 			}
 
 			newList.add(oldProjectDTO);
 
 		}
+		logger.info("########### oldProject: " + list);
+		logger.info("########### newList: " + newList);
 		return newList;
 	}
 
 	public List<OrphanDTO> convertOrphansToDTO(List<Orphan> orphansList) {
 		List<OrphanDTO> list = new ArrayList<>(orphansList.size());
-		Gender gender = null;
+
 		for (Orphan orphan : orphansList) {
-			if (orphan.getGenderId() != null)
-				gender = utilsService.getGenderFromCache(orphan.getGenderId().toString());
-			String genderStr = "";
-			if (gender != null) {
-				genderStr = gender.getName();
-			}
+
 			list.add(new OrphanDTO(orphan.getId().toString(), orphan.getName(), orphan.getBirthDateStr(),
-					orphan.getCaseNumber(), genderStr));
+					orphan.getCaseNumber(), orphan.getGenderName()));
 		}
 		return list;
 	}

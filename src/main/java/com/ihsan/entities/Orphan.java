@@ -14,7 +14,7 @@ import javax.persistence.Transient;
 import com.ihsan.util.GeneralUtils;
 
 @Entity
-@Table(name = "SP_CASES")
+@Table(name = "POS_SP_CASES_V")
 public class Orphan {
 
 	@Id
@@ -40,24 +40,21 @@ public class Orphan {
 	@Column(name = "ADDRESS")
 	private String address;
 
-	// @Column(name = "FAMILYCOUNT")
-	@Transient
+	@Column(name = "FAMILYCOUNT")
 	private Integer familyCount;
 
-	// @Column(name = "MOTHERNAME")
-	@Transient
+	@Column(name = "MOTHERNAME")
 	private String motherName;
 
-	// @Temporal(TemporalType.DATE)
-	// @Column(name = "FATHERDEATHDATE")
-	@Transient
+	@Temporal(TemporalType.DATE)
+	@Column(name = "FATHERDEATHDATE")
 	private Date fatherDeathDate;
 
 	@Column(name = "CASE_NO")
 	private String caseNumber;
 
-	@Column(name = "NATIONALITYID")
-	private BigInteger nationalityId;
+	@Column(name = "NATIONALITY_NAME")
+	private String nationalityName;
 
 	@Column(name = "SPONCER_CATEGORY")
 	private BigInteger sponsorshipTypeId;
@@ -65,8 +62,8 @@ public class Orphan {
 	@Column(name = "FAMILY_ID")
 	private BigInteger familyId;
 
-	@Column(name = "GENDER")
-	private BigInteger genderId;
+	@Column(name = "GENDER_NAME")
+	private String genderName;
 
 	@Column(name = "CHECK_FLAG")
 	private Boolean reserved;
@@ -181,14 +178,6 @@ public class Orphan {
 		this.caseNumber = caseNumber;
 	}
 
-	public BigInteger getNationalityId() {
-		return nationalityId;
-	}
-
-	public void setNationalityId(BigInteger nationalityId) {
-		this.nationalityId = nationalityId;
-	}
-
 	public BigInteger getFamilyId() {
 		return familyId;
 	}
@@ -206,12 +195,20 @@ public class Orphan {
 		this.birthDateStr = birthDateStr;
 	}
 
-	public BigInteger getGenderId() {
-		return genderId;
+	public String getGenderName() {
+		return genderName;
 	}
 
-	public void setGenderId(BigInteger genderId) {
-		this.genderId = genderId;
+	public void setGenderName(String genderName) {
+		this.genderName = genderName;
+	}
+
+	public String getNationalityName() {
+		return nationalityName;
+	}
+
+	public void setNationalityName(String nationalityName) {
+		this.nationalityName = nationalityName;
 	}
 
 }

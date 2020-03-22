@@ -8,21 +8,21 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "POS_CP_PROJECTS_TYPES_V")
-public class NewProjectType {
+@Table(name = "POS_SP_SPONSOR_COUNTRIES_V")
+public class SponsorshipCountry {
 
 	@Id
-	@Column(name = "TYPE_ID")
+	@Column(name = "ID")
 	private BigInteger id;
 
-	@Column(name = "PROJ_NAME")
+	@Column(name = "NAME")
 	private String name;
 
-	public NewProjectType() {
+	public SponsorshipCountry() {
 
 	}
 
-	public NewProjectType(BigInteger id) {
+	public SponsorshipCountry(BigInteger id) {
 		this.id = id;
 	}
 
@@ -40,11 +40,6 @@ public class NewProjectType {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	@Override
-	public String toString() {
-		return "NewProjectType [id=" + id + ", name=" + name + "]";
 	}
 
 }

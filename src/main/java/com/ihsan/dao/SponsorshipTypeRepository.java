@@ -14,7 +14,7 @@ import com.ihsan.util.Constants;
 
 public interface SponsorshipTypeRepository extends JpaRepository<SponsorshipType, String> {
 
-	@Query(value = "select * from FND_LOOKUP_VALUES where lower(LOOKUP_TYPE)=lower('SP_SPONSOR_CATEGORY') and LOOKUP_CODE in (select distinct SPONCER_CATEGORY from SP_CASES)", nativeQuery = true)
+	@Query(value = "select * from POS_SP_SPONSOR_CATEGORY_V", nativeQuery = true)
 	@Cacheable(cacheNames = Constants.CACHE_NAME_SPONSORSHIP_TYPE)
 	List<SponsorshipType> getSponsorshipTypes();
 
@@ -22,7 +22,7 @@ public interface SponsorshipTypeRepository extends JpaRepository<SponsorshipType
 	@CacheEvict(cacheNames = Constants.CACHE_NAME_SPONSORSHIP_TYPE, allEntries = true)
 	void clearSponsorshipTypesCache();
 
-	@Query(value = "select AMOUNT from SP_PAYMENT_SETTING_DTL where SPONCER_CATEGORY=:sponsorshipTypeId and NATIONAL_CODE=:countryId order by EFFECTIVE_DATE desc FETCH NEXT 1 ROWS ONLY", nativeQuery = true)
+	@Query(value = "select AMOUNT from SP_PAYMENT_SETTING_DTL where SPONCER_CATEGORY=:sponsorshipTypeId and COUNTRYID=:countryId order by EFFECTIVE_DATE desc FETCH NEXT 1 ROWS ONLY", nativeQuery = true)
 	Integer findSponsorshipTypeAmount(@Param("sponsorshipTypeId") BigInteger sponsorshipTypeId,
 			@Param("countryId") BigInteger countryId);
 }

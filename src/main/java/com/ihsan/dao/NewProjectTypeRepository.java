@@ -14,20 +14,20 @@ import com.ihsan.util.Constants;
 
 public interface NewProjectTypeRepository extends JpaRepository<NewProjectType, BigInteger> {
 
-    @Query(value = "select * from PROJECT_TYPES where PROJ_CAT=1", nativeQuery = true)
-    @Cacheable(cacheNames = Constants.CACHE_NAME_NEW_PROJECT_TYPE)
-    List<NewProjectType> getNewProjectTypes();
+	@Query(value = "select * from POS_CP_PROJECTS_TYPES_V where PROJ_CAT=1", nativeQuery = true)
+	@Cacheable(cacheNames = Constants.CACHE_NAME_NEW_PROJECT_TYPE)
+	List<NewProjectType> getNewProjectTypes();
 
-    @Query(value = "select PROJECT_IMAGE from PROJECT_TYPES where TYPE_ID=:id", nativeQuery = true)
-    @Cacheable(cacheNames = Constants.CACHE_NAME_NEW_PROJECT_TYPE_IMAGE)
-    byte[] getImageById(@Param("id") BigInteger id);
+	@Query(value = "select PROJECT_IMAGE from POS_CP_PROJECTS_TYPES_V where TYPE_ID=:id", nativeQuery = true)
+	@Cacheable(cacheNames = Constants.CACHE_NAME_NEW_PROJECT_TYPE_IMAGE)
+	byte[] getImageById(@Param("id") BigInteger id);
 
-    @Query(value = "select count(*) from dual", nativeQuery = true)
-    @CacheEvict(cacheNames = Constants.CACHE_NAME_NEW_PROJECT_TYPE, allEntries = true)
-    void clearNewProjectTypesCache();
+	@Query(value = "select count(*) from dual", nativeQuery = true)
+	@CacheEvict(cacheNames = Constants.CACHE_NAME_NEW_PROJECT_TYPE, allEntries = true)
+	void clearNewProjectTypesCache();
 
-    @Query(value = "select count(*) from dual", nativeQuery = true)
-    @CacheEvict(cacheNames = Constants.CACHE_NAME_NEW_PROJECT_TYPE_IMAGE, allEntries = true)
-    void clearNewProjectTypeImageCache();
+	@Query(value = "select count(*) from dual", nativeQuery = true)
+	@CacheEvict(cacheNames = Constants.CACHE_NAME_NEW_PROJECT_TYPE_IMAGE, allEntries = true)
+	void clearNewProjectTypeImageCache();
 
 }

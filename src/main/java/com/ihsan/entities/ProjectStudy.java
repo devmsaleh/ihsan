@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "SCPROJECT_TYPES_INFO")
+@Table(name = "POS_CP_PROJECT_CATEGORIES_V")
 public class ProjectStudy {
 
 	@Id
@@ -26,19 +26,16 @@ public class ProjectStudy {
 	private BigDecimal cost;
 
 	@Column(name = "COUNTRY_ID")
-	private BigInteger countryId;
+	private String countryId;
 
 	@Column(name = "PROJECT_TYPE")
 	private BigInteger projectTypeId;
 
-	@Column(name = "PROJECT_CATEGORY")
-	private BigInteger projectCategoryId;
-
-	public BigInteger getCountryId() {
+	public String getCountryId() {
 		return countryId;
 	}
 
-	public void setCountryId(BigInteger countryId) {
+	public void setCountryId(String countryId) {
 		this.countryId = countryId;
 	}
 
@@ -88,14 +85,6 @@ public class ProjectStudy {
 
 	public void setProjectTypeId(BigInteger projectTypeId) {
 		this.projectTypeId = projectTypeId;
-	}
-
-	public BigInteger getProjectCategoryId() {
-		return projectCategoryId;
-	}
-
-	public void setProjectCategoryId(BigInteger projectCategoryId) {
-		this.projectCategoryId = projectCategoryId;
 	}
 
 }

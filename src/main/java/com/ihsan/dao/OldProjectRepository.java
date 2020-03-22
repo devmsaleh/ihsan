@@ -11,11 +11,10 @@ import com.ihsan.entities.OldProject;
 
 public interface OldProjectRepository extends JpaRepository<OldProject, BigInteger> {
 
-	@Query(value = "SELECT * FROM SC_PROJECT  PRJ WHERE COST < (SELECT NVL(SUM(PAY.MISC_RECEIPT_AMOUNT),0) FROM AR_MISC_RECEIPT_LINES PAY WHERE PAY.project_id=PRJ.PROJECT_ID) AND donor =:donatorId", nativeQuery = true)
-	// @Cacheable(cacheNames = Constants.CACHE_NAME_OLD_PROJECTS_FOR_DONATOR)
+	@Query(value = "SELECT * FROM POS_CP_PROJECTS_V  WHERE donor =:donatorId", nativeQuery = true)
 	List<OldProject> getDonatorOldProjects(@Param("donatorId") BigInteger donatorId);
 
-	@Query(value = "select * from SC_PROJECT order by PROJECT_ID desc fetch next 10 rows only", nativeQuery = true)
+	@Query(value = "select * from POS_CP_PROJECTS_V order by PROJECT_ID desc fetch next 10 rows only", nativeQuery = true)
 	List<OldProject> getMostRecentProjects();
 
 	List<OldProject> findTop10ByNameIgnoreCaseContainingOrderByNameAsc(String name);

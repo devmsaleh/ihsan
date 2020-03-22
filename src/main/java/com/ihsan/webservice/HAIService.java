@@ -40,11 +40,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ihsan.constants.ErrorCodeEnum;
 import com.ihsan.entities.BankCheque;
 import com.ihsan.entities.BankTransfer;
-import com.ihsan.entities.Country;
 import com.ihsan.entities.CouponType;
 import com.ihsan.entities.Delegate;
 import com.ihsan.entities.DelegateCoupon;
 import com.ihsan.entities.Donator;
+import com.ihsan.entities.NewProjectCountry;
 import com.ihsan.entities.NewProjectType;
 import com.ihsan.entities.ProjectStudy;
 import com.ihsan.entities.Receipt;
@@ -223,7 +223,8 @@ public class HAIService extends HAIServiceBase {
 			@HeaderParam("lang") String lang) throws Exception {
 		try {
 
-			List<Country> list = countryRepository.findTop10ByNameIgnoreCaseContainingOrderByNameAsc(name);
+			List<NewProjectCountry> list = newProjectCountryRepository
+					.findTop10ByNameIgnoreCaseContainingOrderByNameAsc(name);
 			logger.info("###### findCountryByName,list: " + list.size());
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, list, errorCodeRepository, lang);
 		} catch (Exception e) {
@@ -597,7 +598,7 @@ public class HAIService extends HAIServiceBase {
 			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
 		try {
 
-			List<Country> countriesList = countryRepository.getProjectCountries(newProjectTypeId);
+			List<NewProjectCountry> countriesList = newProjectCountryRepository.getProjectCountries(newProjectTypeId);
 			logger.info("###### findNewProjectCountries,list: " + countriesList.size());
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, countriesList, errorCodeRepository, lang);
 		} catch (Exception e) {
@@ -634,15 +635,15 @@ public class HAIService extends HAIServiceBase {
 			List<ProjectStudy> projectStudyList = new ArrayList<ProjectStudy>();
 			if (StringUtils.isNotBlank(name)) {
 				projectStudyList = projectStudyRepository
-						.findTop10ByCountryIdAndProjectTypeIdAndProjectCategoryIdAndNameIgnoreCaseContainingOrderByNameAsc(
-								countryId, projectTypeId, new BigInteger("1"), name);
+						.findTop10ByCountryIdAndProjectTypeIdAndNameIgnoreCaseContainingOrderByNameAsc(countryId,
+								projectTypeId, name);
 			} else {
-				projectStudyList = projectStudyRepository
-						.findTop10ByCountryIdAndProjectTypeIdAndProjectCategoryIdOrderByNameAsc(countryId,
-								projectTypeId, new BigInteger("1"));
+				projectStudyList = projectStudyRepository.findTop10ByCountryIdAndProjectTypeIdOrderByNameAsc(countryId,
+						projectTypeId);
 			}
 			logger.info("###### projectStudyList: " + projectStudyList.size());
 			List<ProjectStudyDTO> resultList = convertProjectStudyToDTO(projectStudyList);
+			logger.info("###### resultList: " + resultList);
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, resultList, errorCodeRepository, lang);
 		} catch (Exception e) {
 			logger.error("Exception in findProjectStudy webservice: ", e);
@@ -687,7 +688,7 @@ public class HAIService extends HAIServiceBase {
 			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
 		try {
 
-			byte[] image = countryRepository.getImageById(countryId);
+			byte[] image = newProjectCountryRepository.getImageById(countryId);
 			String mimeType = "image/png";
 			mimeType = StringUtils.isEmpty(mimeType) ? "image/*" : mimeType;
 			String fileName = "NewProjectCountry_" + countryId;

@@ -6,21 +6,21 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "POS_SP_SPONSOR_CATEGORY_V")
-public class SponsorshipType {
+@Table(name = "POS_CP_PROJECTS_COUNTRIES_V")
+public class NewProjectCountry {
 
 	@Id
-	@Column(name = "ID")
+	@Column(name = "COUNTRY_ID")
 	private String id;
 
-	@Column(name = "NAME")
+	@Column(name = "COUNTRY_NAME")
 	private String name;
 
-	public SponsorshipType() {
+	public NewProjectCountry() {
 
 	}
 
-	public SponsorshipType(String id) {
+	public NewProjectCountry(String id) {
 		this.id = id;
 	}
 
