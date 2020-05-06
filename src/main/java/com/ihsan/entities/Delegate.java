@@ -42,7 +42,7 @@ public class Delegate {
 	private Date startDate;
 	@Transient
 	private String pinCode;
-	@Transient
+	@Column(name = "DELEGATE_CATEGORY")
 	private Integer category;
 	@Column(name = "MOBILE")
 	private String mobile;

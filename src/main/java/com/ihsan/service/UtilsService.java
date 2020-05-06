@@ -1,6 +1,7 @@
 package com.ihsan.service;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -19,6 +20,8 @@ import com.ihsan.dao.GiftTypeRepository;
 import com.ihsan.dao.NewProjectCountryRepository;
 import com.ihsan.dao.NewProjectTypeRepository;
 import com.ihsan.dao.OrphanRepository;
+import com.ihsan.dao.ReceiptCollectionDetailRepository;
+import com.ihsan.dao.ReceiptCollectionRepository;
 import com.ihsan.dao.ReceiptDetailsRepository;
 import com.ihsan.dao.ReceiptRepository;
 import com.ihsan.dao.SponsorshipCountryRepository;
@@ -30,6 +33,7 @@ import com.ihsan.dao.charityBoxes.LocationRepository;
 import com.ihsan.dao.charityBoxes.RegionRepository;
 import com.ihsan.dao.charityBoxes.SubLocationRepository;
 import com.ihsan.entities.CouponType;
+import com.ihsan.entities.Delegate;
 import com.ihsan.entities.Family;
 import com.ihsan.entities.FirstTitle;
 import com.ihsan.entities.Gender;
@@ -38,6 +42,8 @@ import com.ihsan.entities.NewProjectCountry;
 import com.ihsan.entities.NewProjectType;
 import com.ihsan.entities.Orphan;
 import com.ihsan.entities.Receipt;
+import com.ihsan.entities.ReceiptCollection;
+import com.ihsan.entities.ReceiptCollectionDetail;
 import com.ihsan.entities.SponsorshipCountry;
 import com.ihsan.entities.charityBoxes.CharityBoxActionType;
 import com.ihsan.entities.charityBoxes.CharityBoxCategory;
@@ -111,6 +117,12 @@ public class UtilsService {
 
 	@Autowired
 	private ReceiptDetailsRepository receiptDetailsRepository;
+
+	@Autowired
+	protected ReceiptCollectionRepository receiptCollectionRepository;
+
+	@Autowired
+	protected ReceiptCollectionDetailRepository receiptCollectionDetailRepository;
 
 	public Receipt createReceipt(Receipt receipt) {
 		receiptRepository.save(receipt);
@@ -400,6 +412,80 @@ public class UtilsService {
 			}
 		} else {
 			log.info("######## SEQUENCE MATCHES MAX ID >>> NO ACTION REQUIRED ###########");
+		}
+	}
+
+	// delegate = 2
+	// supervisor = 100000000000000053
+	public void collectMoneyFromDelegate(BigInteger delegateId, BigInteger supervisorId, List<Receipt> list)
+			throws Exception {
+		Long collectionId = null;
+		// 1- Inert into TM_COUPONS_COLLECTION_AUTO
+		// 2- Insert into TM_COUPONS_COLLECTION_AUTO_DTL
+		// 3- Call procedure TM_PACKAGE.POST_E_COUPON_COLLECTION_TRX
+		try {
+			Delegate supervisor = delegateRepository.getOne(supervisorId);
+			if (GeneralUtils.isEmptyNumber(supervisor.getBankAccountId())) {
+				throw new RuntimeException("حساب التحصيل غير موجود");
+			}
+			if (list != null)
+				log.info("########## collectMoneyFromDelegate,delegateId: " + delegateId + ",supervisorId: "
+						+ supervisorId + ",list: " + list.size());
+			if (list != null && list.size() > 0) {
+				Delegate delegate = delegateRepository.findOne(delegateId);
+				collectionId = receiptCollectionRepository.getMaxId();
+				Long collectionNumber = receiptCollectionRepository.getMaxCollectionNumber();
+				if (collectionId == null)
+					collectionId = 0l;
+				if (collectionNumber == null)
+					collectionNumber = 0l;
+				Long detailId = receiptCollectionDetailRepository.getMaxId();
+				if (detailId == null)
+					detailId = 0l;
+
+				collectionId = collectionId + 1;
+				detailId = detailId + 1;
+				collectionNumber = collectionNumber + 1;
+
+				log.info("######## collectionId: " + collectionId);
+				log.info("######## collectionDetailId: " + detailId);
+				log.info("######## supervisor.getBankAccountId(): " + supervisor.getBankAccountId());
+				ReceiptCollection receiptCollection = new ReceiptCollection(BigInteger.valueOf(collectionId),
+						String.valueOf(collectionNumber), delegate, supervisor);
+				receiptCollection.setBankAccountId(supervisor.getBankAccountId());
+				receiptCollectionRepository.save(receiptCollection);
+				log.info("######## saved receiptCollection id is: " + receiptCollection.getId());
+				List<ReceiptCollectionDetail> detailsList = new ArrayList<ReceiptCollectionDetail>();
+				for (Receipt receipt : list) {
+					ReceiptCollectionDetail detail = new ReceiptCollectionDetail(BigInteger.valueOf(detailId),
+							receiptCollection, receipt, supervisor);
+					detailsList.add(detail);
+					log.info("######## saved receiptCollectionDetail id is: " + detail.getId());
+					detailId = detailId + 1;
+				}
+				log.info("######## detailsList to be saved: " + detailsList.size());
+				receiptCollectionDetailRepository.save(detailsList);
+
+				receiptCollectionRepository.flush();
+				receiptCollectionDetailRepository.flush();
+				String collectResult = receiptCollectionRepository
+						.collectReceiptsFromDelegate(BigInteger.valueOf(collectionId), supervisorId);
+
+				log.info("######### collect result: " + collectResult);
+				if (StringUtils.isBlank(collectResult) || !collectResult.equalsIgnoreCase("OK")) {
+					receiptCollectionDetailRepository.deleteReceiptCollectionDetails(BigInteger.valueOf(collectionId));
+					receiptCollectionRepository.deleteReceiptCollection(BigInteger.valueOf(collectionId));
+					throw new RuntimeException(collectResult);
+				}
+
+			}
+
+		} catch (Exception e) {
+			if (collectionId != null && collectionId > 0) {
+				receiptCollectionDetailRepository.deleteReceiptCollectionDetails(BigInteger.valueOf(collectionId));
+				receiptCollectionRepository.deleteReceiptCollection(BigInteger.valueOf(collectionId));
+			}
+			throw e;
 		}
 	}
 

@@ -3,6 +3,7 @@ package com.ihsan.webservice.dto;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,13 @@ public class ServiceResponse {
 		super();
 		this.errorCodeRepository = errorCodeRepository;
 		this.lang = lang;
+	}
+
+	public ServiceResponse(ErrorCodeEnum errorCode, String errorCodeDesc) {
+		super();
+		this.errorCode = errorCode;
+		response = new HashMap<String, Object>();
+		this.errorCodeDesc = errorCodeDesc;
 	}
 
 	public ServiceResponse(ErrorCodeEnum errorCode, ErrorCodeRepository errorCodeRepository) {
@@ -105,14 +113,14 @@ public class ServiceResponse {
 	}
 
 	public String getErrorCodeDesc() {
-		if (errorCodeRepository != null) {
-			com.ihsan.entities.ErrorCode err = errorCodeRepository.findById(new Long(getErrorCodeValue()));
+		if (StringUtils.isBlank(errorCodeDesc) && errorCodeRepository != null) {
+			com.ihsan.entities.ErrorCode err = errorCodeRepository.findByErrorCode(errorCode.getErrorCode());
 			if (err == null)
 				return errorCode + "";
 			errorCodeDesc = this.lang == null || this.lang.equals("ar") ? err.getErrorNameArabic()
 					: err.getErrorNameEnglish();
 		}
-		if (errorCodeDesc == null)
+		if (StringUtils.isBlank(errorCodeDesc))
 			return errorCode + "";
 		return errorCodeDesc;
 	}

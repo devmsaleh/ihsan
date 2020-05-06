@@ -796,9 +796,12 @@ public class HAIService extends HAIServiceBase {
 			messageTextStringBuffer.append("www.alihsan.ae");
 			String messageTextStr = URLEncoder.encode(messageTextStringBuffer.toString(), "UTF-8");
 			// http://fuj.smscharity.net:9980/smsgw.aspx?user=fuj191&pass=Passw0rd191$&ProviderID=1019&text=%D8%AA%D8%AC%D8%B1%D8%A8%D8%A9&msisdn=971504339373&encoding=2
-			URL url = new URL(
-					"http://alihsan.smscharity.net:9980/smsgw.aspx?user=ihsan209&pass=Pass769w0rd@&ProviderID=1013&text="
-							+ messageTextStr + "&msisdn=" + mobileNumber + "&encoding=2");
+			String userName = "sms_pos";
+			String password = "0fKu9H5ZaGgImlUN";
+			String smsURL = "http://alihsan.smscharity.net:9980/nlsmsgw.aspx?user=" + userName + "&pass=" + password
+					+ "&ProviderID=1013&text=" + messageTextStr + "&msisdn=" + mobileNumber + "&encoding=1";
+			URL url = new URL(smsURL);
+			logger.info("####### sending sms to url: " + smsURL);
 			connection = (HttpURLConnection) url.openConnection();
 			connection.setConnectTimeout(1000 * 30);
 			connection.setReadTimeout(1000 * 30);
@@ -834,6 +837,45 @@ public class HAIService extends HAIServiceBase {
 				}
 		}
 		return result;
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Path("/getDelegates/{supervisorId}")
+	@ApiOperation(value = "عرض المحصلين التابعين لمشرف معين")
+	public ServiceResponse getDelegates(@HeaderParam("token") String token,
+			@PathParam("supervisorId") BigInteger supervisorId, @HeaderParam("lang") String lang) throws Exception {
+		try {
+
+			List<Delegate> delegateList = delegateRepository.getSupervisorDelegates(supervisorId);
+			List<DelegateDTO> resultList = convertDelegateListToDTO(delegateList);
+			for (DelegateDTO delegateDTO : resultList) {
+				delegateDTO.setAmountNotCollected(
+						receiptRepository.getDelegateTotalAmount(new BigInteger(delegateDTO.getId())));
+			}
+			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, resultList, errorCodeRepository, lang);
+		} catch (Exception e) {
+			logger.error("Exception in getDelegates webservice: ", e);
+			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
+		}
+	}
+
+	@POST
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Path("/collectMoneyFromDelegate")
+	@ApiOperation(value = "تحصيل من المندوب")
+	public ServiceResponse collectMoneyFromDelegate(@HeaderParam("delegateId") BigInteger delegateId,
+			@HeaderParam("supervisorId") BigInteger supervisorId, @HeaderParam("token") String token,
+			@HeaderParam("lang") String lang) throws Exception {
+		try {
+			List<Receipt> list = receiptRepository.findByCollectedAndCreatedById("N", delegateId);
+			SupervisorReportDTO supervisorReportDTO = convertReceiptListToSupervisorReport(list);
+			utilsService.collectMoneyFromDelegate(delegateId, supervisorId, list);
+			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, supervisorReportDTO, errorCodeRepository, lang);
+		} catch (Exception e) {
+			logger.error("Exception in collectMoneyFromDelegate webservice: ", e);
+			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, "خطأ فى النظام : " + e.getMessage());
+		}
 	}
 
 }

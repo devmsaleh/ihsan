@@ -20,4 +20,7 @@ public interface DelegateRepository extends JpaRepository<Delegate, BigInteger> 
 
 	@Query(value = "select PROJECTNAME from POSPERMISSIONS where DELEGATEID=:delegateId and STATUS=0", nativeQuery = true)
 	List<BigDecimal> getDelegatePermissions(@Param("delegateId") String delegateId);
+
+	@Query(value = "select * from TM_DELEGATES where DELEGATE_ID in (select DELEGATE_ID from TM_COLECTOR_PRIVILEGES where COLECTOR_ID=:supervisorId)", nativeQuery = true)
+	List<Delegate> getSupervisorDelegates(@Param("supervisorId") BigInteger supervisorId);
 }
