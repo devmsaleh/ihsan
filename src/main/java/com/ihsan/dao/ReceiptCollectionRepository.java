@@ -16,7 +16,7 @@ public interface ReceiptCollectionRepository extends JpaRepository<ReceiptCollec
 	@Query("SELECT max(id) FROM ReceiptCollection")
 	Long getMaxId();
 
-	@Query(value = "select max(cast(COLLECTION_NUMBER as NUMBER)) from TM_COUPONS_COLLECTION_AUTO", nativeQuery = true)
+	@Query(value = "select max(value) from FND_COUNTERS where code='CPE'", nativeQuery = true)
 	Long getMaxCollectionNumber();
 
 	@Modifying(clearAutomatically = true)

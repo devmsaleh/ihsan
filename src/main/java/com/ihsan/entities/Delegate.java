@@ -56,6 +56,9 @@ public class Delegate {
 	@Column(name = "IS_COUPON")
 	private boolean coupon;
 
+	@Column(name = "BRANCH_ID")
+	private String branchId;
+
 	@Transient
 	private boolean supervisor;
 
@@ -85,6 +88,8 @@ public class Delegate {
 	public String getStatus() {
 		if (StringUtils.isBlank(status)) {
 			status = "I";
+		} else {
+			status = status.trim();
 		}
 		return status;
 	}
@@ -231,6 +236,16 @@ public class Delegate {
 
 	public void setCoupon(boolean coupon) {
 		this.coupon = coupon;
+	}
+
+	public String getBranchId() {
+		if (branchId != null)
+			branchId = branchId.trim();
+		return branchId;
+	}
+
+	public void setBranchId(String branchId) {
+		this.branchId = branchId;
 	}
 
 }

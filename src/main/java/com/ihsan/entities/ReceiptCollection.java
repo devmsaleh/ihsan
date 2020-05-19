@@ -51,6 +51,9 @@ public class ReceiptCollection {
 	@Column(name = "BANK_ACC_ID")
 	private BigInteger bankAccountId;
 
+	@Column(name = "BRANCH_ID")
+	private BigInteger branchId;
+
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "DELEGATE_ID")
 	private Delegate delegate;
@@ -154,6 +157,14 @@ public class ReceiptCollection {
 
 	public void setOrgId(int orgId) {
 		this.orgId = orgId;
+	}
+
+	public BigInteger getBranchId() {
+		return branchId;
+	}
+
+	public void setBranchId(BigInteger branchId) {
+		this.branchId = branchId;
 	}
 
 }

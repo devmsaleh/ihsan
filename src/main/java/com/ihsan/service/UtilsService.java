@@ -437,6 +437,13 @@ public class UtilsService {
 			if (GeneralUtils.isEmptyNumber(supervisor.getBankAccountId())) {
 				throw new RuntimeException("حساب التحصيل غير موجود");
 			}
+			BigInteger supervisorBranchId = null;
+			try {
+				supervisorBranchId = new BigInteger(supervisor.getBranchId());
+			} catch (Exception e) {
+				throw new RuntimeException("خطأ فى استرجاع قيمة الفرع الخاص بالمشرف");
+			}
+
 			if (list != null)
 				log.info("########## collectMoneyFromDelegate,delegateId: " + delegateId + ",supervisorId: "
 						+ supervisorId + ",list: " + list.size());
@@ -462,6 +469,7 @@ public class UtilsService {
 				ReceiptCollection receiptCollection = new ReceiptCollection(BigInteger.valueOf(collectionId),
 						String.valueOf(collectionNumber), delegate, supervisor);
 				receiptCollection.setBankAccountId(supervisor.getBankAccountId());
+				receiptCollection.setBranchId(supervisorBranchId);
 				receiptCollectionRepository.save(receiptCollection);
 				log.info("######## saved receiptCollection id is: " + receiptCollection.getId());
 				List<ReceiptCollectionDetail> detailsList = new ArrayList<ReceiptCollectionDetail>();
