@@ -532,14 +532,14 @@ public class HAIServiceBase {
 		SupervisorReportDTO supervisorReportDTO = new SupervisorReportDTO();
 		supervisorReportDTO.setDate(GeneralUtils.formateDateTime(new Date()));
 		for (Receipt receipt : receiptList) {
-			if (receipt.getPaymentType().equals(PaymentTypeEnum.CASH.getValue())) {
+			if (receipt.getReceiptPayment().getPaymentType().equals(PaymentTypeEnum.CASH.getValue())) {
 				supervisorReportDTO.setCashAmount(supervisorReportDTO.getCashAmount().add(receipt.getTotalAmount()));
 				supervisorReportDTO.setCashReceiptsCount(supervisorReportDTO.getCashReceiptsCount() + 1);
-			} else if (receipt.getPaymentType().equals(PaymentTypeEnum.CHEQUE.getValue())) {
+			} else if (receipt.getReceiptPayment().getPaymentType().equals(PaymentTypeEnum.CHEQUE.getValue())) {
 				supervisorReportDTO
 						.setChequeAmount(supervisorReportDTO.getChequeAmount().add(receipt.getTotalAmount()));
 				supervisorReportDTO.setChequeReceiptsCount((supervisorReportDTO.getChequeReceiptsCount() + 1));
-			} else if (receipt.getPaymentType().equals(PaymentTypeEnum.CREDIT.getValue())) {
+			} else if (receipt.getReceiptPayment().getPaymentType().equals(PaymentTypeEnum.CREDIT.getValue())) {
 				supervisorReportDTO
 						.setCreditCardAmount(supervisorReportDTO.getCreditCardAmount().add(receipt.getTotalAmount()));
 				supervisorReportDTO.setCreditCardReceiptsCount((supervisorReportDTO.getCreditCardReceiptsCount() + 1));

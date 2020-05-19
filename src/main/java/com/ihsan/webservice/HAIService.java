@@ -868,7 +868,7 @@ public class HAIService extends HAIServiceBase {
 			@HeaderParam("supervisorId") BigInteger supervisorId, @HeaderParam("token") String token,
 			@HeaderParam("lang") String lang) throws Exception {
 		try {
-			List<Receipt> list = receiptRepository.findByCollectedAndCreatedById("N", delegateId);
+			List<Receipt> list = utilsService.loadDelegateNotCollectedReceipts(delegateId);
 			SupervisorReportDTO supervisorReportDTO = convertReceiptListToSupervisorReport(list);
 			utilsService.collectMoneyFromDelegate(delegateId, supervisorId, list);
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, supervisorReportDTO, errorCodeRepository, lang);
