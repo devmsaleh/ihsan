@@ -9,7 +9,6 @@ import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -135,9 +134,6 @@ public class UtilsService {
 			receiptNumber = receiptNumber + 1;
 			receipt.setNumber(String.valueOf(receiptNumber));
 			return receiptRepository.save(receipt);
-		} catch (DataIntegrityViolationException e) {
-			log.error("######### createReceipt DataIntegrityViolationException: " + e.getMessage());
-			return createReceipt(receipt);
 		} catch (Exception e) {
 			throw e;
 		}

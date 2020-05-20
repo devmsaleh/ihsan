@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
@@ -353,6 +354,9 @@ public class HAIService extends HAIServiceBase {
 				}
 			}
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, receiptPrintDTO, errorCodeRepository, lang);
+		} catch (DataIntegrityViolationException e) {
+			logger.error("######## createReceipt Excception >>> DataIntegrityViolationException >>> retry");
+			return createReceipt(receiptDTO, token, lang);
 		} catch (Exception e) {
 			logger.error("Exception in createReceipt webservice: ", e);
 			logger.error("Exception in createReceipt webservice, JSON: "
