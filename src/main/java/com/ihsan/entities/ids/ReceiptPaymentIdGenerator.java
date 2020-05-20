@@ -39,8 +39,6 @@ public class ReceiptPaymentIdGenerator implements IdentifierGenerator {
 					rs.close();
 				if (statement != null)
 					statement.close();
-				if (connection != null)
-					connection.close();
 			} catch (Exception e) {
 				logger.error("Exception in close resources >> ReceiptPaymentIdGenerator: ", e);
 			}
