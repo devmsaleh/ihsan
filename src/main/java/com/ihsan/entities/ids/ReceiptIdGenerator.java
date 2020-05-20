@@ -21,18 +21,28 @@ public class ReceiptIdGenerator implements IdentifierGenerator {
 	public Serializable generate(SessionImplementor session, Object object) throws HibernateException {
 
 		Connection connection = session.connection();
-
+		ResultSet rs = null;
+		Statement statement = null;
 		try {
-			Statement statement = connection.createStatement();
-
-			ResultSet rs = statement.executeQuery("select max(RECEIPT_CODE) from TM_RECEIPTS");
-
+			statement = connection.createStatement();
+			rs = statement.executeQuery("select max(RECEIPT_CODE) from TM_RECEIPTS");
 			if (rs.next()) {
 				long id = rs.getLong(1);
 				return new BigInteger(String.valueOf(id + 1));
 			}
 		} catch (SQLException e) {
 			logger.error("Exception in ReceiptIdGenerator: ", e);
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (statement != null)
+					statement.close();
+				if (connection != null)
+					connection.close();
+			} catch (Exception e) {
+				logger.error("Exception in close resources >> ReceiptIdGenerator: ", e);
+			}
 		}
 
 		return null;

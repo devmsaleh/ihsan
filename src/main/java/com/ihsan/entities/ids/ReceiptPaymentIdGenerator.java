@@ -21,11 +21,11 @@ public class ReceiptPaymentIdGenerator implements IdentifierGenerator {
 	public Serializable generate(SessionImplementor session, Object object) throws HibernateException {
 
 		Connection connection = session.connection();
-
+		Statement statement = null;
+		ResultSet rs = null;
 		try {
-			Statement statement = connection.createStatement();
-
-			ResultSet rs = statement.executeQuery("select max(PAYMENT_CODE) from TM_RECEIPT_PAYMENTS");
+			statement = connection.createStatement();
+			rs = statement.executeQuery("select max(PAYMENT_CODE) from TM_RECEIPT_PAYMENTS");
 
 			if (rs.next()) {
 				long id = rs.getLong(1);
@@ -33,6 +33,17 @@ public class ReceiptPaymentIdGenerator implements IdentifierGenerator {
 			}
 		} catch (SQLException e) {
 			logger.error("Exception in ReceiptPaymentIdGenerator: ", e);
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (statement != null)
+					statement.close();
+				if (connection != null)
+					connection.close();
+			} catch (Exception e) {
+				logger.error("Exception in close resources >> ReceiptPaymentIdGenerator: ", e);
+			}
 		}
 
 		return null;
