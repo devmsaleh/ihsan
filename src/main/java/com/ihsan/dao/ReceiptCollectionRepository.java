@@ -20,6 +20,11 @@ public interface ReceiptCollectionRepository extends JpaRepository<ReceiptCollec
 	Long getMaxCollectionNumber();
 
 	@Modifying(clearAutomatically = true)
+	@Query(value = "update FND_COUNTERS set value=value+1 where code='CPE'", nativeQuery = true)
+	@Transactional
+	int updateMaxCollectionNumber();
+
+	@Modifying(clearAutomatically = true)
 	@Query(value = "delete from ReceiptCollection where id=:id")
 	@Transactional
 	int deleteReceiptCollection(@Param("id") BigInteger id);

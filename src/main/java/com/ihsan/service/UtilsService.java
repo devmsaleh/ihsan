@@ -450,14 +450,14 @@ public class UtilsService {
 				if (collectionId == null)
 					collectionId = 0l;
 				if (collectionNumber == null)
-					collectionNumber = 0l;
+					collectionNumber = 1l;
 				Long detailId = receiptCollectionDetailRepository.getMaxId();
 				if (detailId == null)
 					detailId = 0l;
 
 				collectionId = collectionId + 1;
 				detailId = detailId + 1;
-				collectionNumber = collectionNumber + 1;
+				receiptCollectionRepository.updateMaxCollectionNumber();
 
 				log.info("######## collectionId: " + collectionId);
 				log.info("######## collectionDetailId: " + detailId);

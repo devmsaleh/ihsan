@@ -33,10 +33,10 @@ public class CouponType {
 	@Column(name = "MUST_ENTER_DONATOR")
 	private Integer mustEnterDonator;
 
-	@Column(name = "COST")
+	@Column(name = "FIXEDAMOUNT")
 	private Integer value;
 
-	@Column(name = "MIN_AMOUNT")
+	@Column(name = "FIXEDAMOUNT", insertable = false, updatable = false)
 	private Integer minimumAmount;
 
 	@Column(name = "QR_CODE")
@@ -106,6 +106,8 @@ public class CouponType {
 	}
 
 	public Integer getValue() {
+		if (value == null)
+			value = 1;
 		return value;
 	}
 
@@ -115,7 +117,7 @@ public class CouponType {
 
 	public Integer getMinimumAmount() {
 		if (minimumAmount == null) {
-			minimumAmount = 0;
+			minimumAmount = 1;
 		}
 		return minimumAmount;
 	}

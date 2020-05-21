@@ -1,5 +1,6 @@
 package com.ihsan.webservice;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -224,9 +225,8 @@ public class SponsorShipWebService extends HAIServiceBase {
 		try {
 
 			GeneralResponseDTO generalResponseDTO = new GeneralResponseDTO();
-			Boolean isFlagged = orphanRepository.isFlagged(id);
-			if (isFlagged == null)
-				isFlagged = false;
+			BigDecimal isFlaggedValue = orphanRepository.isFlagged(id);
+			boolean isFlagged = isFlaggedValue != null && isFlaggedValue.intValue() == 1;
 			if (!isFlagged) {
 				int result = orphanRepository.flag(id);
 

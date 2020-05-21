@@ -1,5 +1,6 @@
 package com.ihsan.dao;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -30,6 +31,6 @@ public interface OrphanRepository extends JpaRepository<Orphan, BigInteger> {
 	int unFlag(@Param("id") BigInteger id);
 
 	@Query(value = "select CHECK_FLAG from POS_SP_CASES_V where CASE_ID=:id", nativeQuery = true)
-	Boolean isFlagged(@Param("id") BigInteger id);
+	BigDecimal isFlagged(@Param("id") BigInteger id);
 
 }
