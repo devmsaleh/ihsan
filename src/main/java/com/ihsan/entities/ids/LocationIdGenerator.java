@@ -21,11 +21,13 @@ public class LocationIdGenerator implements IdentifierGenerator {
 	public Serializable generate(SessionImplementor session, Object object) throws HibernateException {
 
 		Connection connection = session.connection();
+		ResultSet rs = null;
+		Statement statement = null;
 
 		try {
-			Statement statement = connection.createStatement();
+			statement = connection.createStatement();
 
-			ResultSet rs = statement.executeQuery("select max(LOCATION_ID) from TM_LOCATIONS");
+			rs = statement.executeQuery("select max(LOCATION_ID) from TM_LOCATIONS");
 
 			if (rs.next()) {
 				long id = rs.getLong(1);
@@ -33,6 +35,15 @@ public class LocationIdGenerator implements IdentifierGenerator {
 			}
 		} catch (SQLException e) {
 			logger.error("Exception in LocationIdGenerator: ", e);
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (statement != null)
+					statement.close();
+			} catch (Exception e) {
+				logger.error("Exception in close resources >> LocationIdGenerator: ", e);
+			}
 		}
 
 		return null;

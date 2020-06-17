@@ -21,11 +21,13 @@ public class CharityBoxTransferDetailIdGenerator implements IdentifierGenerator 
 	public Serializable generate(SessionImplementor session, Object object) throws HibernateException {
 
 		Connection connection = session.connection();
+		ResultSet rs = null;
+		Statement statement = null;
 
 		try {
-			Statement statement = connection.createStatement();
+			statement = connection.createStatement();
 
-			ResultSet rs = statement.executeQuery("select max(TRANSFER_LINE_ID) from TM_CHARITY_BOX_TRANSFERS_DTL");
+			rs = statement.executeQuery("select max(TRANSFER_LINE_ID) from TM_CHARITY_BOX_TRANSFERS_DTL");
 
 			if (rs.next()) {
 				long id = rs.getLong(1);
@@ -33,6 +35,15 @@ public class CharityBoxTransferDetailIdGenerator implements IdentifierGenerator 
 			}
 		} catch (SQLException e) {
 			logger.error("Exception in CharityBoxTransferDetailIdGenerator: ", e);
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (statement != null)
+					statement.close();
+			} catch (Exception e) {
+				logger.error("Exception in close resources >> CharityBoxTransferDetailIdGenerator: ", e);
+			}
 		}
 
 		return null;
