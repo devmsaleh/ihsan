@@ -35,7 +35,7 @@ public class Delegate {
 	private Date expiryDate;
 	@Column(name = "MAX_LIMIT")
 	private String maxLimit;
-	@Transient
+	@Column(name = "IS_ADMIN")
 	private boolean admin;
 	@Temporal(TemporalType.DATE)
 	@Column(name = "START_DATE")

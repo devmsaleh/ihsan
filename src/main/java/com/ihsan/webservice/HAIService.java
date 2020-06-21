@@ -112,10 +112,17 @@ public class HAIService extends HAIServiceBase {
 			tokenRepository.save(token);
 			delegate.setToken(token.getToken());
 			DelegateDTO delegateDTO = convertDelegateToDTO(delegate);
-			delegateDTO.setCharityBox(isUserHasPermission(permissionsList, PermissionTypeEnum.CHARITY_BOX));
-			delegateDTO.setCoupon(isUserHasPermission(permissionsList, PermissionTypeEnum.COUPON));
-			delegateDTO.setSponsorship(isUserHasPermission(permissionsList, PermissionTypeEnum.SPONSORSHIP));
-			delegateDTO.setProject(isUserHasPermission(permissionsList, PermissionTypeEnum.PROJECT));
+			if (!delegateDTO.isAdmin()) {
+				delegateDTO.setCharityBox(isUserHasPermission(permissionsList, PermissionTypeEnum.CHARITY_BOX));
+				delegateDTO.setCoupon(isUserHasPermission(permissionsList, PermissionTypeEnum.COUPON));
+				delegateDTO.setSponsorship(isUserHasPermission(permissionsList, PermissionTypeEnum.SPONSORSHIP));
+				delegateDTO.setProject(isUserHasPermission(permissionsList, PermissionTypeEnum.PROJECT));
+			} else {
+				delegateDTO.setCharityBox(true);
+				delegateDTO.setCoupon(true);
+				delegateDTO.setSponsorship(true);
+				delegateDTO.setProject(true);
+			}
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, delegateDTO, errorCodeRepository, lang);
 		} catch (Exception e) {
 			logger.error("Exception in login webservice: ", e);
