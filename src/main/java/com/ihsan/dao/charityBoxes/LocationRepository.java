@@ -24,6 +24,8 @@ public interface LocationRepository extends JpaRepository<Location, BigInteger> 
 
 	List<Location> findTop500ByRegionIdOrderByNameAsc(BigInteger regionId);
 
+	List<Location> findTop500ByOrderByNameAsc();
+
 	List<Location> findByNameAndRegionId(String name, BigInteger regionId);
 
 	@Query(value = "SELECT MAX(TO_NUMBER(LOCATION_NUMBER)) FROM TM_LOCATIONS", nativeQuery = true)

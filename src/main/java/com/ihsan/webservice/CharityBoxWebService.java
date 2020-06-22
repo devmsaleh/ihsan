@@ -137,11 +137,15 @@ public class CharityBoxWebService extends HAIServiceBase {
 			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
 		try {
 			List<Location> locationsList = new ArrayList<Location>();
-			if (StringUtils.isNotBlank(name) && !name.equalsIgnoreCase("-1")) {
-				locationsList = locationRepository
-						.findTop10ByRegionIdAndNameIgnoreCaseContainingOrderByNameAsc(regionId, name.trim());
+			if (GeneralUtils.isBigIntegerGreaterThanZero(regionId)) {
+				if (StringUtils.isNotBlank(name) && !name.equalsIgnoreCase("-1")) {
+					locationsList = locationRepository
+							.findTop10ByRegionIdAndNameIgnoreCaseContainingOrderByNameAsc(regionId, name.trim());
+				} else {
+					locationsList = locationRepository.findTop500ByRegionIdOrderByNameAsc(regionId);
+				}
 			} else {
-				locationsList = locationRepository.findTop500ByRegionIdOrderByNameAsc(regionId);
+				locationsList = locationRepository.findTop500ByOrderByNameAsc();
 			}
 			logger.info("###### locationsList: " + locationsList.size());
 			List<LocationDTO> resultList = convertLocationToDTO(locationsList);
@@ -209,7 +213,10 @@ public class CharityBoxWebService extends HAIServiceBase {
 				}
 			} else {
 				concatDetails = true;
-				subLocationsList = subLocationRepository.findTop10ByNameIgnoreCaseContainingOrderByNameAsc(name);
+				if (StringUtils.isNotBlank(name) && !name.equalsIgnoreCase("-1"))
+					subLocationsList = subLocationRepository.findTop10ByNameIgnoreCaseContainingOrderByNameAsc(name);
+				else
+					subLocationsList = subLocationRepository.findTop500ByOrderByNameAsc();
 			}
 			logger.info("###### findSubLocation,subLocationsList: " + subLocationsList.size());
 			concatDetails = false;

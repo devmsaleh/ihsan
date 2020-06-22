@@ -36,6 +36,8 @@ public interface SubLocationRepository extends JpaRepository<SubLocation, BigInt
 
 	List<SubLocation> findTop10ByNameIgnoreCaseContainingOrderByNameAsc(String name);
 
+	List<SubLocation> findTop500ByOrderByNameAsc();
+
 	List<SubLocation> findTop500ByLocationIdOrderByNameAsc(BigInteger locationId);
 
 	@Query(value = "select * from TM_SUB_LOCATIONS sub where sub.LOCATION_ID=:locationId and sub.SUB_LOCATION_ID not in (select SUB_LOCATION_ID from TM_CHARITY_BOXES where CATEGORY_OF_BOXES=:categoryId and STATUS!='1') and sub.SUB_LOCATION_NAME like %:name% fetch next 10 rows only", nativeQuery = true)
