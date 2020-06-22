@@ -22,6 +22,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ihsan.constants.ErrorCodeEnum;
 import com.ihsan.dao.BankChequeRepository;
+import com.ihsan.dao.BankDepositRepository;
 import com.ihsan.dao.BankTransferRepository;
 import com.ihsan.dao.CouponTypeRepository;
 import com.ihsan.dao.DelegateCouponRepository;
@@ -205,6 +206,9 @@ public class HAIServiceBase {
 
 	@Autowired
 	protected TokenRepository userTokenRepository;
+
+	@Autowired
+	protected BankDepositRepository bankDepositRepository;
 
 	@Value("${debugEnabled}")
 	protected boolean debugEnabled;
@@ -408,16 +412,19 @@ public class HAIServiceBase {
 		receiptPayment.setCashValue(receipt.getTotalAmount());
 		receiptPayment.setPaymentType(receiptDTO.getPaymentType().getValue());
 		if (receiptDTO.getPaymentType() == PaymentTypeEnum.CHEQUE) {
-			// receiptPayment.setBankCode(paymentDTO.getBankCode());
+			receiptPayment.setBankCode(paymentDTO.getBankCode());
 			receiptPayment.setChequeDate(GeneralUtils.parseDate(paymentDTO.getChequeDate()));
 			receiptPayment.setChequeNumber(paymentDTO.getChequeNumber());
 		} else if (receiptDTO.getPaymentType() == PaymentTypeEnum.CREDIT) {
 			receiptPayment.setCreditCardTransactionNumber(paymentDTO.getCreditCardTransactionNumber());
 		} else if (receiptDTO.getPaymentType() == PaymentTypeEnum.BANK_TRANSFER) {
-			// receiptPayment.setDeductionNumber(paymentDTO.getDeductionNumber());
-			// receiptPayment.setBankCode(paymentDTO.getBankCode());
-			// receiptPayment.setAccountName(paymentDTO.getAccountName());
-			// receiptPayment.setAccountNumber(paymentDTO.getAccountNumber());
+			receiptPayment.setDeductionNumber(paymentDTO.getDeductionNumber());
+			receiptPayment.setBankCode(paymentDTO.getBankCode());
+			receiptPayment.setAccountName(paymentDTO.getAccountName());
+			receiptPayment.setAccountNumber(paymentDTO.getAccountNumber());
+		} else if (receiptDTO.getPaymentType() == PaymentTypeEnum.DEPOSIT) {
+			receiptPayment.setDepositBankAccountId(paymentDTO.getDepositBankAccountId());
+			receiptPayment.setDepositTransactionNumber(paymentDTO.getDepositTransactionNumber());
 		}
 		receiptPayment.setCreatedBy(receipt.getCreatedBy());
 		receipt.setReceiptPayment(receiptPayment);

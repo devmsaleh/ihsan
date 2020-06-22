@@ -10,15 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ihsan.dao.BankChequeRepository;
+import com.ihsan.dao.BankDepositRepository;
 import com.ihsan.dao.BankTransferRepository;
-import com.ihsan.dao.NewProjectCountryRepository;
 import com.ihsan.dao.CouponTypeRepository;
 import com.ihsan.dao.ErrorCodeRepository;
 import com.ihsan.dao.FirstTitleRepository;
 import com.ihsan.dao.GenderRepository;
 import com.ihsan.dao.GiftTypeRepository;
-import com.ihsan.dao.SponsorshipCountryRepository;
+import com.ihsan.dao.NewProjectCountryRepository;
 import com.ihsan.dao.NewProjectTypeRepository;
+import com.ihsan.dao.SponsorshipCountryRepository;
 import com.ihsan.dao.SponsorshipTypeRepository;
 import com.ihsan.dao.charityBoxes.CharityBoxActionTypeRepository;
 import com.ihsan.dao.charityBoxes.CharityBoxCategoryRepository;
@@ -29,14 +30,15 @@ import com.ihsan.dao.charityBoxes.LocationRepository;
 import com.ihsan.dao.charityBoxes.RegionRepository;
 import com.ihsan.dao.charityBoxes.SubLocationRepository;
 import com.ihsan.entities.BankCheque;
+import com.ihsan.entities.BankDeposit;
 import com.ihsan.entities.BankTransfer;
-import com.ihsan.entities.NewProjectCountry;
 import com.ihsan.entities.CouponType;
 import com.ihsan.entities.FirstTitle;
 import com.ihsan.entities.Gender;
 import com.ihsan.entities.GiftType;
-import com.ihsan.entities.SponsorshipCountry;
+import com.ihsan.entities.NewProjectCountry;
 import com.ihsan.entities.NewProjectType;
+import com.ihsan.entities.SponsorshipCountry;
 import com.ihsan.entities.SponsorshipType;
 import com.ihsan.entities.charityBoxes.CharityBoxActionType;
 import com.ihsan.entities.charityBoxes.CharityBoxCategory;
@@ -108,6 +110,9 @@ public class CacheService {
 
 	@Autowired
 	private GenderRepository genderRepository;
+
+	@Autowired
+	private BankDepositRepository bankDepositRepository;
 
 	public void refreshAllCaches() {
 		DateTime startDate = DateTime.now();
@@ -185,6 +190,10 @@ public class CacheService {
 		sponsorshipCountryRepository.clearAllNationalitiesCache();
 		List<SponsorshipCountry> nationalitiesList = sponsorshipCountryRepository.findAll();
 		logger.info("######### nationalitiesList: " + nationalitiesList.size());
+
+		bankDepositRepository.clearBankDepositCache();
+		List<BankDeposit> bankDepositList = bankDepositRepository.findAll();
+		logger.info("######### bankDepositList: " + bankDepositList.size());
 
 		errorCodeRepository.clearErrorCodesCache();
 		newProjectCountryRepository.clearNewProjectCountriesCache();

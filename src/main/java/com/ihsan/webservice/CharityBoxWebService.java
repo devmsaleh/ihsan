@@ -298,6 +298,22 @@ public class CharityBoxWebService extends HAIServiceBase {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Path("/findSubLocationLatestOperation/{subLocationId}")
+	@ApiOperation(value = "عرض آخر عملية تمت فى الموقع الفرعي")
+	public ServiceResponse findSubLocationLatestOperation(@PathParam("subLocationId") BigInteger subLocationId,
+			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
+		try {
+
+			String operation = "لا يوجد عمليات";
+			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, operation, lang);
+		} catch (Exception e) {
+			logger.error("Exception in findSubLocationCharityBoxes webservice: ", e);
+			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
+		}
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	@Path("/findSubLocationCharityBoxes/{subLocationId}")
 	@ApiOperation(value = "عرض حصالات المكان")
 	public ServiceResponse findSubLocationCharityBoxes(@PathParam("subLocationId") BigInteger subLocationId,

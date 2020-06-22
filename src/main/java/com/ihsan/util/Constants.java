@@ -33,4 +33,5 @@ public final class Constants {
 	public static final String CACHE_NAME_COUNTRY_SPONSORSHIP_IMAGE = "COUNTRY_SPONSORSHIP_IMAGE_CACHE";
 	public static final String CACHE_NAME_NEW_PROJECT_TYPE_IMAGE = "NEW_PROJECT_TYPE_IMAGE_CACHE";
 	public static final String CACHE_NAME_ALL_NATIONALITIES = "NATIONALITY_CACHE";
+	public static final String CACHE_NAME_BANKS_DEPOSIT = "BANKS_DEPOSIT_CACHE";
 }

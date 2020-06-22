@@ -16,6 +16,8 @@ public class ReceiptDTO {
 
 	private String donatorName;
 
+	private boolean smsEnglish = false;
+
 	private List<NewCouponDTO> couponsList = new ArrayList<NewCouponDTO>();
 
 	private List<NewProjectDTO> newProjectsList = new ArrayList<NewProjectDTO>();
@@ -103,6 +105,14 @@ public class ReceiptDTO {
 
 	public void setOldSponsorshipList(List<OldSponsorshipDTO> oldSponsorshipList) {
 		this.oldSponsorshipList = oldSponsorshipList;
+	}
+
+	public boolean isSmsEnglish() {
+		return smsEnglish;
+	}
+
+	public void setSmsEnglish(boolean smsEnglish) {
+		this.smsEnglish = smsEnglish;
 	}
 
 }

@@ -28,10 +28,6 @@ public class CharityBoxTransferDetail {
 	@Id
 	@GenericGenerator(name = "charityBoxTransferDetail_id_generator", strategy = "com.ihsan.entities.ids.CharityBoxTransferDetailIdGenerator")
 	@GeneratedValue(generator = "charityBoxTransferDetail_id_generator")
-	// @GeneratedValue(strategy = GenerationType.SEQUENCE, generator =
-	// "CH_BOX_TRANS_DTL_SEQ")
-	// @SequenceGenerator(sequenceName = "CH_BOX_TRANS_DTL_SEQ", allocationSize = 1,
-	// name = "CH_BOX_TRANS_DTL_SEQ")
 	@Column(name = "TRANSFER_LINE_ID")
 	private BigInteger id;
 
@@ -88,6 +84,9 @@ public class CharityBoxTransferDetail {
 
 	@Column(name = "TRANSFER_TYPE")
 	private BigInteger transferType;
+
+	@Column(name = "IS_SUB_LOCATION_CLOSED")
+	private boolean subLocationTemporaryClosed;
 
 	public BigInteger getSafetyCase() {
 		return safetyCase;
@@ -207,6 +206,14 @@ public class CharityBoxTransferDetail {
 
 	public void setTransferType(BigInteger transferType) {
 		this.transferType = transferType;
+	}
+
+	public boolean isSubLocationTemporaryClosed() {
+		return subLocationTemporaryClosed;
+	}
+
+	public void setSubLocationTemporaryClosed(boolean subLocationTemporaryClosed) {
+		this.subLocationTemporaryClosed = subLocationTemporaryClosed;
 	}
 
 }

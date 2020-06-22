@@ -27,10 +27,6 @@ public class SubLocation {
 	@Id
 	@GenericGenerator(name = "subLocation_id_generator", strategy = "com.ihsan.entities.ids.SubLocationIdGenerator")
 	@GeneratedValue(generator = "subLocation_id_generator")
-	// @GeneratedValue(strategy = GenerationType.SEQUENCE, generator =
-	// "SUB_LOCATION_SEQ")
-	// @SequenceGenerator(sequenceName = "SUB_LOCATION_SEQ", allocationSize = 1,
-	// name = "SUB_LOCATION_SEQ")
 	@Column(name = "SUB_LOCATION_ID")
 	private BigInteger id;
 
@@ -80,7 +76,8 @@ public class SubLocation {
 	@Transient
 	private ErrorCodeEnum errorCode;
 
-	// we should map creation date here
+	@Column(name = "IS_TEMPORARY_CLOSED")
+	private boolean subLocationTemporaryClosed;
 
 	public BigInteger getLocationId() {
 		return locationId;
@@ -218,6 +215,14 @@ public class SubLocation {
 
 	public void setDelegate(Delegate delegate) {
 		this.delegate = delegate;
+	}
+
+	public boolean isSubLocationTemporaryClosed() {
+		return subLocationTemporaryClosed;
+	}
+
+	public void setSubLocationTemporaryClosed(boolean subLocationTemporaryClosed) {
+		this.subLocationTemporaryClosed = subLocationTemporaryClosed;
 	}
 
 }

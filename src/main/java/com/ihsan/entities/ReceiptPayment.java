@@ -23,10 +23,6 @@ public class ReceiptPayment {
 	@Id
 	@GenericGenerator(name = "receiptPayment_id_generator", strategy = "com.ihsan.entities.ids.ReceiptPaymentIdGenerator")
 	@GeneratedValue(generator = "receiptPayment_id_generator")
-	// @GeneratedValue(strategy = GenerationType.SEQUENCE, generator =
-	// "tm_receipt_payments_seq")
-	// @SequenceGenerator(sequenceName = "tm_receipt_payments_seq", allocationSize =
-	// 1, name = "tm_receipt_payments_seq")
 	@Column(name = "PAYMENT_CODE", unique = true)
 	private BigInteger id;
 
@@ -57,6 +53,24 @@ public class ReceiptPayment {
 
 	@Column(name = "PAYMENT_TYPE")
 	private String paymentType;
+
+	@Column(name = "BANK_CODE")
+	private String bankCode;
+
+	@Column(name = "DEDUCTION_NUMBER")
+	private String deductionNumber;
+
+	@Column(name = "ACCOUNT_NUMBER")
+	private String accountNumber;
+
+	@Column(name = "ACCOUNT_NAME")
+	private String accountName;
+
+	@Column(name = "DEPOSIT_BANK_ACCOUNT_ID")
+	private BigInteger depositBankAccountId;
+
+	@Column(name = "DEPOSIT_TRANSACTION_NUMBER")
+	private String depositTransactionNumber;
 
 	public BigInteger getId() {
 		return id;
@@ -128,6 +142,54 @@ public class ReceiptPayment {
 
 	public void setPaymentType(String paymentType) {
 		this.paymentType = paymentType;
+	}
+
+	public BigInteger getDepositBankAccountId() {
+		return depositBankAccountId;
+	}
+
+	public void setDepositBankAccountId(BigInteger depositBankAccountId) {
+		this.depositBankAccountId = depositBankAccountId;
+	}
+
+	public String getDepositTransactionNumber() {
+		return depositTransactionNumber;
+	}
+
+	public void setDepositTransactionNumber(String depositTransactionNumber) {
+		this.depositTransactionNumber = depositTransactionNumber;
+	}
+
+	public String getBankCode() {
+		return bankCode;
+	}
+
+	public void setBankCode(String bankCode) {
+		this.bankCode = bankCode;
+	}
+
+	public String getDeductionNumber() {
+		return deductionNumber;
+	}
+
+	public void setDeductionNumber(String deductionNumber) {
+		this.deductionNumber = deductionNumber;
+	}
+
+	public String getAccountNumber() {
+		return accountNumber;
+	}
+
+	public void setAccountNumber(String accountNumber) {
+		this.accountNumber = accountNumber;
+	}
+
+	public String getAccountName() {
+		return accountName;
+	}
+
+	public void setAccountName(String accountName) {
+		this.accountName = accountName;
 	}
 
 }

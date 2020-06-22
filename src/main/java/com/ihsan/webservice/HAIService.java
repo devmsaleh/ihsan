@@ -40,6 +40,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ihsan.constants.ErrorCodeEnum;
 import com.ihsan.entities.BankCheque;
+import com.ihsan.entities.BankDeposit;
 import com.ihsan.entities.BankTransfer;
 import com.ihsan.entities.CouponType;
 import com.ihsan.entities.Delegate;
@@ -774,6 +775,22 @@ public class HAIService extends HAIServiceBase {
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, newList, errorCodeRepository, lang);
 		} catch (Exception e) {
 			logger.error("Exception in getBanksForTransfer webservice: ", e);
+			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
+		}
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Path("/getBanksForDeposit")
+	@ApiOperation(value = "عرض البنوك الخاصة بالإيداع البنكي")
+	public ServiceResponse getBanksForDeposit(@HeaderParam("token") String token, @HeaderParam("lang") String lang)
+			throws Exception {
+		try {
+
+			List<BankDeposit> banksList = bankDepositRepository.findAll();
+			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, banksList, errorCodeRepository, lang);
+		} catch (Exception e) {
+			logger.error("Exception in getBanksForDeposit webservice: ", e);
 			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
 		}
 	}
