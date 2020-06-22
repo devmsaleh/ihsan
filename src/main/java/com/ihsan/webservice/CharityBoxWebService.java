@@ -113,11 +113,11 @@ public class CharityBoxWebService extends HAIServiceBase {
 		try {
 			logger.info("###### emarahId: " + emarahId + ",name: " + name);
 			List<Region> regionsList = new ArrayList<Region>();
-			if (StringUtils.isNotBlank(name)) {
+			if (StringUtils.isNotBlank(name) && !name.equalsIgnoreCase("-1")) {
 				// Pageable page = new PageRequest(0, 10, new Sort(Sort.Direction.ASC, "name"));
 				regionsList = regionRepository.findTop10ByEmarahIdAndNameIgnoreCaseContainingOrderByNameAsc(emarahId,
 						name.trim());
-			} else if (StringUtils.isBlank(name) || name.equalsIgnoreCase("ALL")) {
+			} else {
 				regionsList = regionRepository.findTop100ByEmarahIdOrderByNameAsc(emarahId);
 			}
 			logger.info("###### regionsList: " + regionsList.size());
@@ -137,7 +137,7 @@ public class CharityBoxWebService extends HAIServiceBase {
 			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
 		try {
 			List<Location> locationsList = new ArrayList<Location>();
-			if (StringUtils.isNotBlank(name) && !name.equalsIgnoreCase("ALL")) {
+			if (StringUtils.isNotBlank(name) && !name.equalsIgnoreCase("-1")) {
 				locationsList = locationRepository
 						.findTop10ByRegionIdAndNameIgnoreCaseContainingOrderByNameAsc(regionId, name.trim());
 			} else {
@@ -180,6 +180,7 @@ public class CharityBoxWebService extends HAIServiceBase {
 				subLocationsList = subLocationRepository.findTop10ByNameIgnoreCaseContainingOrderByNameAsc(name);
 			}
 			logger.info("###### findSubLocation,subLocationsList: " + subLocationsList.size());
+			concatDetails = false;
 			List<SubLocationDTO> resultList = convertSubLocationListToDTO(subLocationsList, concatDetails);
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, resultList, errorCodeRepository, lang);
 		} catch (Exception e) {
@@ -199,8 +200,8 @@ public class CharityBoxWebService extends HAIServiceBase {
 
 			List<SubLocation> subLocationsList = new ArrayList<SubLocation>();
 			boolean concatDetails = false;
-			if (locationId != null && locationId.compareTo(BigInteger.ZERO) > 0) {
-				if (StringUtils.isNotBlank(name) && !name.equalsIgnoreCase("ALL")) {
+			if (GeneralUtils.isBigIntegerGreaterThanZero(locationId)) {
+				if (StringUtils.isNotBlank(name) && !name.equalsIgnoreCase("-1")) {
 					subLocationsList = subLocationRepository
 							.findTop10ByLocationIdAndNameIgnoreCaseContainingOrderByNameAsc(locationId, name.trim());
 				} else {
@@ -211,6 +212,7 @@ public class CharityBoxWebService extends HAIServiceBase {
 				subLocationsList = subLocationRepository.findTop10ByNameIgnoreCaseContainingOrderByNameAsc(name);
 			}
 			logger.info("###### findSubLocation,subLocationsList: " + subLocationsList.size());
+			concatDetails = false;
 			List<SubLocationDTO> resultList = convertSubLocationListToDTO(subLocationsList, concatDetails);
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, resultList, errorCodeRepository, lang);
 		} catch (Exception e) {
