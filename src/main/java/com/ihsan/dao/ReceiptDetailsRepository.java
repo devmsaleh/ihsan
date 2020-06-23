@@ -23,7 +23,7 @@ public interface ReceiptDetailsRepository extends JpaRepository<ReceiptDetail, B
 	@Query(value = "SELECT MAX(RECEIPT_DETAIL_CODE) FROM TM_RECEIPT_DETAILS", nativeQuery = true)
 	Long getMaxReceiptDetailId();
 
-	@Query(value = "SELECT LAST_NUMBER FROM dba_sequences where sequence_name='TM_RECEIPT_DETAILS_SEQ'", nativeQuery = true)
+	@Query(value = "SELECT LAST_NUMBER FROM user_sequences where sequence_name='TM_RECEIPT_DETAILS_SEQ'", nativeQuery = true)
 	Long getReceiptDetailsSequenceCurrentValue();
 
 	@Query(value = "select tm_receipt_details_seq.nextval from dual", nativeQuery = true)
