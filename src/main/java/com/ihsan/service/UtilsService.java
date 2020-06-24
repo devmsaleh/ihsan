@@ -494,7 +494,10 @@ public class UtilsService {
 			}
 
 		} catch (Exception e) {
+			log.error("######### Exception in collectMoneyFromDelegate,collectionId: " + collectionId, e);
 			if (collectionId != null && collectionId > 0) {
+				log.info("######## DELETING FROM ReceiptCollection,ReceiptCollectionDetails for collectionId: "
+						+ collectionId);
 				receiptCollectionDetailRepository.deleteReceiptCollectionDetails(BigInteger.valueOf(collectionId));
 				receiptCollectionRepository.deleteReceiptCollection(BigInteger.valueOf(collectionId));
 			}

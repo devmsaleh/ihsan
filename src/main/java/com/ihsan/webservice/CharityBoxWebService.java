@@ -41,6 +41,7 @@ import com.ihsan.util.CustomFileUtils;
 import com.ihsan.util.GeneralUtils;
 import com.ihsan.webservice.dto.GeneralResponseDTO;
 import com.ihsan.webservice.dto.ServiceResponse;
+import com.ihsan.webservice.dto.TransactionDTO;
 import com.ihsan.webservice.dto.charityBox.BarcodeDTO;
 import com.ihsan.webservice.dto.charityBox.CharityBoxDTO;
 import com.ihsan.webservice.dto.charityBox.CharityBoxTransferDTO;
@@ -304,8 +305,9 @@ public class CharityBoxWebService extends HAIServiceBase {
 			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
 		try {
 
-			String operation = "لا يوجد عمليات";
-			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, operation, lang);
+			String operation = "";
+			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, new TransactionDTO(operation), errorCodeRepository,
+					lang);
 		} catch (Exception e) {
 			logger.error("Exception in findSubLocationCharityBoxes webservice: ", e);
 			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
