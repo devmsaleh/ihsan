@@ -1,6 +1,7 @@
 package com.ihsan.dao.charityBoxes;
 
 import java.math.BigInteger;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.cache.annotation.CacheEvict;
@@ -94,4 +95,10 @@ public interface SubLocationRepository extends JpaRepository<SubLocation, BigInt
 	int updateSubLocation(@Param("locationLatitude") Float locationLatitude,
 			@Param("locationLongitude") Float locationLongitude, @Param("id") BigInteger id);
 
+	@Modifying(clearAutomatically = true)
+	@Query(value = "update Sublocation set subLocationTemporaryClosed=:subLocationTemporaryClosed,lastUpdateBy=:lastUpdateBy,lastUpdateDate=:lastUpdateDate where id=:id")
+	@Transactional
+	int updateTemporaryClosed(@Param("id") BigInteger id,
+			@Param("subLocationTemporaryClosed") boolean subLocationTemporaryClosed,
+			@Param("lastUpdateBy") BigInteger lastUpdateBy, @Param("lastUpdateDate") Date lastUpdateDate);
 }

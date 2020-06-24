@@ -43,7 +43,7 @@ public class UtilsRepository {
 			orphanDTO = new OrphanDTO(((BigDecimal) dataArray[0]).toString(), (String) dataArray[1],
 					(Date) dataArray[2], (String) dataArray[3], (String) dataArray[4], (BigDecimal) dataArray[5],
 					(String) dataArray[6], (String) dataArray[7]);
-			orphanDTO.setBirthDateStr(GeneralUtils.formateDate(orphanDTO.getBirthDate()));
+			orphanDTO.setBirthDateStr(GeneralUtils.formatDate(orphanDTO.getBirthDate()));
 			orphanDTO.setGender((String) dataArray[8]);
 			firstTitle = utilsService.getFirstTitleFromCache(orphanDTO.getFirstTitleId());
 			orphanDTO.setFirstTitleName(firstTitle.getName());

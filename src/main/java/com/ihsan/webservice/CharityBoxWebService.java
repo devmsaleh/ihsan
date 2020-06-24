@@ -305,9 +305,44 @@ public class CharityBoxWebService extends HAIServiceBase {
 			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
 		try {
 
-			String operation = "";
-			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, new TransactionDTO(operation), errorCodeRepository,
-					lang);
+			StringBuffer sb = new StringBuffer("");
+			CharityBoxTransfer charityBoxTransfer = charityBoxTransferRepository
+					.findTop1BySubLocationIdOrderByIdDesc(subLocationId);
+			logger.info("########### findSubLocationLatestOperation for subLocationId: " + subLocationId + ",result: "
+					+ charityBoxTransfer);
+			if (charityBoxTransfer != null && StringUtils.isNotBlank(charityBoxTransfer.getActionType())) {
+				String actionTypeDesc = "";
+				CharityBoxActionTypeEnum actionEnum = CharityBoxActionTypeEnum
+						.valueOf(charityBoxTransfer.getActionType());
+				if (actionEnum == null) {
+					actionEnum = CharityBoxActionTypeEnum.UNDEFINED;
+				}
+				actionTypeDesc = actionEnum.getLabel();
+				sb.append("نوع العملية : ").append(actionTypeDesc).append("\n");
+				if (charityBoxTransfer.getCreatedBy() != null) {
+					sb.append("تمت بواسطة : ").append(charityBoxTransfer.getCreatedBy().getName()).append("\n");
+				}
+				sb.append("وقت العملية : ").append(GeneralUtils.formatDateTime(charityBoxTransfer.getCreationDate()))
+						.append("\n");
+				if (actionEnum.equals(CharityBoxActionTypeEnum.CHECK)) {
+					if (charityBoxTransfer.isSubLocationTemporaryClosed())
+						sb.append("المكان مغلق مؤقتا").append("\n");
+					CharityBoxStatus charityBoxStatus = utilsService
+							.getCharityBoxStatusFromCache(charityBoxTransfer.getStatus());
+					if (charityBoxStatus != null) {
+						sb.append("حالة الحصالة : ").append(charityBoxStatus.getName()).append("\n");
+					}
+				}
+
+				if (StringUtils.isNotBlank(charityBoxTransfer.getNotes())) {
+					sb.append("ملاحظات : ").append(charityBoxTransfer.getNotes().trim()).append("\n");
+				}
+
+			} else {
+				sb.append("لا يوجد عمليات");
+			}
+			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, new TransactionDTO(sb.toString()),
+					errorCodeRepository, lang);
 		} catch (Exception e) {
 			logger.error("Exception in findSubLocationCharityBoxes webservice: ", e);
 			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
@@ -442,9 +477,18 @@ public class CharityBoxWebService extends HAIServiceBase {
 				charityBoxTransferDetail.setSubLocation(new SubLocation(charityBox.getSubLocationId()));
 			}
 
+			charityBoxTransfer.setActionType(actionType);
+			charityBoxTransfer.setSubLocationTemporaryClosed(charityBoxTransferDTO.isSubLocationTemporaryClosed());
 			charityBoxTransferRepository.save(charityBoxTransfer);
 			generalResponseDTO.setId(String.valueOf(charityBoxTransfer.getId()));
 			generalResponseDTO.setSuccess(true);
+
+			if (actionType.equals(CharityBoxActionTypeEnum.CHECK.getValue())) {
+				logger.info("####### UPDATE SUBLOCATION STATUS,id: " + charityBoxTransferDTO.getSubLocationId());
+				subLocationRepository.updateTemporaryClosed(charityBoxTransferDTO.getSubLocationId(),
+						charityBoxTransferDTO.isSubLocationTemporaryClosed(), charityBoxTransferDTO.getDelegateId(),
+						new Date());
+			}
 
 			// تحديث حالة الحصالة التى يتم استبدالها لتكون نشطه
 			if (actionType.equals(CharityBoxActionTypeEnum.REPLACE.getValue())) {
@@ -458,9 +502,9 @@ public class CharityBoxWebService extends HAIServiceBase {
 				}
 			}
 
-			String statusId = findCharityBoxStatusId(charityBoxTransferDTO.getActionType().getValue());
-			if (!statusId.equals("-1"))
-				charityBox.setStatus(new CharityBoxStatus(statusId));
+			CharityBoxStatusEnum statusEnum = findCharityBoxStatusByActionType(charityBoxTransferDTO.getActionType());
+			if (statusEnum != null)
+				charityBox.setStatus(new CharityBoxStatus(statusEnum.getValue()));
 			charityBox.setLastUpdateDate(new Date());
 			charityBox.setLastUpdateBy(charityBoxTransfer.getSupervisor());
 			charityBoxRepository.save(charityBox);
@@ -605,24 +649,24 @@ public class CharityBoxWebService extends HAIServiceBase {
 		}
 	}
 
-	private String findCharityBoxStatusId(String actionType) {
-		String statusId = "-1";
-		if (actionType.equals(CharityBoxActionTypeEnum.INSERT.getValue())) {
-			statusId = CharityBoxStatusEnum.ACTIVE.getValue();
-		} else if (actionType.equals(CharityBoxActionTypeEnum.BROKEN.getValue())) {
-			statusId = CharityBoxStatusEnum.BROKEN.getValue();
-		} else if (actionType.equals(CharityBoxActionTypeEnum.COLLECT.getValue())) {
-			statusId = CharityBoxStatusEnum.COLLECTED.getValue();
-		} else if (actionType.equals(CharityBoxActionTypeEnum.LOST.getValue())) {
-			statusId = CharityBoxStatusEnum.LOST.getValue();
-		} else if (actionType.equals(CharityBoxActionTypeEnum.REPLACE.getValue())) {
-			statusId = CharityBoxStatusEnum.REPLACED.getValue();
-		} else if (actionType.equals(CharityBoxActionTypeEnum.COLLECTED_MONEY.getValue())) {
-			statusId = CharityBoxStatusEnum.ACTIVE.getValue();
-		} else if (actionType.equals(CharityBoxActionTypeEnum.WITHDRAWAL.getValue())) {
-			statusId = CharityBoxStatusEnum.NOT_ACTIVE.getValue();
+	private CharityBoxStatusEnum findCharityBoxStatusByActionType(CharityBoxActionTypeEnum actionTypeEnum) {
+		CharityBoxStatusEnum statusEnum = null;
+		if (actionTypeEnum.equals(CharityBoxActionTypeEnum.INSERT)) {
+			statusEnum = CharityBoxStatusEnum.ACTIVE;
+		} else if (actionTypeEnum.equals(CharityBoxActionTypeEnum.BROKEN)) {
+			statusEnum = CharityBoxStatusEnum.BROKEN;
+		} else if (actionTypeEnum.equals(CharityBoxActionTypeEnum.COLLECT)) {
+			statusEnum = CharityBoxStatusEnum.COLLECTED;
+		} else if (actionTypeEnum.equals(CharityBoxActionTypeEnum.LOST)) {
+			statusEnum = CharityBoxStatusEnum.LOST;
+		} else if (actionTypeEnum.equals(CharityBoxActionTypeEnum.REPLACE)) {
+			statusEnum = CharityBoxStatusEnum.REPLACED;
+		} else if (actionTypeEnum.equals(CharityBoxActionTypeEnum.COLLECTED_MONEY)) {
+			statusEnum = CharityBoxStatusEnum.ACTIVE;
+		} else if (actionTypeEnum.equals(CharityBoxActionTypeEnum.WITHDRAWAL)) {
+			statusEnum = CharityBoxStatusEnum.NOT_ACTIVE;
 		}
-		return statusId;
+		return statusEnum;
 	}
 
 	@GET

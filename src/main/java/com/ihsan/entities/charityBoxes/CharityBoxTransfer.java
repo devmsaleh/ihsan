@@ -56,6 +56,9 @@ public class CharityBoxTransfer {
 	@Column(name = "NOTES")
 	private String notes;
 
+	@Column(name = "ACTION_TYPE")
+	private String actionType;
+
 	@Column(name = "TRANSFER_NUMBER")
 	private BigInteger transferNumber;
 
@@ -189,6 +192,21 @@ public class CharityBoxTransfer {
 
 	public void setSubLocationTemporaryClosed(boolean subLocationTemporaryClosed) {
 		this.subLocationTemporaryClosed = subLocationTemporaryClosed;
+	}
+
+	public String getActionType() {
+		return actionType;
+	}
+
+	public void setActionType(String actionType) {
+		this.actionType = actionType;
+	}
+
+	@Override
+	public String toString() {
+		return "CharityBoxTransfer [id=" + id + ", startDate=" + startDate + ", creationDate=" + creationDate
+				+ ", status=" + status + ", notes=" + notes + ", actionType=" + actionType + ", transferNumber="
+				+ transferNumber + ", subLocationTemporaryClosed=" + subLocationTemporaryClosed + "]";
 	}
 
 }

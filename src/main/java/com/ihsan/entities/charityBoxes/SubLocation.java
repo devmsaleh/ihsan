@@ -15,6 +15,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.ihsan.constants.ErrorCodeEnum;
@@ -58,6 +59,13 @@ public class SubLocation {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "CREATION_DATE")
 	private Date creationDate = new Date();
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "LAST_UPDATED_DATE")
+	private Date lastUpdateDate;
+
+	@Column(name = "LAST_UPDATE_BY")
+	private BigInteger lastUpdateBy;
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CREATED_BY")
@@ -114,6 +122,9 @@ public class SubLocation {
 	}
 
 	public String getName() {
+		if (StringUtils.isNotBlank(name) && subLocationTemporaryClosed) {
+			name = name + " (" + "مغلق مؤقتا" + ")";
+		}
 		return name;
 	}
 
@@ -223,6 +234,22 @@ public class SubLocation {
 
 	public void setSubLocationTemporaryClosed(boolean subLocationTemporaryClosed) {
 		this.subLocationTemporaryClosed = subLocationTemporaryClosed;
+	}
+
+	public Date getLastUpdateDate() {
+		return lastUpdateDate;
+	}
+
+	public void setLastUpdateDate(Date lastUpdateDate) {
+		this.lastUpdateDate = lastUpdateDate;
+	}
+
+	public BigInteger getLastUpdateBy() {
+		return lastUpdateBy;
+	}
+
+	public void setLastUpdateBy(BigInteger lastUpdateBy) {
+		this.lastUpdateBy = lastUpdateBy;
 	}
 
 }

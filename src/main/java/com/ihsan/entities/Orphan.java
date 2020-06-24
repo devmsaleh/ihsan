@@ -187,7 +187,7 @@ public class Orphan {
 	}
 
 	public String getBirthDateStr() {
-		birthDateStr = GeneralUtils.formateDate(birthDate);
+		birthDateStr = GeneralUtils.formatDate(birthDate);
 		return birthDateStr;
 	}
 

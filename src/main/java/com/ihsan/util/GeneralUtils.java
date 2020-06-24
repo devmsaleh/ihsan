@@ -28,7 +28,7 @@ public class GeneralUtils {
 		}
 	}
 
-	public static String formateDate(Date date) {
+	public static String formatDate(Date date) {
 		if (date == null)
 			return "";
 		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMATE_FOR_DISPLAY);
@@ -40,11 +40,11 @@ public class GeneralUtils {
 		}
 	}
 
-	public static String formateDateTime(Date date) {
-		return formateDateTime(date, "ar");
+	public static String formatDateTime(Date date) {
+		return formatDateTime(date, "ar");
 	}
 
-	public static String formateDateTime(Date date, String lang) {
+	public static String formatDateTime(Date date, String lang) {
 		if (date == null)
 			return "";
 		String format = DATE_TIME_FORMATE_FOR_DISPLAY_ARABIC;

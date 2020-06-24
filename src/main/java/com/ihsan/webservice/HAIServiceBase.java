@@ -435,11 +435,11 @@ public class HAIServiceBase {
 		DelegateDTO delegateDTO = new DelegateDTO();
 		delegateDTO.setId(delegate.getId().toString());
 		delegateDTO.setAdmin(delegate.isAdmin());
-		delegateDTO.setExpiryDate(GeneralUtils.formateDate(delegate.getExpiryDate()));
+		delegateDTO.setExpiryDate(GeneralUtils.formatDate(delegate.getExpiryDate()));
 		delegateDTO.setMaxLimit(new BigDecimal(delegate.getMaxLimit()));
 		delegateDTO.setName(delegate.getName());
 		delegateDTO.setNumber(delegate.getNumber());
-		delegateDTO.setStartDate(GeneralUtils.formateDate(delegate.getStartDate()));
+		delegateDTO.setStartDate(GeneralUtils.formatDate(delegate.getStartDate()));
 		delegateDTO.setToken(delegate.getToken());
 		delegateDTO.setUserName(delegate.getUserName());
 		delegateDTO.setPinCode(delegate.getPinCode());
@@ -526,7 +526,7 @@ public class HAIServiceBase {
 			if (receipt != null)
 				receiptDetailDTO.setReceiptNumber(receipt.getNumber());
 		}
-		receiptDetailDTO.setDate(GeneralUtils.formateDateTime(receiptDetail.getCreationDate(), lang));
+		receiptDetailDTO.setDate(GeneralUtils.formatDateTime(receiptDetail.getCreationDate(), lang));
 		if (StringUtils.isBlank(receiptDetailDTO.getName())) {
 			receiptDetailDTO.setName(findReceiptDetailName(receiptDetail));
 		}
@@ -537,7 +537,7 @@ public class HAIServiceBase {
 
 	public SupervisorReportDTO convertReceiptListToSupervisorReport(List<Receipt> receiptList) {
 		SupervisorReportDTO supervisorReportDTO = new SupervisorReportDTO();
-		supervisorReportDTO.setDate(GeneralUtils.formateDateTime(new Date()));
+		supervisorReportDTO.setDate(GeneralUtils.formatDateTime(new Date()));
 		for (Receipt receipt : receiptList) {
 			if (receipt.getReceiptPayment().getPaymentType().equals(PaymentTypeEnum.CASH.getValue())) {
 				supervisorReportDTO.setCashAmount(supervisorReportDTO.getCashAmount().add(receipt.getTotalAmount()));
@@ -635,7 +635,7 @@ public class HAIServiceBase {
 		receiptPrintDTO.setDonatorName(receipt.getDonatorName());
 		receiptPrintDTO.setPaymentType(receipt.getPaymentType());
 		receiptPrintDTO.setPaymentTypeDisplay(receipt.getPaymentType());
-		receiptPrintDTO.setReceiptDate(GeneralUtils.formateDateTime(receipt.getCreationDate(), lang));
+		receiptPrintDTO.setReceiptDate(GeneralUtils.formatDateTime(receipt.getCreationDate(), lang));
 		receiptRepository.updateNumberOfPrints(receipt.getId());
 		return receiptPrintDTO;
 	}
