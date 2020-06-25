@@ -24,6 +24,7 @@ public class CharityBoxTransferDTO {
 	private List<BigInteger> attachments = new ArrayList<BigInteger>();
 	private BigInteger safetyCaseId;
 	private boolean subLocationTemporaryClosed;
+	private int subLocationRating;
 
 	public BigInteger getCharityBoxId() {
 		return charityBoxId;
@@ -151,6 +152,14 @@ public class CharityBoxTransferDTO {
 
 	public void setSubLocationTemporaryClosed(boolean subLocationTemporaryClosed) {
 		this.subLocationTemporaryClosed = subLocationTemporaryClosed;
+	}
+
+	public int getSubLocationRating() {
+		return subLocationRating;
+	}
+
+	public void setSubLocationRating(int subLocationRating) {
+		this.subLocationRating = subLocationRating;
 	}
 
 }
