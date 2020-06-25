@@ -26,6 +26,7 @@ import com.ihsan.dao.BankDepositRepository;
 import com.ihsan.dao.BankTransferRepository;
 import com.ihsan.dao.CouponTypeRepository;
 import com.ihsan.dao.DelegateCouponRepository;
+import com.ihsan.dao.DelegateNoteRepository;
 import com.ihsan.dao.DelegateRepository;
 import com.ihsan.dao.DonatorRepository;
 import com.ihsan.dao.ErrorCodeRepository;
@@ -132,6 +133,9 @@ public class HAIServiceBase {
 
 	@Autowired
 	protected DelegateCouponRepository delegateCouponRepository;
+
+	@Autowired
+	protected DelegateNoteRepository delegateNoteRepository;
 
 	@Autowired
 	protected NewProjectTypeRepository newProjectTypeRepository;

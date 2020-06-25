@@ -45,6 +45,7 @@ import com.ihsan.entities.BankTransfer;
 import com.ihsan.entities.CouponType;
 import com.ihsan.entities.Delegate;
 import com.ihsan.entities.DelegateCoupon;
+import com.ihsan.entities.DelegateNote;
 import com.ihsan.entities.Donator;
 import com.ihsan.entities.NewProjectCountry;
 import com.ihsan.entities.NewProjectType;
@@ -365,7 +366,7 @@ public class HAIService extends HAIServiceBase {
 				if (StringUtils.isNotBlank(receiptDTO.getDonatorPhoneNumber())
 						&& receiptDTO.getDonatorPhoneNumber().length() == 10) {
 					sendSMS(receiptDTO.getDonatorPhoneNumber(), receiptPrintDTO.getTotalAmount().toString(),
-							receipt.getNumber().toString());
+							receipt.getNumber().toString(), receiptDTO.isSmsEnglish());
 				}
 			}
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, receiptPrintDTO, errorCodeRepository, lang);
@@ -443,6 +444,58 @@ public class HAIService extends HAIServiceBase {
 					lang);
 		} catch (Exception e) {
 			logger.error("Exception in removeFromFavorites webservice: ", e);
+			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
+		}
+	}
+
+	@POST
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Path("/addNote/{delegateId}/{note}")
+	@ApiOperation(value = "اضافة ملاحظة")
+	public ServiceResponse addNote(@PathParam("delegateId") BigInteger delegateId, @PathParam("note") String note,
+			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
+		try {
+
+			DelegateNote delegateNote = new DelegateNote(delegateId, note);
+			delegateNoteRepository.save(delegateNote);
+			logger.info("######## addNote,id: " + delegateNote.getId());
+			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE,
+					new GeneralResponseDTO(delegateNote.getId().toString()), errorCodeRepository, lang);
+		} catch (Exception e) {
+			logger.error("Exception in addNote webservice: ", e);
+			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
+		}
+	}
+
+	@POST
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Path("/removeNote/{noteId}")
+	@ApiOperation(value = "إزالة ملاحظة")
+	public ServiceResponse removeNote(@PathParam("noteId") BigInteger noteId, @HeaderParam("token") String token,
+			@HeaderParam("lang") String lang) throws Exception {
+		try {
+			delegateNoteRepository.removeNote(noteId);
+			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, new GeneralResponseDTO(true), errorCodeRepository,
+					lang);
+		} catch (Exception e) {
+			logger.error("Exception in removeNote webservice: ", e);
+			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
+		}
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Path("/getNotes/{delegateId}")
+	@ApiOperation(value = "عرض ملاحظات المندوب")
+	public ServiceResponse getNotes(@HeaderParam("token") String token, @PathParam("delegateId") BigInteger delegateId,
+			@HeaderParam("lang") String lang) throws Exception {
+		try {
+
+			List<DelegateNote> notesList = delegateNoteRepository
+					.findByDelegateIdAndActiveTrueOrderByIdDesc(delegateId);
+			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, notesList, errorCodeRepository, lang);
+		} catch (Exception e) {
+			logger.error("Exception in getNotes webservice: ", e);
 			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
 		}
 	}
@@ -815,7 +868,7 @@ public class HAIService extends HAIServiceBase {
 	}
 
 	@Async
-	public String sendSMS(String mobileNumber, String totalDonatedAmount, String receiptNumber) {
+	public String sendSMS(String mobileNumber, String totalDonatedAmount, String receiptNumber, boolean smsEnglish) {
 
 		mobileNumber = "971" + mobileNumber.substring(1);
 		HttpURLConnection connection = null;
@@ -824,13 +877,20 @@ public class HAIService extends HAIServiceBase {
 		try {
 
 			StringBuffer messageTextStringBuffer = new StringBuffer();
-			messageTextStringBuffer.append("نشكركم على تبرعكم بمبلغ").append(" ").append(totalDonatedAmount).append(" ")
-					.append("درهم").append("\n");
-			messageTextStringBuffer.append("رقم المعاملة : ").append(receiptNumber).append("\n");
-			messageTextStringBuffer.append("مع تحيات جمعية الاحسان الخيرية").append("\n");
-			messageTextStringBuffer.append("www.alihsan.ae");
+			if (smsEnglish) {
+				messageTextStringBuffer.append("Thank you for your generous support to Al Ihsan Charity Association")
+						.append("\n").append("Total Amount: ").append(totalDonatedAmount).append(" ").append("dirham")
+						.append("\n");
+				messageTextStringBuffer.append("Transaction no: ").append(receiptNumber).append("\n");
+				messageTextStringBuffer.append("www.alihsan.ae");
+			} else {
+				messageTextStringBuffer.append("نشكركم على تبرعكم بمبلغ").append(" ").append(totalDonatedAmount)
+						.append(" ").append("درهم").append("\n");
+				messageTextStringBuffer.append("رقم المعاملة : ").append(receiptNumber).append("\n");
+				messageTextStringBuffer.append("مع تحيات جمعية الاحسان الخيرية").append("\n");
+				messageTextStringBuffer.append("www.alihsan.ae");
+			}
 			String messageTextStr = URLEncoder.encode(messageTextStringBuffer.toString(), "UTF-8");
-			// http://fuj.smscharity.net:9980/smsgw.aspx?user=fuj191&pass=Passw0rd191$&ProviderID=1019&text=%D8%AA%D8%AC%D8%B1%D8%A8%D8%A9&msisdn=971504339373&encoding=2
 			String userName = "sms_pos";
 			String password = "0fKu9H5ZaGgImlUN";
 			String smsURL = "http://alihsan.smscharity.net:9980/nlsmsgw.aspx?user=" + userName + "&pass=" + password

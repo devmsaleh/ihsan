@@ -318,7 +318,8 @@ public class CharityBoxWebService extends HAIServiceBase {
 					sb.append("تمت بواسطة : ").append(charityBoxTransferDetail.getCreatedBy().getName()).append("\n");
 				}
 				sb.append("وقت العملية : ")
-						.append(GeneralUtils.formatDateTime(charityBoxTransferDetail.getCreationDate())).append("\n");
+						.append(GeneralUtils.formatDateTime(charityBoxTransferDetail.getCreationDate(), "en"))
+						.append("\n");
 				if (charityBoxTransferDetail.getActionType().getId()
 						.equals(CharityBoxActionTypeEnum.CHECK.getValue())) {
 					if (charityBoxTransferDetail.isSubLocationTemporaryClosed())
@@ -474,7 +475,8 @@ public class CharityBoxWebService extends HAIServiceBase {
 			if (actionEnum != null)
 				charityBoxTransfer.setActionType(actionEnum.toString());
 			charityBoxTransfer.setSubLocationTemporaryClosed(charityBoxTransferDTO.isSubLocationTemporaryClosed());
-			charityBoxTransferDetail.setSubLocationTemporaryClosed(charityBoxTransferDTO.isSubLocationTemporaryClosed());
+			charityBoxTransferDetail
+					.setSubLocationTemporaryClosed(charityBoxTransferDTO.isSubLocationTemporaryClosed());
 			charityBoxTransferRepository.save(charityBoxTransfer);
 			generalResponseDTO.setId(String.valueOf(charityBoxTransfer.getId()));
 			generalResponseDTO.setSuccess(true);
