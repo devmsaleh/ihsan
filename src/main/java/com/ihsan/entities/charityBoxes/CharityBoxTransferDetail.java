@@ -55,8 +55,8 @@ public class CharityBoxTransferDetail {
 	@JoinColumn(name = "ACTION_TYPE")
 	private CharityBoxActionType actionType;
 
-	// @Column(name = "STATUS")
-	// private String status = "1";
+	@Column(name = "ACTION_TYPE", insertable = false, updatable = false)
+	private String actionTypeId;
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "SUPERVISOR_ID")
@@ -214,6 +214,21 @@ public class CharityBoxTransferDetail {
 
 	public void setSubLocationTemporaryClosed(boolean subLocationTemporaryClosed) {
 		this.subLocationTemporaryClosed = subLocationTemporaryClosed;
+	}
+
+	public String getActionTypeId() {
+		return actionTypeId;
+	}
+
+	public void setActionTypeId(String actionTypeId) {
+		this.actionTypeId = actionTypeId;
+	}
+
+	@Override
+	public String toString() {
+		return "CharityBoxTransferDetail [id=" + id + ", actionTypeId=" + actionTypeId + ", notes=" + notes
+				+ ", transactionNumber=" + transactionNumber + ", safetyCase=" + safetyCase + ", transferType="
+				+ transferType + ", subLocationTemporaryClosed=" + subLocationTemporaryClosed + "]";
 	}
 
 }

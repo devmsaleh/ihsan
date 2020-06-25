@@ -306,36 +306,27 @@ public class CharityBoxWebService extends HAIServiceBase {
 		try {
 
 			StringBuffer sb = new StringBuffer("");
-			CharityBoxTransfer charityBoxTransfer = charityBoxTransferRepository
+			CharityBoxTransferDetail charityBoxTransferDetail = charityBoxTransferDetailRepository
 					.findTop1BySubLocationIdOrderByIdDesc(subLocationId);
 			logger.info("########### findSubLocationLatestOperation for subLocationId: " + subLocationId + ",result: "
-					+ charityBoxTransfer);
-			if (charityBoxTransfer != null && StringUtils.isNotBlank(charityBoxTransfer.getActionType())) {
+					+ charityBoxTransferDetail);
+			if (charityBoxTransferDetail != null && charityBoxTransferDetail.getActionType() != null) {
 				String actionTypeDesc = "";
-				CharityBoxActionTypeEnum actionEnum = CharityBoxActionTypeEnum
-						.valueOf(charityBoxTransfer.getActionType());
-				if (actionEnum == null) {
-					actionEnum = CharityBoxActionTypeEnum.UNDEFINED;
-				}
-				actionTypeDesc = actionEnum.getLabel();
+				actionTypeDesc = charityBoxTransferDetail.getActionType().getName();
 				sb.append("نوع العملية : ").append(actionTypeDesc).append("\n");
-				if (charityBoxTransfer.getCreatedBy() != null) {
-					sb.append("تمت بواسطة : ").append(charityBoxTransfer.getCreatedBy().getName()).append("\n");
+				if (charityBoxTransferDetail.getCreatedBy() != null) {
+					sb.append("تمت بواسطة : ").append(charityBoxTransferDetail.getCreatedBy().getName()).append("\n");
 				}
-				sb.append("وقت العملية : ").append(GeneralUtils.formatDateTime(charityBoxTransfer.getCreationDate()))
-						.append("\n");
-				if (actionEnum.equals(CharityBoxActionTypeEnum.CHECK)) {
-					if (charityBoxTransfer.isSubLocationTemporaryClosed())
+				sb.append("وقت العملية : ")
+						.append(GeneralUtils.formatDateTime(charityBoxTransferDetail.getCreationDate())).append("\n");
+				if (charityBoxTransferDetail.getActionType().getId()
+						.equals(CharityBoxActionTypeEnum.CHECK.getValue())) {
+					if (charityBoxTransferDetail.isSubLocationTemporaryClosed())
 						sb.append("المكان مغلق مؤقتا").append("\n");
-					CharityBoxStatus charityBoxStatus = utilsService
-							.getCharityBoxStatusFromCache(charityBoxTransfer.getStatus());
-					if (charityBoxStatus != null) {
-						sb.append("حالة الحصالة : ").append(charityBoxStatus.getName()).append("\n");
-					}
 				}
 
-				if (StringUtils.isNotBlank(charityBoxTransfer.getNotes())) {
-					sb.append("ملاحظات : ").append(charityBoxTransfer.getNotes().trim()).append("\n");
+				if (StringUtils.isNotBlank(charityBoxTransferDetail.getNotes())) {
+					sb.append("ملاحظات : ").append(charityBoxTransferDetail.getNotes().trim()).append("\n");
 				}
 
 			} else {
@@ -460,6 +451,8 @@ public class CharityBoxWebService extends HAIServiceBase {
 				logger.info("##### createCharityBoxTransfer,charityboxId: " + charityBoxTransferDTO.getCharityBoxId()
 						+ ",subLocation: " + charityBox.getSubLocationId());
 
+			if (charityBoxTransfer.getSubLocation() == null)
+				charityBoxTransfer.setSubLocation(new SubLocation(charityBox.getSubLocationId()));
 			charityBox.setSupervisor(charityBoxTransfer.getSupervisor());
 
 			// set charityBoxTransfer sublocation
@@ -477,17 +470,25 @@ public class CharityBoxWebService extends HAIServiceBase {
 				charityBoxTransferDetail.setSubLocation(new SubLocation(charityBox.getSubLocationId()));
 			}
 
-			charityBoxTransfer.setActionType(actionType);
+			CharityBoxActionTypeEnum actionEnum = CharityBoxActionTypeEnum.getEnumByValue(actionType);
+			if (actionEnum != null)
+				charityBoxTransfer.setActionType(actionEnum.toString());
 			charityBoxTransfer.setSubLocationTemporaryClosed(charityBoxTransferDTO.isSubLocationTemporaryClosed());
+			charityBoxTransferDetail.setSubLocationTemporaryClosed(charityBoxTransferDTO.isSubLocationTemporaryClosed());
 			charityBoxTransferRepository.save(charityBoxTransfer);
 			generalResponseDTO.setId(String.valueOf(charityBoxTransfer.getId()));
 			generalResponseDTO.setSuccess(true);
 
 			if (actionType.equals(CharityBoxActionTypeEnum.CHECK.getValue())) {
-				logger.info("####### UPDATE SUBLOCATION STATUS,id: " + charityBoxTransferDTO.getSubLocationId());
-				subLocationRepository.updateTemporaryClosed(charityBoxTransferDTO.getSubLocationId(),
-						charityBoxTransferDTO.isSubLocationTemporaryClosed(), charityBoxTransferDTO.getDelegateId(),
-						new Date());
+				if (charityBoxTransfer.getSubLocation() != null) {
+					logger.info("####### UPDATE SUBLOCATION STATUS,id: " + charityBoxTransfer.getSubLocation().getId());
+					subLocationRepository.updateTemporaryClosed(charityBoxTransfer.getSubLocation().getId(),
+							charityBoxTransferDTO.isSubLocationTemporaryClosed(), charityBoxTransferDTO.getDelegateId(),
+							new Date());
+				} else {
+					logger.info(
+							"####### UNABLE TO UPDATE SUBLOCATION STATUS >>> charityBoxTransfer.getSubLocation() IS NULL");
+				}
 			}
 
 			// تحديث حالة الحصالة التى يتم استبدالها لتكون نشطه

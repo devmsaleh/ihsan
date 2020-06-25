@@ -44,6 +44,7 @@ import com.ihsan.dao.TokenRepository;
 import com.ihsan.dao.UtilsRepository;
 import com.ihsan.dao.charityBoxes.AttachmentRepository;
 import com.ihsan.dao.charityBoxes.CharityBoxRepository;
+import com.ihsan.dao.charityBoxes.CharityBoxTransferDetailRepository;
 import com.ihsan.dao.charityBoxes.CharityBoxTransferRepository;
 import com.ihsan.dao.charityBoxes.EmarahRepository;
 import com.ihsan.dao.charityBoxes.LocationRepository;
@@ -209,6 +210,9 @@ public class HAIServiceBase {
 
 	@Autowired
 	protected BankDepositRepository bankDepositRepository;
+
+	@Autowired
+	protected CharityBoxTransferDetailRepository charityBoxTransferDetailRepository;
 
 	@Value("${debugEnabled}")
 	protected boolean debugEnabled;
@@ -928,8 +932,9 @@ public class HAIServiceBase {
 					+ charityBoxTransferDTO.getDelegateId());
 
 		detail.setCreatedBy(new Delegate(charityBoxTransferDTO.getDelegateId()));
-		if (!GeneralUtils.isEmptyNumber(charityBoxTransferDTO.getNewCharityBoxId()))
+		if (!GeneralUtils.isEmptyNumber(charityBoxTransferDTO.getNewCharityBoxId())) {
 			detail.setNewCharityBox(new CharityBox(charityBoxTransferDTO.getNewCharityBoxId()));
+		}
 		detail.setNotes(charityBoxTransferDTO.getNotes());
 		if (!GeneralUtils.isEmptyNumber(charityBoxTransferDTO.getSubLocationId())) {
 			detail.setSubLocation(new SubLocation(charityBoxTransferDTO.getSubLocationId()));

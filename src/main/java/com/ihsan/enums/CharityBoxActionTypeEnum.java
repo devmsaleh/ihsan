@@ -9,6 +9,26 @@ public enum CharityBoxActionTypeEnum {
 	private String value;
 	private String label;
 
+	public static CharityBoxActionTypeEnum getEnumByName(String name) {
+		if (name == null)
+			return null;
+		for (CharityBoxActionTypeEnum enumObj : CharityBoxActionTypeEnum.values()) {
+			if (enumObj.toString().equals(name))
+				return enumObj;
+		}
+		return null;
+	}
+
+	public static CharityBoxActionTypeEnum getEnumByValue(String value) {
+		if (value == null)
+			return null;
+		for (CharityBoxActionTypeEnum enumObj : CharityBoxActionTypeEnum.values()) {
+			if (enumObj.getValue().equals(value))
+				return enumObj;
+		}
+		return null;
+	}
+
 	public String getValue() {
 		return value;
 	}

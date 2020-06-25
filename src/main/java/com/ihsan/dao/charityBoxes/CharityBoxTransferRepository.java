@@ -12,5 +12,4 @@ public interface CharityBoxTransferRepository extends JpaRepository<CharityBoxTr
 	@Query(value = "SELECT MAX(TRANSFER_NUMBER) FROM TM_CHARITY_BOX_TRANSFERS", nativeQuery = true)
 	Long getMaxTransferNumber();
 
-	CharityBoxTransfer findTop1BySubLocationIdOrderByIdDesc(BigInteger subLocationId);
 }
