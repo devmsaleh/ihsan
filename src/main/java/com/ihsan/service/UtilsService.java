@@ -506,7 +506,7 @@ public class UtilsService {
 	}
 
 	public List<Receipt> loadDelegateNotCollectedReceipts(BigInteger delegateId) {
-		List<Receipt> list = receiptRepository.findByCollectedAndCreatedById("N", delegateId);
+		List<Receipt> list = receiptRepository.findByCollectedAndCreatedByIdOrderByIdDesc("N", delegateId);
 		for (Receipt receipt : list) {
 			Hibernate.initialize(receipt.getReceiptPayment());
 		}

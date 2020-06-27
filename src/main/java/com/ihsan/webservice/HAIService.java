@@ -57,6 +57,7 @@ import com.ihsan.enums.PermissionTypeEnum;
 import com.ihsan.service.CacheService;
 import com.ihsan.util.GeneralUtils;
 import com.ihsan.webservice.dto.BankDTO;
+import com.ihsan.webservice.dto.CollectionDTO;
 import com.ihsan.webservice.dto.CouponReportDTO;
 import com.ihsan.webservice.dto.CouponTypeDTO;
 import com.ihsan.webservice.dto.DelegateDTO;
@@ -567,7 +568,7 @@ public class HAIService extends HAIServiceBase {
 			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
 		try {
 
-			List<Receipt> list = receiptRepository.findByCollectedAndCreatedById("N", delegateId);
+			List<Receipt> list = receiptRepository.findByCollectedAndCreatedByIdOrderByIdDesc("N", delegateId);
 			SupervisorReportDTO supervisorReportDTO = convertReceiptListToSupervisorReport(list);
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, supervisorReportDTO, errorCodeRepository, lang);
 		} catch (Exception e) {
@@ -959,18 +960,41 @@ public class HAIService extends HAIServiceBase {
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	@Path("/collectMoneyFromDelegate")
 	@ApiOperation(value = "تحصيل من المندوب")
-	public ServiceResponse collectMoneyFromDelegate(@HeaderParam("delegateId") BigInteger delegateId,
-			@HeaderParam("supervisorId") BigInteger supervisorId, @HeaderParam("token") String token,
+	public ServiceResponse collectMoneyFromDelegate(CollectionDTO collectionDTO, @HeaderParam("token") String token,
 			@HeaderParam("lang") String lang) throws Exception {
 		try {
-			List<Receipt> list = utilsService.loadDelegateNotCollectedReceipts(delegateId);
-			SupervisorReportDTO supervisorReportDTO = convertReceiptListToSupervisorReport(list);
-			utilsService.collectMoneyFromDelegate(delegateId, supervisorId, list);
+			logger.info("######### collectMoneyFromDelegate,collectionDTO: " + collectionDTO);
+			List<Receipt> allReceiptsList = utilsService
+					.loadDelegateNotCollectedReceipts(collectionDTO.getDelegateId());
+			List<Receipt> finalList = new ArrayList<Receipt>();
+			if (collectionDTO.getIgnoredReceiptsList() == null || collectionDTO.getIgnoredReceiptsList().size() == 0) {
+				finalList.addAll(allReceiptsList);
+			} else {
+				for (Receipt receipt : allReceiptsList) {
+					if (!isIgnoredReceipt(collectionDTO.getIgnoredReceiptsList(), receipt.getId())) {
+						finalList.add(receipt);
+					} else {
+						logger.info("######## IGNORING RECEIPT: " + receipt.getId());
+					}
+				}
+			}
+			SupervisorReportDTO supervisorReportDTO = convertReceiptListToSupervisorReport(finalList);
+			utilsService.collectMoneyFromDelegate(collectionDTO.getDelegateId(), collectionDTO.getSupervisorId(),
+					finalList);
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, supervisorReportDTO, errorCodeRepository, lang);
 		} catch (Exception e) {
 			logger.error("Exception in collectMoneyFromDelegate webservice: ", e);
 			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, "خطأ فى النظام : " + e.getMessage());
 		}
+	}
+
+	private boolean isIgnoredReceipt(List<BigInteger> allReceiptsList, BigInteger receiptId) {
+		for (BigInteger ignoredReceipt : allReceiptsList) {
+			if (ignoredReceipt.compareTo(receiptId) == 0) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }
