@@ -101,4 +101,10 @@ public interface SubLocationRepository extends JpaRepository<SubLocation, BigInt
 	int updateTemporaryClosed(@Param("id") BigInteger id,
 			@Param("subLocationTemporaryClosed") boolean subLocationTemporaryClosed,
 			@Param("lastUpdateBy") BigInteger lastUpdateBy, @Param("lastUpdateDate") Date lastUpdateDate);
+
+	@Modifying(clearAutomatically = true)
+	@Query(value = "update SubLocation set rating=:rating,lastRatingBy=:lastRatingBy,lastRatingDate=:lastRatingDate where id=:id")
+	@Transactional
+	int updateRating(@Param("id") BigInteger id, @Param("rating") int rating,
+			@Param("lastRatingBy") BigInteger lastRatingBy, @Param("lastRatingDate") Date lastRatingDate);
 }

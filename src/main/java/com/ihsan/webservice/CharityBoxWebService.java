@@ -481,10 +481,19 @@ public class CharityBoxWebService extends HAIServiceBase {
 			generalResponseDTO.setId(String.valueOf(charityBoxTransfer.getId()));
 			generalResponseDTO.setSuccess(true);
 
+			if (charityBoxTransferDTO.getSubLocationRating() > 0) {
+				logger.info(
+						"####### UPDATE SUBLOCATION RATING,id: " + charityBoxTransferDetail.getSubLocation().getId());
+				subLocationRepository.updateRating(charityBoxTransferDetail.getSubLocation().getId(),
+						charityBoxTransferDTO.getSubLocationRating(), charityBoxTransferDTO.getDelegateId(),
+						new Date());
+			}
+
 			if (actionType.equals(CharityBoxActionTypeEnum.CHECK.getValue())) {
-				if (charityBoxTransfer.getSubLocation() != null) {
-					logger.info("####### UPDATE SUBLOCATION STATUS,id: " + charityBoxTransfer.getSubLocation().getId());
-					subLocationRepository.updateTemporaryClosed(charityBoxTransfer.getSubLocation().getId(),
+				if (charityBoxTransferDetail.getSubLocation() != null) {
+					logger.info("####### UPDATE SUBLOCATION STATUS,id: "
+							+ charityBoxTransferDetail.getSubLocation().getId());
+					subLocationRepository.updateTemporaryClosed(charityBoxTransferDetail.getSubLocation().getId(),
 							charityBoxTransferDTO.isSubLocationTemporaryClosed(), charityBoxTransferDTO.getDelegateId(),
 							new Date());
 				} else {

@@ -87,6 +87,16 @@ public class SubLocation {
 	@Column(name = "IS_TEMPORARY_CLOSED")
 	private boolean subLocationTemporaryClosed;
 
+	@Column(name = "RATING")
+	private Integer rating;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "LAST_RATING_DATE")
+	private Date lastRatingDate;
+
+	@Column(name = "LAST_RATING_BY")
+	private BigInteger lastRatingBy;
+
 	public BigInteger getLocationId() {
 		return locationId;
 	}
@@ -250,6 +260,33 @@ public class SubLocation {
 
 	public void setLastUpdateBy(BigInteger lastUpdateBy) {
 		this.lastUpdateBy = lastUpdateBy;
+	}
+
+	public Integer getRating() {
+		if (rating == null) {
+			rating = 0;
+		}
+		return rating;
+	}
+
+	public void setRating(Integer rating) {
+		this.rating = rating;
+	}
+
+	public Date getLastRatingDate() {
+		return lastRatingDate;
+	}
+
+	public void setLastRatingDate(Date lastRatingDate) {
+		this.lastRatingDate = lastRatingDate;
+	}
+
+	public BigInteger getLastRatingBy() {
+		return lastRatingBy;
+	}
+
+	public void setLastRatingBy(BigInteger lastRatingBy) {
+		this.lastRatingBy = lastRatingBy;
 	}
 
 }
