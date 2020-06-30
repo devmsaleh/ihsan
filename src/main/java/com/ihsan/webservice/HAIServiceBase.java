@@ -558,9 +558,14 @@ public class HAIServiceBase {
 				supervisorReportDTO
 						.setCreditCardAmount(supervisorReportDTO.getCreditCardAmount().add(receipt.getTotalAmount()));
 				supervisorReportDTO.setCreditCardReceiptsCount((supervisorReportDTO.getCreditCardReceiptsCount() + 1));
+			} else if (receipt.getReceiptPayment().getPaymentType().equals(PaymentTypeEnum.DEPOSIT.getValue())) {
+				supervisorReportDTO
+						.setDepositAmount(supervisorReportDTO.getDepositAmount().add(receipt.getTotalAmount()));
+				supervisorReportDTO.setDepositReceiptsCount((supervisorReportDTO.getDepositReceiptsCount() + 1));
 			}
 			supervisorReportDTO.setTotalAmount(supervisorReportDTO.getCashAmount()
-					.add(supervisorReportDTO.getChequeAmount()).add(supervisorReportDTO.getCreditCardAmount()));
+					.add(supervisorReportDTO.getChequeAmount()).add(supervisorReportDTO.getCreditCardAmount())
+					.add(supervisorReportDTO.getDepositAmount()));
 		}
 		return supervisorReportDTO;
 	}

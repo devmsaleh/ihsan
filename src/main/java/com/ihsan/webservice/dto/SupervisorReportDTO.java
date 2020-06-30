@@ -9,9 +9,11 @@ public class SupervisorReportDTO {
 	private BigDecimal cashAmount = new BigDecimal(0);
 	private BigDecimal creditCardAmount = new BigDecimal(0);
 	private BigDecimal chequeAmount = new BigDecimal(0);
+	private BigDecimal depositAmount = new BigDecimal(0);
 	private BigDecimal totalAmount = new BigDecimal(0);
 	private int cashReceiptsCount;
 	private int creditCardReceiptsCount;
+	private int depositReceiptsCount;
 	private int chequeReceiptsCount;
 	private String date;
 	private List<ReceiptPrintDTO> receiptsList = new ArrayList<ReceiptPrintDTO>();
@@ -86,6 +88,22 @@ public class SupervisorReportDTO {
 
 	public void setReceiptsList(List<ReceiptPrintDTO> receiptsList) {
 		this.receiptsList = receiptsList;
+	}
+
+	public BigDecimal getDepositAmount() {
+		return depositAmount;
+	}
+
+	public void setDepositAmount(BigDecimal depositAmount) {
+		this.depositAmount = depositAmount;
+	}
+
+	public int getDepositReceiptsCount() {
+		return depositReceiptsCount;
+	}
+
+	public void setDepositReceiptsCount(int depositReceiptsCount) {
+		this.depositReceiptsCount = depositReceiptsCount;
 	}
 
 }
