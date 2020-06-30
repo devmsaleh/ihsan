@@ -569,7 +569,11 @@ public class HAIService extends HAIServiceBase {
 		try {
 
 			List<Receipt> list = receiptRepository.findByCollectedAndCreatedByIdOrderByIdDesc("N", delegateId);
+			List<ReceiptPrintDTO> receiptsList = new ArrayList<ReceiptPrintDTO>();
+			for (Receipt receipt : list)
+				receiptsList.add(new ReceiptPrintDTO(receipt));
 			SupervisorReportDTO supervisorReportDTO = convertReceiptListToSupervisorReport(list);
+			supervisorReportDTO.setReceiptsList(receiptsList);
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, supervisorReportDTO, errorCodeRepository, lang);
 		} catch (Exception e) {
 			logger.error("Exception in findDelegatedNotCollectedReceipts webservice: ", e);

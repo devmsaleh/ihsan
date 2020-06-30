@@ -1,6 +1,8 @@
 package com.ihsan.webservice.dto;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SupervisorReportDTO {
 
@@ -12,6 +14,7 @@ public class SupervisorReportDTO {
 	private int creditCardReceiptsCount;
 	private int chequeReceiptsCount;
 	private String date;
+	private List<ReceiptPrintDTO> receiptsList = new ArrayList<ReceiptPrintDTO>();
 
 	public BigDecimal getCashAmount() {
 		return cashAmount;
@@ -75,6 +78,14 @@ public class SupervisorReportDTO {
 
 	public void setDate(String date) {
 		this.date = date;
+	}
+
+	public List<ReceiptPrintDTO> getReceiptsList() {
+		return receiptsList;
+	}
+
+	public void setReceiptsList(List<ReceiptPrintDTO> receiptsList) {
+		this.receiptsList = receiptsList;
 	}
 
 }

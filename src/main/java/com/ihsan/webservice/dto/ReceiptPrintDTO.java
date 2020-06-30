@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ihsan.entities.PaymentTypeEnum;
+import com.ihsan.entities.Receipt;
+import com.ihsan.util.GeneralUtils;
 
 public class ReceiptPrintDTO {
 
@@ -17,6 +19,18 @@ public class ReceiptPrintDTO {
 	private List<ReceiptDetailDTO> details = new ArrayList<ReceiptDetailDTO>();
 	private BigDecimal totalAmount = new BigDecimal(0);
 	private int numberOfPrints;
+
+	public ReceiptPrintDTO(Receipt receipt) {
+		this.receiptNumber = receipt.getNumber();
+		this.receiptDate = GeneralUtils.formatDateTime(receipt.getCreationDate());
+		this.totalAmount = receipt.getTotalAmount();
+		this.paymentType = null;
+		this.paymentTypeDisplay = null;
+	}
+
+	public ReceiptPrintDTO() {
+
+	}
 
 	public String getReceiptDate() {
 		return receiptDate;
