@@ -1,6 +1,7 @@
 package com.ihsan.webservice.dto;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +13,7 @@ public class ReceiptPrintDTO {
 
 	private String receiptDate;
 	private String receiptNumber;
+	private BigInteger receiptId;
 	private String paymentType = PaymentTypeEnum.CASH.getValue();
 	private String paymentTypeDisplay = PaymentTypeEnum.CASH.getValue();
 	private String donatorName;
@@ -22,6 +24,7 @@ public class ReceiptPrintDTO {
 
 	public ReceiptPrintDTO(Receipt receipt) {
 		this.receiptNumber = receipt.getNumber();
+		this.receiptId = receipt.getId();
 		this.receiptDate = GeneralUtils.formatDateTime(receipt.getCreationDate());
 		this.totalAmount = receipt.getTotalAmount();
 		this.paymentType = null;
@@ -102,6 +105,14 @@ public class ReceiptPrintDTO {
 
 	public void setNumberOfPrints(int numberOfPrints) {
 		this.numberOfPrints = numberOfPrints;
+	}
+
+	public BigInteger getReceiptId() {
+		return receiptId;
+	}
+
+	public void setReceiptId(BigInteger receiptId) {
+		this.receiptId = receiptId;
 	}
 
 }
