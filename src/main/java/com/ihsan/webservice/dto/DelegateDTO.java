@@ -18,11 +18,11 @@ public class DelegateDTO {
 	private boolean supervisor;
 	private String mobile;
 	private BigDecimal amountNotCollected = new BigDecimal(0);
+	private boolean updateCoupons;
 	private boolean charityBox;
 	private boolean coupon;
 	private boolean sponsorship;
 	private boolean project;
-	private boolean updateCoupons;
 
 	public String getId() {
 		return id;
