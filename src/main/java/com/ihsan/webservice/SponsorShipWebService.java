@@ -229,7 +229,6 @@ public class SponsorShipWebService extends HAIServiceBase {
 			boolean isFlagged = isFlaggedValue != null && isFlaggedValue.intValue() == 1;
 			if (!isFlagged) {
 				int result = orphanRepository.flag(id);
-
 				generalResponseDTO.setSuccess(result > 0);
 			}
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, generalResponseDTO, errorCodeRepository, lang);

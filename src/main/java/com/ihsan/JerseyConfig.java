@@ -6,6 +6,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.springframework.context.annotation.Configuration;
 
 import com.ihsan.webservice.HAIService;
+import com.ihsan.webservice.SponsorShipWebService;
 
 import io.swagger.jaxrs.config.BeanConfig;
 import io.swagger.jaxrs.config.SwaggerConfigLocator;
@@ -18,7 +19,7 @@ public class JerseyConfig extends ResourceConfig {
 
 	public JerseyConfig() {
 		register(HAIService.class);
-		// register(SponsorShipWebService.class);
+		register(SponsorShipWebService.class);
 
 		BeanConfig swaggerConfig = new BeanConfig();
 		swaggerConfig.setBasePath("/ihsan/api");
