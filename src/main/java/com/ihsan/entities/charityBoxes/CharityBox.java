@@ -75,6 +75,9 @@ public class CharityBox {
 	@Column(name = "COMMENTS")
 	private String comments;
 
+	@Column(name = "BRANCH_ID")
+	private BigInteger branchId;
+
 	public CharityBox() {
 
 	}
@@ -209,6 +212,14 @@ public class CharityBox {
 
 	public void setSubLocation(SubLocation subLocation) {
 		this.subLocation = subLocation;
+	}
+
+	public BigInteger getBranchId() {
+		return branchId;
+	}
+
+	public void setBranchId(BigInteger branchId) {
+		this.branchId = branchId;
 	}
 
 }

@@ -34,6 +34,7 @@ import com.ihsan.entities.charityBoxes.Emarah;
 import com.ihsan.entities.charityBoxes.Location;
 import com.ihsan.entities.charityBoxes.Region;
 import com.ihsan.entities.charityBoxes.RouteDetail;
+import com.ihsan.entities.charityBoxes.SafetyCase;
 import com.ihsan.entities.charityBoxes.SubLocation;
 import com.ihsan.enums.CharityBoxActionTypeEnum;
 import com.ihsan.enums.CharityBoxStatusEnum;
@@ -101,6 +102,31 @@ public class CharityBoxWebService extends HAIServiceBase {
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, charityBoxDTO, errorCodeRepository, lang);
 		} catch (Exception e) {
 			logger.error("Exception in findCharityBox webservice: ", e);
+			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
+		}
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Path("/findSafetyCase/{barcode}")
+	@ApiOperation(value = "البحث عن الكيس بواسطة الباركود")
+	public ServiceResponse findSafetyCase(@PathParam("barcode") String barcode, @HeaderParam("token") String token,
+			@HeaderParam("lang") String lang) throws Exception {
+		try {
+
+			SafetyCase safetyCase = safetyCaseRepository.findByBarcode(barcode);
+			logger.info("###### findSafetyCase,safetyCase: " + safetyCase);
+			if (safetyCase == null) {
+				return new ServiceResponse(ErrorCodeEnum.WRONG_SAFETY_CASE_BARCODE, "لا يمكن العثور على بيانات الكيس",
+						lang);
+			}
+			if (safetyCase.getStatus().equalsIgnoreCase("Y")) {
+				return new ServiceResponse(ErrorCodeEnum.SAFETY_CASE_ACTIVE, "لا يمكن استخدام الكيس لأن حالته فعال",
+						lang);
+			}
+			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, safetyCase, errorCodeRepository, lang);
+		} catch (Exception e) {
+			logger.error("Exception in findSafetyCase webservice: ", e);
 			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
 		}
 	}
@@ -477,6 +503,9 @@ public class CharityBoxWebService extends HAIServiceBase {
 			charityBoxTransfer.setSubLocationTemporaryClosed(charityBoxTransferDTO.isSubLocationTemporaryClosed());
 			charityBoxTransferDetail
 					.setSubLocationTemporaryClosed(charityBoxTransferDTO.isSubLocationTemporaryClosed());
+			if (charityBox != null) {
+				charityBoxTransfer.setBranchId(charityBox.getBranchId());
+			}
 			charityBoxTransferRepository.save(charityBoxTransfer);
 			generalResponseDTO.setId(String.valueOf(charityBoxTransfer.getId()));
 			generalResponseDTO.setSuccess(true);
@@ -528,6 +557,13 @@ public class CharityBoxWebService extends HAIServiceBase {
 							attachmentId);
 					index++;
 				}
+			}
+
+			if (actionType.equals(CharityBoxActionTypeEnum.COLLECTED_MONEY.getValue())
+					&& !GeneralUtils.isEmptyNumber(charityBoxTransferDTO.getSafetyCaseId())) {
+				if (debugEnabled)
+					logger.info("######### updating safety case: " + charityBoxTransferDTO.getSafetyCaseId());
+				safetyCaseRepository.updateSafetyCaseStatus(charityBoxTransferDTO.getSafetyCaseId(), "Y", new Date());
 			}
 
 			if (charityBoxTransferDTO.getUpdateSublocationLatitude() != null
@@ -662,23 +698,7 @@ public class CharityBoxWebService extends HAIServiceBase {
 	}
 
 	private CharityBoxStatusEnum findCharityBoxStatusByActionType(CharityBoxActionTypeEnum actionTypeEnum) {
-		CharityBoxStatusEnum statusEnum = null;
-		if (actionTypeEnum.equals(CharityBoxActionTypeEnum.INSERT)) {
-			statusEnum = CharityBoxStatusEnum.ACTIVE;
-		} else if (actionTypeEnum.equals(CharityBoxActionTypeEnum.BROKEN)) {
-			statusEnum = CharityBoxStatusEnum.BROKEN;
-		} else if (actionTypeEnum.equals(CharityBoxActionTypeEnum.COLLECT)) {
-			statusEnum = CharityBoxStatusEnum.COLLECTED;
-		} else if (actionTypeEnum.equals(CharityBoxActionTypeEnum.LOST)) {
-			statusEnum = CharityBoxStatusEnum.LOST;
-		} else if (actionTypeEnum.equals(CharityBoxActionTypeEnum.REPLACE)) {
-			statusEnum = CharityBoxStatusEnum.REPLACED;
-		} else if (actionTypeEnum.equals(CharityBoxActionTypeEnum.COLLECTED_MONEY)) {
-			statusEnum = CharityBoxStatusEnum.ACTIVE;
-		} else if (actionTypeEnum.equals(CharityBoxActionTypeEnum.WITHDRAWAL)) {
-			statusEnum = CharityBoxStatusEnum.NOT_ACTIVE;
-		}
-		return statusEnum;
+		return actionTypeEnum.getRelatedStatusEnum();
 	}
 
 	@GET

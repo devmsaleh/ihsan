@@ -78,6 +78,9 @@ public class CharityBoxTransfer {
 	@Column(name = "IS_SUB_LOCATION_CLOSED")
 	private boolean subLocationTemporaryClosed;
 
+	@Column(name = "BRANCH_ID")
+	private BigInteger branchId;
+
 	public CharityBoxTransfer() {
 
 	}
@@ -207,6 +210,14 @@ public class CharityBoxTransfer {
 		return "CharityBoxTransfer [id=" + id + ", startDate=" + startDate + ", creationDate=" + creationDate
 				+ ", status=" + status + ", notes=" + notes + ", actionType=" + actionType + ", transferNumber="
 				+ transferNumber + ", subLocationTemporaryClosed=" + subLocationTemporaryClosed + "]";
+	}
+
+	public BigInteger getBranchId() {
+		return branchId;
+	}
+
+	public void setBranchId(BigInteger branchId) {
+		this.branchId = branchId;
 	}
 
 }

@@ -51,6 +51,7 @@ import com.ihsan.dao.charityBoxes.EmarahRepository;
 import com.ihsan.dao.charityBoxes.LocationRepository;
 import com.ihsan.dao.charityBoxes.RegionRepository;
 import com.ihsan.dao.charityBoxes.RouteDetailRepository;
+import com.ihsan.dao.charityBoxes.SafetyCaseRepository;
 import com.ihsan.dao.charityBoxes.SubLocationRepository;
 import com.ihsan.entities.BankCheque;
 import com.ihsan.entities.BankTransfer;
@@ -217,6 +218,9 @@ public class HAIServiceBase {
 
 	@Autowired
 	protected CharityBoxTransferDetailRepository charityBoxTransferDetailRepository;
+
+	@Autowired
+	protected SafetyCaseRepository safetyCaseRepository;
 
 	@Value("${debugEnabled}")
 	protected boolean debugEnabled;
