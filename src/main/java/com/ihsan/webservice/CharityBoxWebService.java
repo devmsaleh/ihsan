@@ -341,7 +341,16 @@ public class CharityBoxWebService extends HAIServiceBase {
 				actionTypeDesc = charityBoxTransferDetail.getActionType().getName();
 				sb.append("نوع العملية : ").append(actionTypeDesc).append("\n");
 				if (charityBoxTransferDetail.getCreatedBy() != null) {
-					sb.append("تمت بواسطة : ").append(charityBoxTransferDetail.getCreatedBy().getName()).append("\n");
+					try {
+						sb.append("تمت بواسطة : ").append(charityBoxTransferDetail.getCreatedBy().getName())
+								.append("\n");
+					} catch (Exception e) {
+						logger.error(
+								"Exception in findSubLocationCharityBoxes webservice for charityBoxTransferDetailId: "
+										+ charityBoxTransferDetail.getId() + ",unable to find delegate with id: "
+										+ charityBoxTransferDetail.getCreatedBy().getId(),
+								e);
+					}
 				}
 				sb.append("وقت العملية : ")
 						.append(GeneralUtils.formatDateTime(charityBoxTransferDetail.getCreationDate(), "en"))
@@ -515,6 +524,14 @@ public class CharityBoxWebService extends HAIServiceBase {
 						"####### UPDATE SUBLOCATION RATING,id: " + charityBoxTransferDetail.getSubLocation().getId());
 				subLocationRepository.updateRating(charityBoxTransferDetail.getSubLocation().getId(),
 						charityBoxTransferDTO.getSubLocationRating(), charityBoxTransferDTO.getDelegateId(),
+						new Date());
+			}
+
+			if (StringUtils.isNotBlank(charityBoxTransferDTO.getSubLocationNotes())) {
+				logger.info(
+						"####### UPDATE SUBLOCATION NOTES,id: " + charityBoxTransferDetail.getSubLocation().getId());
+				subLocationRepository.updateNotes(charityBoxTransferDetail.getSubLocation().getId(),
+						charityBoxTransferDTO.getSubLocationNotes().trim(), charityBoxTransferDTO.getDelegateId(),
 						new Date());
 			}
 

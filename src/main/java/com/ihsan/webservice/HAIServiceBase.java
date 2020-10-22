@@ -788,6 +788,9 @@ public class HAIServiceBase {
 		for (SubLocation subLocation : inputList) {
 			subLocationDTO = new SubLocationDTO(subLocation.getId(), subLocation.getLocationId(), subLocation.getName(),
 					subLocation.getLocationLatitude(), subLocation.getLocationLongitude());
+			subLocationDTO.setRating(subLocation.getRating());
+			subLocationDTO.setSubLocationTemporaryClosed(subLocation.isSubLocationTemporaryClosed());
+			subLocationDTO.setNotes(subLocation.getNotes());
 			if (concatDetails && subLocation.getLocationId() != null
 					&& subLocation.getLocationId().compareTo(BigInteger.ZERO) > 0) {
 				location = utilsService.getLocationFromCache(subLocation.getLocationId());

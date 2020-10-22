@@ -25,6 +25,7 @@ public class CharityBoxTransferDTO {
 	private BigInteger safetyCaseId;
 	private boolean subLocationTemporaryClosed;
 	private int subLocationRating;
+	private String subLocationNotes;
 
 	public BigInteger getCharityBoxId() {
 		return charityBoxId;
@@ -160,6 +161,14 @@ public class CharityBoxTransferDTO {
 
 	public void setSubLocationRating(int subLocationRating) {
 		this.subLocationRating = subLocationRating;
+	}
+
+	public String getSubLocationNotes() {
+		return subLocationNotes;
+	}
+
+	public void setSubLocationNotes(String subLocationNotes) {
+		this.subLocationNotes = subLocationNotes;
 	}
 
 }

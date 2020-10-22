@@ -97,6 +97,16 @@ public class SubLocation {
 	@Column(name = "LAST_RATING_BY")
 	private BigInteger lastRatingBy;
 
+	@Column(name = "NOTES")
+	private String notes;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "LAST_NOTES_DATE")
+	private Date lastNotesDate;
+
+	@Column(name = "LAST_NOTES_BY")
+	private BigInteger lastNotesBy;
+
 	public BigInteger getLocationId() {
 		return locationId;
 	}
@@ -287,6 +297,30 @@ public class SubLocation {
 
 	public void setLastRatingBy(BigInteger lastRatingBy) {
 		this.lastRatingBy = lastRatingBy;
+	}
+
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
+	public Date getLastNotesDate() {
+		return lastNotesDate;
+	}
+
+	public void setLastNotesDate(Date lastNotesDate) {
+		this.lastNotesDate = lastNotesDate;
+	}
+
+	public BigInteger getLastNotesBy() {
+		return lastNotesBy;
+	}
+
+	public void setLastNotesBy(BigInteger lastNotesBy) {
+		this.lastNotesBy = lastNotesBy;
 	}
 
 }

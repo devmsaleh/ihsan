@@ -15,6 +15,9 @@ public class SubLocationDTO {
 	private Float locationLongitude;
 	private String address;
 	private String mobile;
+	private int rating;
+	private boolean subLocationTemporaryClosed;
+	private String notes;
 
 	public SubLocationDTO() {
 
@@ -107,6 +110,30 @@ public class SubLocationDTO {
 
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
+	}
+
+	public int getRating() {
+		return rating;
+	}
+
+	public void setRating(int rating) {
+		this.rating = rating;
+	}
+
+	public boolean isSubLocationTemporaryClosed() {
+		return subLocationTemporaryClosed;
+	}
+
+	public void setSubLocationTemporaryClosed(boolean subLocationTemporaryClosed) {
+		this.subLocationTemporaryClosed = subLocationTemporaryClosed;
+	}
+
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
 	}
 
 }
