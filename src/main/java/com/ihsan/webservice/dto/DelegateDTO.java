@@ -23,6 +23,42 @@ public class DelegateDTO {
 	private boolean coupon;
 	private boolean sponsorship;
 	private boolean project;
+	private BigDecimal cashAmount = new BigDecimal(0);
+	private BigDecimal creditCardAmount = new BigDecimal(0);
+	private BigDecimal chequeAmount = new BigDecimal(0);
+	private BigDecimal depositAmount = new BigDecimal(0);
+
+	public BigDecimal getCashAmount() {
+		return cashAmount;
+	}
+
+	public void setCashAmount(BigDecimal cashAmount) {
+		this.cashAmount = cashAmount;
+	}
+
+	public BigDecimal getCreditCardAmount() {
+		return creditCardAmount;
+	}
+
+	public void setCreditCardAmount(BigDecimal creditCardAmount) {
+		this.creditCardAmount = creditCardAmount;
+	}
+
+	public BigDecimal getChequeAmount() {
+		return chequeAmount;
+	}
+
+	public void setChequeAmount(BigDecimal chequeAmount) {
+		this.chequeAmount = chequeAmount;
+	}
+
+	public BigDecimal getDepositAmount() {
+		return depositAmount;
+	}
+
+	public void setDepositAmount(BigDecimal depositAmount) {
+		this.depositAmount = depositAmount;
+	}
 
 	public String getId() {
 		return id;

@@ -28,7 +28,7 @@ public interface ReceiptRepository extends JpaRepository<Receipt, BigInteger> {
 	@Query(value = "select sum(TOTAL_AMOUNT) from TM_RECEIPTS where TM_DELEGATES_CODE=:delegateId and STATUS=0", nativeQuery = true)
 	BigDecimal getDelegateTotalAmount(@Param("delegateId") BigInteger delegateId);
 
-	List<Receipt> findByCollectedAndCreatedByIdOrderByIdDesc(String collected, BigInteger delegateId);
+	List<Receipt> findByCollectedAndCreatedByIdOrderByIdDesc(boolean collected, BigInteger delegateId);
 
 	@Query(value = "SELECT MAX(TO_NUMBER(receipt_number)) FROM tm_receipts", nativeQuery = true)
 	Long getMaxReceiptNumber();

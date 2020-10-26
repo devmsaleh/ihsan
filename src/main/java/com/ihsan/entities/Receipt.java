@@ -20,7 +20,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -69,12 +68,9 @@ public class Receipt {
 	@Column(name = "DONATOR_NAME", columnDefinition = "nvarchar2 (100)")
 	private String donatorName;
 
-	@Column(name = "COLLECTED")
-	private String collected = "N"; // 0 means not collected , 1 means collected
-
 	// status 0,1
-	@Column(name = "STATUS")
-	private Integer status = 0;
+	@Column(name = "STATUS", columnDefinition = "NUMBER(3,0)")
+	private boolean collected;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "RECEIPT_DATE")
@@ -206,17 +202,6 @@ public class Receipt {
 		this.donatorPhoneNumber = donatorPhoneNumber;
 	}
 
-	public String getCollected() {
-		if (StringUtils.isBlank(collected)) {
-			collected = "N";
-		}
-		return collected;
-	}
-
-	public void setCollected(String collected) {
-		this.collected = collected;
-	}
-
 	public Date getReceiptDate() {
 		return receiptDate;
 	}
@@ -253,20 +238,20 @@ public class Receipt {
 		this.paymentType = paymentType;
 	}
 
-	public Integer getStatus() {
-		return status;
-	}
-
-	public void setStatus(Integer status) {
-		this.status = status;
-	}
-
 	public boolean isTawasulApp() {
 		return tawasulApp;
 	}
 
 	public void setTawasulApp(boolean tawasulApp) {
 		this.tawasulApp = tawasulApp;
+	}
+
+	public boolean isCollected() {
+		return collected;
+	}
+
+	public void setCollected(boolean collected) {
+		this.collected = collected;
 	}
 
 }

@@ -49,6 +49,7 @@ import com.ihsan.entities.DelegateNote;
 import com.ihsan.entities.Donator;
 import com.ihsan.entities.NewProjectCountry;
 import com.ihsan.entities.NewProjectType;
+import com.ihsan.entities.PaymentTypeEnum;
 import com.ihsan.entities.ProjectStudy;
 import com.ihsan.entities.Receipt;
 import com.ihsan.entities.ReceiptDetail;
@@ -517,7 +518,7 @@ public class HAIService extends HAIServiceBase {
 			toDate = DateUtils.setSeconds(toDate, 0);
 			List<ReceiptDetail> list = receiptDetailsRepository
 					.findByCreatedByIdAndReceiptCollectedAndCreationDateGreaterThanEqualAndCreationDateLessThanEqualOrderByIdAsc(
-							delegateId, "N", fromDate, toDate);
+							delegateId, false, fromDate, toDate);
 
 			List<CouponReportDTO> resultList = convertReceiptDetailsToCouponReportDTO(list, lang);
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, resultList, errorCodeRepository, lang);
@@ -546,7 +547,7 @@ public class HAIService extends HAIServiceBase {
 			if (notCollectedOnly)
 				list = receiptDetailsRepository
 						.findByCreatedByIdAndReceiptCollectedAndCreationDateGreaterThanEqualAndCreationDateLessThanEqualOrderByIdAsc(
-								delegateId, "N", fromDate, toDate);
+								delegateId, false, fromDate, toDate);
 			else
 				list = receiptDetailsRepository
 						.findByCreatedByIdAndCreationDateGreaterThanEqualAndCreationDateLessThanEqualOrderByIdAsc(
@@ -568,7 +569,7 @@ public class HAIService extends HAIServiceBase {
 			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
 		try {
 
-			List<Receipt> list = receiptRepository.findByCollectedAndCreatedByIdOrderByIdDesc("N", delegateId);
+			List<Receipt> list = receiptRepository.findByCollectedAndCreatedByIdOrderByIdDesc(false, delegateId);
 			List<ReceiptPrintDTO> receiptsList = new ArrayList<ReceiptPrintDTO>();
 			for (Receipt receipt : list)
 				receiptsList.add(new ReceiptPrintDTO(receipt));
@@ -950,8 +951,23 @@ public class HAIService extends HAIServiceBase {
 			List<Delegate> delegateList = delegateRepository.getSupervisorDelegates(supervisorId);
 			List<DelegateDTO> resultList = convertDelegateListToDTO(delegateList);
 			for (DelegateDTO delegateDTO : resultList) {
-				delegateDTO.setAmountNotCollected(
-						receiptRepository.getDelegateTotalAmount(new BigInteger(delegateDTO.getId())));
+				List<Receipt> receiptList = receiptRepository.findByCollectedAndCreatedByIdOrderByIdDesc(false,
+						new BigInteger(delegateDTO.getId()));
+				for (Receipt receipt : receiptList) {
+					if (receipt.getReceiptPayment().getPaymentType().equals(PaymentTypeEnum.CASH.getValue())) {
+						delegateDTO.setCashAmount(delegateDTO.getCashAmount().add(receipt.getTotalAmount()));
+					} else if (receipt.getReceiptPayment().getPaymentType().equals(PaymentTypeEnum.CHEQUE.getValue())) {
+						delegateDTO.setChequeAmount(delegateDTO.getChequeAmount().add(receipt.getTotalAmount()));
+					} else if (receipt.getReceiptPayment().getPaymentType().equals(PaymentTypeEnum.CREDIT.getValue())) {
+						delegateDTO
+								.setCreditCardAmount(delegateDTO.getCreditCardAmount().add(receipt.getTotalAmount()));
+					} else if (receipt.getReceiptPayment().getPaymentType()
+							.equals(PaymentTypeEnum.DEPOSIT.getValue())) {
+						delegateDTO.setDepositAmount(delegateDTO.getDepositAmount().add(receipt.getTotalAmount()));
+					}
+					delegateDTO.setAmountNotCollected(delegateDTO.getCashAmount().add(delegateDTO.getChequeAmount())
+							.add(delegateDTO.getCreditCardAmount()).add(delegateDTO.getDepositAmount()));
+				}
 			}
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, resultList, errorCodeRepository, lang);
 		} catch (Exception e) {

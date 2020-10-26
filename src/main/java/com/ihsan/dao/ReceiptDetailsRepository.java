@@ -18,7 +18,7 @@ public interface ReceiptDetailsRepository extends JpaRepository<ReceiptDetail, B
 			BigInteger delegateId, Date fromDate, Date toDate);
 
 	List<ReceiptDetail> findByCreatedByIdAndReceiptCollectedAndCreationDateGreaterThanEqualAndCreationDateLessThanEqualOrderByIdAsc(
-			BigInteger delegateId, String collected, Date fromDate, Date toDate);
+			BigInteger delegateId, boolean collected, Date fromDate, Date toDate);
 
 	@Query(value = "SELECT MAX(RECEIPT_DETAIL_CODE) FROM TM_RECEIPT_DETAILS", nativeQuery = true)
 	Long getMaxReceiptDetailId();
