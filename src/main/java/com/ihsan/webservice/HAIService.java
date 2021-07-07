@@ -99,6 +99,9 @@ public class HAIService extends HAIServiceBase {
 	public ServiceResponse login(@HeaderParam("userName") String userName, @HeaderParam("password") String password,
 			@HeaderParam("lang") String lang) throws Exception {
 		try {
+			logger.info("########### login,userName: " + userName + ",password: " + password);
+			if (StringUtils.isBlank(userName) || StringUtils.isBlank(password))
+				return new ServiceResponse(ErrorCodeEnum.EMPTY_USERNAME_OR_PASSWORD, errorCodeRepository, lang);
 			Delegate delegate = delegateRepository.authenticate(userName, password);
 			if (delegate == null) {
 				return new ServiceResponse(ErrorCodeEnum.WRONG_CREDENTIALS, errorCodeRepository, lang);

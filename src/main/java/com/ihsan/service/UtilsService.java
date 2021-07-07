@@ -369,6 +369,9 @@ public class UtilsService {
 
 	public OrphanDTO getOrphanDetails(BigInteger id) {
 		Orphan orphan = orphanRepository.findOne(id);
+		if (orphan == null) {
+			log.error("######### unable to find orphan with id: " + id);
+		}
 		OrphanDTO orphanDTO = new OrphanDTO(orphan.getId().toString(), orphan.getName(), orphan.getBirthDateStr(),
 				orphan.getCaseNumber(), orphan.getGenderName());
 
