@@ -714,12 +714,12 @@ public class HAIService extends HAIServiceBase {
 			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
 		try {
 			List<ProjectStudy> projectStudyList = new ArrayList<ProjectStudy>();
-			if (StringUtils.isNotBlank(name)) {
+			if (StringUtils.isNotBlank(name) && !name.trim().equalsIgnoreCase("LIST_ALL")) {
 				projectStudyList = projectStudyRepository
 						.findTop10ByCountryIdAndProjectTypeIdAndNameIgnoreCaseContainingOrderByNameAsc(countryId,
 								projectTypeId, name);
 			} else {
-				projectStudyList = projectStudyRepository.findTop10ByCountryIdAndProjectTypeIdOrderByNameAsc(countryId,
+				projectStudyList = projectStudyRepository.findTop100ByCountryIdAndProjectTypeIdOrderByNameAsc(countryId,
 						projectTypeId);
 			}
 			logger.info("###### projectStudyList: " + projectStudyList.size());

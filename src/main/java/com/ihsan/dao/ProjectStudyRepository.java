@@ -12,5 +12,6 @@ public interface ProjectStudyRepository extends JpaRepository<ProjectStudy, BigI
 	List<ProjectStudy> findTop10ByCountryIdAndProjectTypeIdAndNameIgnoreCaseContainingOrderByNameAsc(String countryId,
 			BigInteger projectTypeId, String name);
 
-	List<ProjectStudy> findTop10ByCountryIdAndProjectTypeIdOrderByNameAsc(String countryId, BigInteger projectTypeId);
+	List<ProjectStudy> findTop100ByCountryIdAndProjectTypeIdOrderByNameAsc(String countryId, BigInteger projectTypeId);
+
 }
