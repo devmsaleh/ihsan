@@ -561,8 +561,11 @@ public class CharityBoxWebService extends HAIServiceBase {
 			}
 
 			CharityBoxStatusEnum statusEnum = findCharityBoxStatusByActionType(charityBoxTransferDTO.getActionType());
-			if (statusEnum != null)
+			logger.info("######### charityBoxActionType: " + charityBoxTransferDTO.getActionType() + ",statusEnum: "
+					+ statusEnum);
+			if (statusEnum != null) {
 				charityBox.setStatus(new CharityBoxStatus(statusEnum.getValue()));
+			}
 			charityBox.setLastUpdateDate(new Date());
 			charityBox.setLastUpdateBy(charityBoxTransfer.getSupervisor());
 			charityBoxRepository.save(charityBox);

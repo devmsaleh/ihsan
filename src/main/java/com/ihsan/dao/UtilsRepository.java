@@ -38,11 +38,21 @@ public class UtilsRepository {
 		List<OrphanDTO> resultList = new ArrayList<OrphanDTO>(result.size());
 		OrphanDTO orphanDTO = null;
 		FirstTitle firstTitle = null;
+		String genderId = null;
+		String firstTitleId = null;
 		for (Iterator<Object[]> iterator = result.iterator(); iterator.hasNext();) {
+			genderId = null;
+			firstTitleId = null;
 			Object[] dataArray = (Object[]) iterator.next();
+			if (dataArray[4] != null) {
+				genderId = ((BigDecimal) dataArray[4]).toString();
+			}
+			if (dataArray[7] != null) {
+				firstTitleId = ((BigDecimal) dataArray[4]).toString();
+			}
 			orphanDTO = new OrphanDTO(((BigDecimal) dataArray[0]).toString(), (String) dataArray[1],
-					(Date) dataArray[2], (String) dataArray[3], (String) dataArray[4], (BigDecimal) dataArray[5],
-					(String) dataArray[6], (String) dataArray[7]);
+					(Date) dataArray[2], (String) dataArray[3], genderId, (BigDecimal) dataArray[5],
+					(String) dataArray[6], firstTitleId);
 			orphanDTO.setBirthDateStr(GeneralUtils.formatDate(orphanDTO.getBirthDate()));
 			orphanDTO.setGender((String) dataArray[8]);
 			firstTitle = utilsService.getFirstTitleFromCache(orphanDTO.getFirstTitleId());

@@ -15,7 +15,7 @@ import com.ihsan.entities.Orphan;
 public interface OrphanRepository extends JpaRepository<Orphan, BigInteger> {
 
 	@Query(value = "select * from POS_SP_CASES_V orphan WHERE COUNTRYID=:countryId"
-			+ " and SPONCER_CATEGORY=:sponsorshipTypeId offset :startFromRowNumber rows fetch next :pageSize rows only", nativeQuery = true)
+			+ " and SPONCER_CATEGORY=:sponsorshipTypeId and CASE_STATUS in (3,7) and NVL(CHECK_FLAG,0)=0 offset :startFromRowNumber rows fetch next :pageSize rows only", nativeQuery = true)
 	List<Orphan> findOrphans(@Param("countryId") BigInteger countryId,
 			@Param("sponsorshipTypeId") String sponsorshipTypeId, @Param("startFromRowNumber") int startFromRowNumber,
 			@Param("pageSize") int pageSize);

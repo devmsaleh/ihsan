@@ -401,7 +401,7 @@ public class UtilsService {
 	}
 
 	public void checkReceiptDetailsSequence() {
-		log.info("######## checkReceiptDetailsSequence ###########");
+		// log.info("######## checkReceiptDetailsSequence ###########");
 		Long maxReceiptId = receiptDetailsRepository.getMaxReceiptDetailId();
 		if (maxReceiptId == null)
 			maxReceiptId = 0l;
@@ -409,9 +409,9 @@ public class UtilsService {
 		if (currentSequenceValue == null)
 			currentSequenceValue = 0l;
 		Long difference = maxReceiptId - currentSequenceValue;
-		log.info("######## maxReceiptId: " + maxReceiptId);
-		log.info("######## currentSequenceValue: " + currentSequenceValue);
-		log.info("######## difference: " + difference);
+		// log.info("######## maxReceiptId: " + maxReceiptId);
+		// log.info("######## currentSequenceValue: " + currentSequenceValue);
+		// log.info("######## difference: " + difference);
 		if (currentSequenceValue < maxReceiptId) {
 			difference = difference + 1;
 			for (int i = 0; i < difference; i++) {

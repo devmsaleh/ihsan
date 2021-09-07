@@ -211,7 +211,7 @@ public class SponsorShipWebService extends HAIServiceBase {
 			logger.info("###### findOrphanDetails,orphan id: " + orphanDTO.getId());
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, orphanDTO, errorCodeRepository, lang);
 		} catch (Exception e) {
-			logger.error("Exception in findOrphanDetails webservice: ", e);
+			logger.error("Exception in findOrphanDetails webservice,id: " + id, e);
 			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
 		}
 	}
