@@ -13,6 +13,9 @@ import javax.persistence.Transient;
 
 import com.ihsan.util.GeneralUtils;
 
+// case_status 3 متوقف
+//  7 جاهز للكفالة
+// 9 عقد جديد
 @Entity
 @Table(name = "POS_SP_CASES_V")
 public class Orphan {
