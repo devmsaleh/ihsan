@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -150,15 +151,19 @@ public class SponsorShipWebService extends HAIServiceBase {
 	@ApiOperation(value = "عرض الأيتام فى دولة معينة لنوع كفالة معين")
 	public ServiceResponse findOrphans(@PathParam("countryId") String countryId,
 			@PathParam("sponsorshipTypeId") String sponsorshipTypeId, @PathParam("pageNumber") int pageNumber,
-			@HeaderParam("token") String token, @HeaderParam("lang") String lang) throws Exception {
+			@HeaderParam("token") String token, @HeaderParam("lang") String lang,
+			@HeaderParam("delegateId") String delegateId) throws Exception {
 		try {
 
+			if (StringUtils.isBlank(delegateId)) {
+				delegateId = "-1";
+			}
 			int pageSize = 10;
 			int startFromRowNumber = (pageNumber * pageSize) - pageSize;
 			logger.info("######### findOrphans,countryId: " + countryId + ",sponsorshipTypeId: " + sponsorshipTypeId
 					+ ",startFromRowNumber: " + startFromRowNumber);
-			List<Orphan> orphansList = orphanRepository.findOrphans(new BigInteger(countryId), sponsorshipTypeId,
-					startFromRowNumber, pageSize);
+			List<Orphan> orphansList = orphanRepository.findOrphans(new BigInteger(delegateId),
+					new BigInteger(countryId), sponsorshipTypeId, startFromRowNumber, pageSize);
 			logger.info("###### findOrphans size: " + orphansList.size());
 			List<OrphanDTO> list = convertOrphansToDTO(orphansList);
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, list, errorCodeRepository, lang);
@@ -221,14 +226,16 @@ public class SponsorShipWebService extends HAIServiceBase {
 	@Path("/flagOrphan/{id}")
 	@ApiOperation(value = "حجز يتيم")
 	public ServiceResponse flagOrphan(@PathParam("id") BigInteger id, @HeaderParam("token") String token,
-			@HeaderParam("lang") String lang) throws Exception {
+			@HeaderParam("lang") String lang, @HeaderParam("delegateId") String delegateId) throws Exception {
 		try {
-
+			if (StringUtils.isBlank(delegateId)) {
+				delegateId = "-1";
+			}
 			GeneralResponseDTO generalResponseDTO = new GeneralResponseDTO();
 			BigDecimal isFlaggedValue = orphanRepository.isFlagged(id);
 			boolean isFlagged = isFlaggedValue != null && isFlaggedValue.intValue() == 1;
 			if (!isFlagged) {
-				int result = orphanRepository.flag(id);
+				int result = orphanRepository.flag(id, new BigInteger(delegateId), new Date());
 				generalResponseDTO.setSuccess(result > 0);
 			}
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, generalResponseDTO, errorCodeRepository, lang);
@@ -248,7 +255,6 @@ public class SponsorShipWebService extends HAIServiceBase {
 
 			GeneralResponseDTO generalResponseDTO = new GeneralResponseDTO();
 			int result = orphanRepository.unFlag(id);
-
 			generalResponseDTO.setSuccess(result > 0);
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, generalResponseDTO, errorCodeRepository, lang);
 		} catch (Exception e) {
