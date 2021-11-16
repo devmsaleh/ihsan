@@ -1,6 +1,5 @@
 package com.ihsan.webservice;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -160,11 +159,8 @@ public class SponsorShipWebService extends HAIServiceBase {
 			}
 			int pageSize = 10;
 			int startFromRowNumber = (pageNumber * pageSize) - pageSize;
-			logger.info("######### findOrphans,countryId: " + countryId + ",sponsorshipTypeId: " + sponsorshipTypeId
-					+ ",startFromRowNumber: " + startFromRowNumber);
 			List<Orphan> orphansList = orphanRepository.findOrphans(new BigInteger(delegateId),
 					new BigInteger(countryId), sponsorshipTypeId, startFromRowNumber, pageSize);
-			logger.info("###### findOrphans size: " + orphansList.size());
 			List<OrphanDTO> list = convertOrphansToDTO(orphansList);
 			return new ServiceResponse(ErrorCodeEnum.SUCCESS_CODE, list, errorCodeRepository, lang);
 		} catch (Exception e) {
@@ -232,9 +228,13 @@ public class SponsorShipWebService extends HAIServiceBase {
 				delegateId = "-1";
 			}
 			GeneralResponseDTO generalResponseDTO = new GeneralResponseDTO();
-			BigDecimal isFlaggedValue = orphanRepository.isFlagged(id);
-			boolean isFlagged = isFlaggedValue != null && isFlaggedValue.intValue() == 1;
-			if (!isFlagged) {
+			Orphan orphan = orphanRepository.getOne(id);
+			boolean isFlaggedByOtherUser = false;
+			if (orphan != null) {
+				isFlaggedByOtherUser = orphan.isReserved() && orphan.getReservedByDelegateId() != null
+						&& !orphan.getReservedByDelegateId().equals(new BigInteger(delegateId));
+			}
+			if (!isFlaggedByOtherUser) {
 				int result = orphanRepository.flag(id, new BigInteger(delegateId), new Date());
 				generalResponseDTO.setSuccess(result > 0);
 			}

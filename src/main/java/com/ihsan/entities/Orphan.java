@@ -71,6 +71,9 @@ public class Orphan {
 	@Column(name = "CHECK_FLAG")
 	private Boolean reserved;
 
+	@Column(name = "RESERVED_BY")
+	private BigInteger reservedByDelegateId;
+
 	public Orphan() {
 
 	}
@@ -212,6 +215,14 @@ public class Orphan {
 
 	public void setNationalityName(String nationalityName) {
 		this.nationalityName = nationalityName;
+	}
+
+	public BigInteger getReservedByDelegateId() {
+		return reservedByDelegateId;
+	}
+
+	public void setReservedByDelegateId(BigInteger reservedByDelegateId) {
+		this.reservedByDelegateId = reservedByDelegateId;
 	}
 
 }
