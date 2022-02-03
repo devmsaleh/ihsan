@@ -9,9 +9,9 @@ public enum CharityBoxActionTypeEnum {
 	WITHDRAWAL("9", "سحب", CharityBoxStatusEnum.NOT_ACTIVE), LOST("10", "مفقودة", CharityBoxStatusEnum.LOST),
 	UNDEFINED("-1", "غير معرف", null);
 
-	private String value;
-	private String label;
-	private CharityBoxStatusEnum relatedStatusEnum;
+	private final String value;
+	private final String label;
+	private final CharityBoxStatusEnum relatedStatusEnum;
 
 	public static CharityBoxActionTypeEnum getEnumByName(String name) {
 		if (name == null)

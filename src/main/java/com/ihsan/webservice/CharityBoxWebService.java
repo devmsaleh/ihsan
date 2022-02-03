@@ -562,7 +562,7 @@ public class CharityBoxWebService extends HAIServiceBase {
 				}
 			}
 
-			CharityBoxStatusEnum statusEnum = findCharityBoxStatusByActionType(charityBoxTransferDTO.getActionType());
+			CharityBoxStatusEnum statusEnum = charityBoxTransferDTO.getActionType().getRelatedStatusEnum();
 			logger.info("######### updating charitybox: " + charityBox.getId() + ",charityBoxActionType: "
 					+ charityBoxTransferDTO.getActionType() + ",new statusEnum: " + statusEnum);
 			if (statusEnum != null) {
@@ -721,10 +721,6 @@ public class CharityBoxWebService extends HAIServiceBase {
 			logger.error("Exception in createNewSubLocation webservice: ", e);
 			return new ServiceResponse(ErrorCodeEnum.SYSTEM_ERROR_CODE, errorCodeRepository, lang);
 		}
-	}
-
-	private CharityBoxStatusEnum findCharityBoxStatusByActionType(CharityBoxActionTypeEnum actionTypeEnum) {
-		return actionTypeEnum.getRelatedStatusEnum();
 	}
 
 	@GET
