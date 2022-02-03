@@ -74,6 +74,7 @@ public class CharityBoxWebService extends HAIServiceBase {
 	public ServiceResponse findCharityBox(BarcodeDTO barcodeDTO, @HeaderParam("token") String token,
 			@HeaderParam("lang") String lang) throws Exception {
 		try {
+
 			CharityBox charityBox = null;
 			if (StringUtils.isNotBlank(barcodeDTO.getBarcode()))
 				charityBox = charityBoxRepository.findByBarcode(barcodeDTO.getBarcode());
@@ -85,6 +86,7 @@ public class CharityBoxWebService extends HAIServiceBase {
 				else if (StringUtils.isNotBlank(barcodeDTO.getNumber()))
 					return new ServiceResponse(ErrorCodeEnum.CHARITYBOX_NUMBER_NOT_EXIST, errorCodeRepository, lang);
 			}
+
 			if (barcodeDTO.getActionType().getValue().equals(CharityBoxActionTypeEnum.INSERT.getValue())) {
 				if (!charityBox.getStatusId().equals(CharityBoxStatusEnum.NOT_ACTIVE.getValue())) {
 					return new ServiceResponse(ErrorCodeEnum.CHARITY_BOX_IN_USE, errorCodeRepository, lang);
@@ -561,15 +563,19 @@ public class CharityBoxWebService extends HAIServiceBase {
 			}
 
 			CharityBoxStatusEnum statusEnum = findCharityBoxStatusByActionType(charityBoxTransferDTO.getActionType());
-			logger.info("######### charityBoxActionType: " + charityBoxTransferDTO.getActionType() + ",statusEnum: "
-					+ statusEnum);
+			logger.info("######### updating charitybox: " + charityBox.getId() + ",charityBoxActionType: "
+					+ charityBoxTransferDTO.getActionType() + ",new statusEnum: " + statusEnum);
 			if (statusEnum != null) {
 				charityBox.setStatus(new CharityBoxStatus(statusEnum.getValue()));
 			}
 			charityBox.setLastUpdateDate(new Date());
 			charityBox.setLastUpdateBy(charityBoxTransfer.getSupervisor());
+			logger.info("########## charitybox: " + charityBox.getId() + " new status before save is: "
+					+ charityBox.getStatus());
 			charityBoxRepository.save(charityBox);
-
+			charityBox = charityBoxRepository.findOne(charityBox.getId());
+			logger.info("########## charitybox: " + charityBox.getId() + " status after save is: "
+					+ charityBox.getStatus());
 			int index = 1;
 			if (charityBoxTransferDTO.getAttachments() != null) {
 				for (BigInteger attachmentId : charityBoxTransferDTO.getAttachments()) {

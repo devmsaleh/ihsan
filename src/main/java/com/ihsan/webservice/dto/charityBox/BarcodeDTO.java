@@ -52,4 +52,9 @@ public class BarcodeDTO {
 		this.number = number;
 	}
 
+	@Override
+	public String toString() {
+		return "BarcodeDTO [barcode=" + barcode + ", actionType=" + actionType + ", number=" + number + "]";
+	}
+
 }

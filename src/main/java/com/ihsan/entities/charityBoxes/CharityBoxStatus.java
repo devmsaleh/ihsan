@@ -1,5 +1,7 @@
 package com.ihsan.entities.charityBoxes;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -20,7 +22,7 @@ public class CharityBoxStatus {
 	private String name;
 
 	@Column(name = "LOOKUP_TYPE")
-	private String type;
+	private String type = "BOXES_STATUS";
 
 	public String getType() {
 		return type;
@@ -36,6 +38,7 @@ public class CharityBoxStatus {
 
 	public CharityBoxStatus(String id) {
 		this.id = id;
+		this.type = "BOXES_STATUS";
 	}
 
 	public String getId() {
@@ -52,6 +55,28 @@ public class CharityBoxStatus {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, type);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		CharityBoxStatus other = (CharityBoxStatus) obj;
+		return Objects.equals(id, other.id) && Objects.equals(type, other.type);
+	}
+
+	@Override
+	public String toString() {
+		return "CharityBoxStatus [id=" + id + ", name=" + name + ", type=" + type + "]";
 	}
 
 }
