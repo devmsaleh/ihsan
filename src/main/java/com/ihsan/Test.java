@@ -13,15 +13,13 @@ import com.ihsan.enums.CharityBoxStatusEnum;
 import com.ihsan.webservice.dto.charityBox.CharityBoxTransferDTO;
 
 public class Test {
+
 	public static void main(String[] args) {
 		CharityBoxTransferDTO charityBoxTransferDTO = new CharityBoxTransferDTO();
 		charityBoxTransferDTO.setActionType(CharityBoxActionTypeEnum.INSERT);
-		CharityBoxStatusEnum statusEnum = findCharityBoxStatusByActionType(charityBoxTransferDTO.getActionType());
-		System.out.println("####### statusEnum: " + statusEnum);
-	}
-
-	private static CharityBoxStatusEnum findCharityBoxStatusByActionType(CharityBoxActionTypeEnum actionTypeEnum) {
-		return actionTypeEnum.getRelatedStatusEnum();
+		System.out.println("####### statusEnum1: " + charityBoxTransferDTO.getActionType().getRelatedStatusEnum());
+		CharityBoxStatusEnum statusEnum = CharityBoxActionTypeEnum.findStatus(charityBoxTransferDTO.getActionType());
+		System.out.println("####### statusEnum2: " + statusEnum);
 	}
 
 	public static String sendSMS(String mobileNumber, String totalDonatedAmount, String receiptNumber) {

@@ -901,7 +901,7 @@ public class HAIService extends HAIServiceBase {
 			}
 			String messageTextStr = URLEncoder.encode(messageTextStringBuffer.toString(), "UTF-8");
 			String userName = "sms_pos";
-			String password = "0fKu9H5ZaGgImlUN";
+			String password = "vfsaFSF43r4FF234";
 			String smsURL = "http://alihsan.smscharity.net:9980/nlsmsgw.aspx?user=" + userName + "&pass=" + password
 					+ "&ProviderID=1013&text=" + messageTextStr + "&msisdn=" + mobileNumber + "&encoding=1";
 			URL url = new URL(smsURL);

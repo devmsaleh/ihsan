@@ -13,6 +13,22 @@ public enum CharityBoxActionTypeEnum {
 	private final String label;
 	private final CharityBoxStatusEnum relatedStatusEnum;
 
+	private CharityBoxActionTypeEnum(String value, String label, CharityBoxStatusEnum relatedStatusEnum) {
+		this.value = value;
+		this.label = label;
+		this.relatedStatusEnum = relatedStatusEnum;
+	}
+
+	public static CharityBoxStatusEnum findStatus(CharityBoxActionTypeEnum actionTypeEnum) {
+		if (actionTypeEnum == null)
+			return null;
+		for (CharityBoxActionTypeEnum enumLoop : CharityBoxActionTypeEnum.values()) {
+			if (enumLoop.toString().equals(actionTypeEnum.toString()))
+				return enumLoop.getRelatedStatusEnum();
+		}
+		return null;
+	}
+
 	public static CharityBoxActionTypeEnum getEnumByName(String name) {
 		if (name == null)
 			return null;
@@ -35,12 +51,6 @@ public enum CharityBoxActionTypeEnum {
 
 	public String getValue() {
 		return value;
-	}
-
-	private CharityBoxActionTypeEnum(String value, String label, CharityBoxStatusEnum relatedStatusEnum) {
-		this.value = value;
-		this.label = label;
-		this.relatedStatusEnum = relatedStatusEnum;
 	}
 
 	public String getLabel() {

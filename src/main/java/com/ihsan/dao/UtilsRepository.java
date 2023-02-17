@@ -48,7 +48,7 @@ public class UtilsRepository {
 				genderId = ((BigDecimal) dataArray[4]).toString();
 			}
 			if (dataArray[7] != null) {
-				firstTitleId = ((BigDecimal) dataArray[4]).toString();
+				firstTitleId = ((BigDecimal) dataArray[7]).toString();
 			}
 			orphanDTO = new OrphanDTO(((BigDecimal) dataArray[0]).toString(), (String) dataArray[1],
 					(Date) dataArray[2], (String) dataArray[3], genderId, (BigDecimal) dataArray[5],
