@@ -570,9 +570,6 @@ public class CharityBoxWebService extends HAIServiceBase {
 					+ charityBoxTransferDTO.getActionType() + ",new statusEnum: " + statusEnum);
 			if (statusEnum != null) {
 				charityBox.setStatus(new CharityBoxStatus(statusEnum.getValue()));
-			} else {
-				throw new RuntimeException("statusEnum is NULL for charitybox: " + charityBox.getId()
-						+ ",charityBoxActionType is: " + charityBoxTransferDTO.getActionType());
 			}
 			charityBox.setLastUpdateDate(new Date());
 			charityBox.setLastUpdateBy(charityBoxTransfer.getSupervisor());

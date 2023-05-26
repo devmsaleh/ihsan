@@ -40,21 +40,59 @@ public class UtilsRepository {
 		FirstTitle firstTitle = null;
 		String genderId = null;
 		String firstTitleId = null;
+		String id = null;
+		String name = null;
+		Date birthDate = null;
+		String caseNumber = null;
+		BigDecimal caseAmount = BigDecimal.ZERO;
+		String sponsorFor = null;
+		String gender = null;
+
 		for (Iterator<Object[]> iterator = result.iterator(); iterator.hasNext();) {
+			id = null;
+			name = null;
+			birthDate = null;
+			caseNumber = null;
+			caseAmount = BigDecimal.ZERO;
+			sponsorFor = null;
 			genderId = null;
 			firstTitleId = null;
+			gender = null;
 			Object[] dataArray = (Object[]) iterator.next();
+			if (dataArray[0] != null) {
+				id = ((BigDecimal) dataArray[0]).toString();
+			}
+			if (dataArray[1] != null) {
+				name = (String) dataArray[1];
+			}
+			if (dataArray[2] != null) {
+				birthDate = (Date) dataArray[2];
+			}
+			if (dataArray[3] != null) {
+				caseNumber = (String) dataArray[3];
+			}
 			if (dataArray[4] != null) {
 				genderId = ((BigDecimal) dataArray[4]).toString();
 			}
+
+			if (dataArray[5] != null) {
+				caseAmount = (BigDecimal) dataArray[5];
+			}
+
+			if (dataArray[6] != null) {
+				sponsorFor = (String) dataArray[6];
+			}
+
 			if (dataArray[7] != null) {
 				firstTitleId = ((BigDecimal) dataArray[7]).toString();
 			}
-			orphanDTO = new OrphanDTO(((BigDecimal) dataArray[0]).toString(), (String) dataArray[1],
-					(Date) dataArray[2], (String) dataArray[3], genderId, (BigDecimal) dataArray[5],
-					(String) dataArray[6], firstTitleId);
+
+			if (dataArray[8] != null) {
+				gender = (String) dataArray[8];
+			}
+			orphanDTO = new OrphanDTO(id, name, birthDate, caseNumber, genderId, caseAmount, sponsorFor, firstTitleId);
 			orphanDTO.setBirthDateStr(GeneralUtils.formatDate(orphanDTO.getBirthDate()));
-			orphanDTO.setGender((String) dataArray[8]);
+			orphanDTO.setGender(gender);
 			firstTitle = utilsService.getFirstTitleFromCache(orphanDTO.getFirstTitleId());
 			orphanDTO.setFirstTitleName(firstTitle.getName());
 			resultList.add(orphanDTO);
